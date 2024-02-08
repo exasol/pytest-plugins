@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  workflow_call:
+    secrets:
+      ALTERNATIVE_GITHUB_TOKEN:
+        required: false
+
+jobs:
+
+  Verify:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Development Environment
+        uses: ./.github/actions/pytest-plugins-environment
+
+      - name: Run Tests of all plugins
+        run: just test
+
