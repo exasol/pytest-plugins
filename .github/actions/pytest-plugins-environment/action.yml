@@ -14,16 +14,6 @@ inputs:
     required: true
     default: 1.7.1
 
-  pipx-version:
-    description: 'Pipx version to use'
-    required: true
-    default: 1.0.0
-
-  ruff-version:
-    description: 'Ruff version to use'
-    required: true
-    default: 0.2.1
-
   just-version:
     description: 'Just version to use'
     required: true
@@ -43,14 +33,6 @@ runs:
       uses: abatilo/actions-poetry@v2
       with:
         poetry-version: ${{ inputs.poetry-version }}
-
-    - name: Setup pipx (${{ inputs.pipx-version }})
-      run: pip install "pipx==${{ inputs.pipx-version }}"
-      shell: bash
-
-    - name: Setup ruff (${{ inputs.ruff-version }})
-      run: pipx install "ruff==${{ inputs.ruff-version }}"
-      shell: bash
 
     - name: Setup just (${{ inputs.just-version }})
       uses: extractions/setup-just@v1

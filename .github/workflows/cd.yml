@@ -1,0 +1,9 @@
+name: Continues Delivery (Release)
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  CI:
+    uses: ./.github/workflows/ci.yml

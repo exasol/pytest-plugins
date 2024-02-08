@@ -4,11 +4,6 @@ PROJECTS := "pytest-itde"
 default:
     just --list
 
-# Reformat all python files in the respository
-fmt:
-   ruff format
-   ruff --fix 
-
 # Run tests for one or multiple projects within this respository
 test +projects=PROJECTS:
     #!/usr/bin/env bash
