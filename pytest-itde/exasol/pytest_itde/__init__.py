@@ -1,5 +1,5 @@
 import os
-from typing import Tuple
+from typing import Tuple, Generator, Any
 
 import pyexasol
 import pytest
@@ -214,7 +214,7 @@ def itde(
     exasol_config,
     bucketfs_config,
     connection_factory,
-) -> config.TestConfig:
+) -> Generator[config.TestConfig, Any, Any]:
     """Starts a docker based test environment and returns the associated test config."""
     connection = connection_factory(exasol_config)
 

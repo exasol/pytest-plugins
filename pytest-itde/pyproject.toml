@@ -57,5 +57,10 @@ max-module-lines = 800
 module = [
     "test.unit.*",
     "test.integration.*",
+    "exasol.toolbox.*",
+    "pyexasol.*",
+    "exasol_integration_test_docker_environment.*",
 ]
 ignore_errors = true
+ignore_missing_imports = true
+
