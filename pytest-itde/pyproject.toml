@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Nicola Coretti <nicola.coretti@exasol.com>"]
 readme = "README.md"
-packages = [{include = "exasol", from = "src"}]
+packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
@@ -15,6 +15,47 @@ pyexasol = ">=0.25"
 [tool.poetry.plugins.pytest11]
 itde = "exasol.pytest_itde"
 
+
+[tool.poetry.group.dev.dependencies]
+exasol-toolbox = "0.8.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+relative_files = true
+source = [
+    "exasol",
+]
+
+[tool.coverage.report]
+fail_under = 15
+
+
+[tool.black]
+line-length = 88
+verbose = false
+include = "\\.pyi?$"
+
+
+[tool.isort]
+profile = "black"
+force_grid_wrap = 2
+
+
+[tool.pylint.master]
+fail-under = 8.1
+output-format = "colorized,json:.lint.json,text:.lint.txt"
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 800
+
+
+[[tool.mypy.overrides]]
+module = [
+    "test.unit.*",
+    "test.integration.*",
+]
+ignore_errors = true

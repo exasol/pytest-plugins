@@ -1,6 +1,11 @@
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import Generic, List, Optional, TypeVar
+from typing import (
+    Generic,
+    List,
+    Optional,
+    TypeVar,
+)
 
 from pyexasol.connection import ExaConnection
 

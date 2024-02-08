@@ -1,8 +1,11 @@
 import pytest
+from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
 
 from exasol.pytest_itde import TestSchemas
-from exasol.pytest_itde.config import Option, OptionGroup
-from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
+from exasol.pytest_itde.config import (
+    Option,
+    OptionGroup,
+)
 
 OPTIONS = (
     Option(

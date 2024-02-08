@@ -3,9 +3,9 @@ from typing import Tuple
 
 import pyexasol
 import pytest
+from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
 
 from exasol.pytest_itde import config
-from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
 
 EXASOL = config.OptionGroup(
     prefix="exasol",
