@@ -8,9 +8,9 @@ packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4"
-pytest = ">=7"
-exasol-integration-test-docker-environment = ">=2"
-pyexasol = ">=0.25"
+pytest = ">=7,<9"
+exasol-integration-test-docker-environment = ">=2,<3"
+pyexasol = "^0.25"
 
 [tool.poetry.plugins.pytest11]
 itde = "exasol.pytest_itde"
