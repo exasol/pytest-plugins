@@ -3,7 +3,7 @@ name = "pytest-exasol-itde"
 version = "0.1.0"
 description = ""
 authors = ["Nicola Coretti <nicola.coretti@exasol.com>"]
-readme = "README.md"
+readme = "README.rst"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
