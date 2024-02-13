@@ -10,8 +10,6 @@ on:
         type: choice
         options:
         - "pytest-itde"
-        - "pytest-stub1"
-        - "pytest-stub2"
       version:
         description: 'Version number for the release'
         required: True
