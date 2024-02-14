@@ -1,0 +1,9 @@
+name: Continues Integration (PR)
+
+on:
+  pull_request:
+
+jobs:
+
+  CI:
+    uses: ./.github/workflows/ci.yml

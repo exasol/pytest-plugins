@@ -1,0 +1,28 @@
+name: Continues Delivery (Release)
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project to release'
+        required: true
+        default: 'pytest-itde'
+        type: choice
+        options:
+        - "pytest-itde"
+      version:
+        description: 'Version number for the release'
+        required: True
+        type: int
+jobs:
+  Release:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check
+        run: |
+          echo "Stub: validate that all preconditions for the release are meet"
+
+      - name:
+        run: |
+          just release ${{ inputs.project }} ${{ inputs.version }}
