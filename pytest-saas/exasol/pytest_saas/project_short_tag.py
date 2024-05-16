@@ -8,7 +8,6 @@ potentially long-running database instances in order to avoid unwanted costs.
 
 from pathlib import Path
 
-
 FILE = "error_code_config.yml"
 
 
@@ -29,6 +28,4 @@ def read_from_yaml(dir: Path) -> str:
             return
         if line.startswith("error-tags:"):
             header = True
-    raise RuntimeError(
-        f"Could not read project short tag from file {config_file}"
-    )
+    raise RuntimeError(f"Could not read project short tag from file {config_file}")

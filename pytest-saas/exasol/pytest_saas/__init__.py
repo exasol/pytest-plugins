@@ -1,34 +1,34 @@
-import pytest
 import os
-
-import exasol.pytest_saas.project_short_tag as pst
-
 from pathlib import Path
-from exasol.saas.client import (
-    openapi,
-)
+
+import pytest
+from exasol.saas.client import openapi
 from exasol.saas.client.api_access import (
+    OpenApiAccess,
     create_saas_client,
     timestamp_name,
-    OpenApiAccess,
 )
+
+import exasol.pytest_saas.project_short_tag as pst
 
 
 def pytest_addoption(parser):
     parser.addoption(
-            f"--saas-database-id",
-            help="""ID of the instance of an existing SaaS database to be
+        f"--saas-database-id",
+        help="""ID of the instance of an existing SaaS database to be
             used during the current pytest session instead of creating a
             dedicated instance temporarily.""",
     )
     parser.addoption(
-            f"--keep-saas-database", action="store_true", default=False,
-            help="""Keep the SaaS database instance created for the current
+        f"--keep-saas-database",
+        action="store_true",
+        default=False,
+        help="""Keep the SaaS database instance created for the current
             pytest session for subsequent inspection or reuse.""",
     )
     parser.addoption(
-            f"--project-short-tag",
-            help="""Short tag aka. "abbreviation" for your current project.
+        f"--project-short-tag",
+        help="""Short tag aka. "abbreviation" for your current project.
             See docstring in project_short_tag.py for more details.
             pytest plugin for exasol-saas-api will include this short tag into
             the names of created database instances.""",
@@ -60,9 +60,9 @@ def saas_account_id() -> str:
 @pytest.fixture(scope="session")
 def project_short_tag(request):
     return (
-        pst.read_from_yaml(request.config.rootpath) or
-        request.config.getoption("--project-short-tag") or
-        os.environ.get("PROJECT_SHORT_TAG")
+        pst.read_from_yaml(request.config.rootpath)
+        or request.config.getoption("--project-short-tag")
+        or os.environ.get("PROJECT_SHORT_TAG")
     )
 
 
@@ -78,7 +78,9 @@ def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
 
 
 @pytest.fixture(scope="session")
-def saas_database(request, api_access, database_name) -> openapi.models.database.Database:
+def saas_database(
+    request, api_access, database_name
+) -> openapi.models.database.Database:
     """
     Note: The SaaS instance database returned by this fixture initially
     will not be operational. The startup takes about 20 minutes.
