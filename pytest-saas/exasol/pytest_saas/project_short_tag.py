@@ -24,8 +24,7 @@ def read_from_yaml(dir: Path) -> str:
     for line in content.splitlines():
         line = line.strip()
         if header:
-            print(line.strip().replace(":", ""))
-            return
+            return line.strip().replace(":", "")
         if line.startswith("error-tags:"):
             header = True
     raise RuntimeError(f"Could not read project short tag from file {config_file}")

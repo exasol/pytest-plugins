@@ -60,9 +60,9 @@ def saas_account_id() -> str:
 @pytest.fixture(scope="session")
 def project_short_tag(request):
     return (
-        pst.read_from_yaml(request.config.rootpath)
-        or request.config.getoption("--project-short-tag")
+        request.config.getoption("--project-short-tag")
         or os.environ.get("PROJECT_SHORT_TAG")
+        or pst.read_from_yaml(request.config.rootpath)
     )
 
 
