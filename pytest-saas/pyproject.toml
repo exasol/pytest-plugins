@@ -10,7 +10,7 @@ packages = [{include = "exasol"}]
 python = ">=3.8,<4"
 pytest = ">=7,<9"
 # pyexasol = "^0.25"
-exasol-saas-api = "^0.4.0"
+exasol-saas-api = "^0.5.0"
 
 [tool.poetry.plugins.pytest11]
 saas = "exasol.pytest_saas"
