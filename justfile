@@ -1,4 +1,4 @@
-PROJECTS := "pytest-itde"
+PROJECTS := "pytest-saas pytest-itde"
 
 # Default target
 default:
@@ -12,21 +12,9 @@ test +projects=PROJECTS:
         poetry -C ${p}/ run nox -f ${p}/noxfile.py -s coverage
     done
 
-
 # Create a release
 release project version:
-    @echo "This currently is a stub, in the future the workflow probably will look somthing like this:"
-    @echo ""
-    @echo "poetry -C {{project}} run -f {{project}}/noxfile -s release {{ version }}"
-    @echo ""
-    @echo ""
-    @echo "Workflow:"
-    @echo "* update version"
-    @echo "* rename unreleased section to specified version"
-    @echo "* rename create new empty unreleased section"
-    @echo "* create git tag"
-    @echo "* build package/wheel"
-    @echo "* create & publish github release"
-    @echo "* create & publish pypi release"
-    @echo "* create/output slack announcement and print to terminal"
-
+    @echo "ensure environment variables are set: POETRY_HTTP_BASIC_PYPI_USERNAME and POETRY_HTTP_BASIC_PYPI_PASSWORD"
+    #!/usr/bin/env bash
+    echo poetry -C {{project}}/ build
+    echo poetry -C {{project}}/ publish
