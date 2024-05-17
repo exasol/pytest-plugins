@@ -1,4 +1,4 @@
-# Pytest Plugin for Exasol SaaS 0.1.0, released tbd
+# Unreleased
 
 ## Summary
 
