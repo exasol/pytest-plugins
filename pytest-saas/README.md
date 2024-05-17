@@ -1,4 +1,4 @@
-# pytest-saas Plugin
+# pytest-exasol-saas Plugin
 
 The `pytest-exasol-saas` plugin is a pytest plugin designed to facilitate the integration
 testing of projects using the [exasol-saas-api](https://github.com/exasol/saas-api-python).
