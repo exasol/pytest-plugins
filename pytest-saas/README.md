@@ -43,7 +43,7 @@ pytest-exasol-saas Plugin will name the database instances using 3 components
 
 A database instances might for example have the name `1715155224SAPIPY-run` indicating it was
 * created on Wednesday, May 8, 2024
-* in the context of a project with short tag `SAPYPI`
+* in the context of a project with short tag `SAPIPY`
 * by a user with login name starting with `run`
 
 Please note that Exasol SaaS limits the length of database names to 10 characters only. So pytest-exasol-saas plugin will shorten the constructed name to 10 characters max.
