@@ -11,7 +11,7 @@ jobs:
 
     steps:
      - name: Show CM 1
-       run: echo ${{ github.event.head_commit.message }}
+       run: echo ${{ github.event.pull_request.head_commit.message }}
 
   CI:
     uses: ./.github/workflows/ci.yml
