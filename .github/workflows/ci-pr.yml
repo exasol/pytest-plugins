@@ -25,7 +25,7 @@ jobs:
 
       - name: Verify setting of env var in ci-pr
         run: |
-          echo "A = $A
+          echo "A = $A"
           echo "RUN_SLOW_TESTS = $RUN_SLOW_TESTS"
 
   CI:
