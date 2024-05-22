@@ -10,6 +10,8 @@ on:
     - cron: "0 0 1/7 * *"
 
 jobs:
+  show-commit-message:
+    run: echo ${{ github.event.head_commit.message }}
 
   CI:
     uses: ./.github/workflows/ci.yml
