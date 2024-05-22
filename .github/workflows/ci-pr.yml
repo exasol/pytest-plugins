@@ -21,6 +21,7 @@ jobs:
           echo A=5 >> "$GITHUB_OUTPUT"
           git status
           git log -1 HEAD~1 --format="%b"
+          git log -2
           if ! (git log -1 HEAD~1 --format="%b" | grep "\[run-slow-tests\]"); then
              export RUN_SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
           fi
