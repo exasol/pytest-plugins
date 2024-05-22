@@ -54,6 +54,11 @@ def _env(**kwargs):
          ),
     ])
 def test_pass_options_via_cli(pytester, make_test_files, files, cli_args):
+    """
+    This test could also be called a unit test and verifies that the CLI
+    arguments are registered correctly, can be passed to pytest, and are
+    accessible within external test cases.
+    """
     make_test_files(pytester, files)
     result = pytester.runpytest(*cli_args)
     assert result.ret == pytest.ExitCode.OK
@@ -114,3 +119,13 @@ def test_id_of_existing_database(request, pytester, capsys):
     captured = capsys.readouterr()
     assert result.ret != pytest.ExitCode.OK
     assert "Database not found" in captured.out
+
+
+def test_operational_database(request, pytester):
+    testname = request.node.name
+    pytester.makepyfile(** _testfile( f"""
+    def {testname}(operational_saas_database_id):
+        assert operational_saas_database_id is not None
+    """))
+    result = pytester.runpytest()
+    assert result.ret == pytest.ExitCode.OK

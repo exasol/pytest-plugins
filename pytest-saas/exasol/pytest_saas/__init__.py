@@ -96,5 +96,6 @@ def saas_database(
 @pytest.fixture(scope="session")
 def operational_saas_database_id(api_access, saas_database) -> str:
     db = saas_database
+    api_access.add_allowed_ip()
     api_access.wait_until_running(db.id)
     return db.id
