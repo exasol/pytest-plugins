@@ -13,3 +13,4 @@ jobs:
 
   CI:
     uses: ./.github/workflows/ci.yml
+    secrets: inherit
