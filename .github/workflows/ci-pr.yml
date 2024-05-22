@@ -20,7 +20,8 @@ jobs:
         run: |
           echo A=5 >> "$GITHUB_OUTPUT"
           /usr/bin/git status
-          /usr/bin/git log -1 --pretty=format:"%b"
+          /usr/bin/git log | cat
+          # /usr/bin/git log -1 --pretty=format:"%b"
           if ! (/usr/bin/git log -1 --pretty=format:"%b" | grep "\[run-slow-tests\]"); then
              export RUN_SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
           fi
