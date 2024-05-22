@@ -20,7 +20,7 @@ jobs:
         run: |
           echo A=5 >> "$GITHUB_OUTPUT"
           if ! (git log -2 --format="%b" | grep "\[run-slow-tests\]"); then
-             echo 'RUN_SLOW_TESTS=\'-m "not slow"\'' >> "$GITHUB_OUTPUT"
+             echo RUN_SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Verify setting of env var in ci-pr
