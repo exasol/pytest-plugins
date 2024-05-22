@@ -22,13 +22,13 @@ pip install pytest-exasol-saas
 
 By default the fixtures in pytest-exasol-saas Plugin will create instances of Exasol SaaS database with scope `session`.
 
-If you want to use an existing instance instead, then you can provide the instance's ID with command line option `--saas-database-id <ID>` to pytest.
+If you want to use an existing instance instead, then you can provide the instance's ID with the command line option `--saas-database-id <ID>` to pytest.
 
 ### Keeping Database Instances After the Test Session
 
 By default the fixtures in pytest-exasol-saas Plugin will remove the created database instances after the session or in case of errors.
 
-However, if you provide command line option `--keep-saas-database` then pytest-exasol-saas Plugin will _keep_ these instances for subsequent inspection or reuse.
+However, if you provide the command line option `--keep-saas-database` then the pytest-exasol-saas plugin will _keep_ these instances for subsequent inspection or reuse.
 
 Please note hat long-running instances will cause significant costs.
 

@@ -6,7 +6,7 @@ default:
 
 # Run tests for one or multiple projects within this respository
 test +projects=PROJECTS:
-    #!/usr/bin/env python
+    #!/usr/bin/env python3
     import subprocess, sys
     rc = 0
     def run(command):
