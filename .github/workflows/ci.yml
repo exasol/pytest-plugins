@@ -23,7 +23,9 @@ jobs:
 
       - name: Evaluate Whether to Run Slow Tests
         if: ${{ ! contains(github.event.head_commit.message, '[run-slow-tests]') }}
-        run: echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
+        run: |
+          echo ${{ github.event.head_commit.message }}
+          echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
 
       - name: Run Tests of All Plugins
         run: |
