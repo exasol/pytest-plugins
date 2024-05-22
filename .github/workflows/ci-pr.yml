@@ -5,13 +5,19 @@ on:
 
 jobs:
 
-  show-commit-message-ci-pr:
+  examine-commit-message-ci-pr:
     name: show commit message ci-pr
     runs-on: ubuntu-20.04
 
     steps:
-     - name: Show CM 1
-       run: echo ${{ github.event.pull_request.head_commit.message }}
+      - name: Examine Commit Message in ci-pr
+        run: |
+          if (git log -1 --pretty=format:"%s" | grep "[run-slow-tests]"); then
+             echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
+          fi
+
+      - name: Verify setting of env var in ci-pr
+        run: echo ${{ env.RUN_SLOW_TESTS }}
 
   CI:
     uses: ./.github/workflows/ci.yml

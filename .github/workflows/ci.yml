@@ -16,8 +16,14 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Show Commit Message
-        run: echo ${{ inputs.commit-message }}
+      - name: Examine Commit Message
+        run: |
+          if (git log -1 --pretty=format:"%s" | grep "[run-slow-tests]"); then
+             echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
+          fi
+
+      - name: Verify setting of env var
+        run: echo ${{ env.RUN_SLOW_TESTS }}
 
       - name: SCM Checkout
         uses: actions/checkout@v4
