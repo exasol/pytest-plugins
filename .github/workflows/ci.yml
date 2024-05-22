@@ -13,6 +13,9 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Show event
+        run: echo ${{ github.event }}
+
       - name: SCM Checkout
         uses: actions/checkout@v4
         with:
@@ -20,9 +23,6 @@ jobs:
 
       - name: Setup Development Environment
         uses: ./.github/actions/pytest-plugins-environment
-
-      - name: Show event
-        run: echo ${{ github.event.workflow_call.head_commit.message }}
 
       - name: Evaluate Whether to Run Slow Tests
         if: ${{ ! contains(github.event.head_commit.message, '[run-slow-tests]') }}
