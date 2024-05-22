@@ -15,9 +15,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Examine Commit Message in ci-pr
+      - id: examine
+        name: Examine Commit Message in ci-pr
         run: |
-          echo 5 >> "$GITHUB_OUTPUT"
+          echo A=5 >> "$GITHUB_OUTPUT"
           git status
           git log -1 --pretty=format:"%b"
           if ! (git log -1 --pretty=format:"%b" | grep "\[run-slow-tests\]"); then
@@ -26,8 +27,8 @@ jobs:
 
       - name: Verify setting of env var in ci-pr
         run: |
-          echo "GITHUB_OUTPUT 1 = ${{ neegs.examine-commit-message-ci-pr.outputs.output1}}
-          echo "GITHUB_OUTPUT 2 = ${{ neegs.examine-commit-message-ci-pr.outputs.output2}}
+          echo "OUTPUT 1 = ${{ steps.examine.outputs.A }}"
+          echo "OUTPUT 2 = ${{ steps.examine.outputs.RUN_SLOW_TESTS }}"
 
   CI:
     uses: ./.github/workflows/ci.yml
