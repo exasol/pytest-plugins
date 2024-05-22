@@ -27,7 +27,7 @@ jobs:
 
       - name: Run Tests of All Plugins
         run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
+          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS" 
           just test
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
