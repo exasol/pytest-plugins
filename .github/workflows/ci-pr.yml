@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Examine Commit Message in ci-pr
         run: |
           if (git log -1 --pretty=format:"%s" | grep "\[run-slow-tests\]"); then
