@@ -17,16 +17,17 @@ jobs:
 
       - name: Examine Commit Message in ci-pr
         run: |
-          export A=5
+          echo 5 >> "$GITHUB_OUTPUT"
+          git status
           git log -1 --pretty=format:"%b"
           if ! (git log -1 --pretty=format:"%b" | grep "\[run-slow-tests\]"); then
-             export RUN_SLOW_TESTS='-m "not slow"'
+             export RUN_SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Verify setting of env var in ci-pr
         run: |
-          echo "A = $A"
-          echo "RUN_SLOW_TESTS = $RUN_SLOW_TESTS"
+          echo "GITHUB_OUTPUT 1 = ${{ neegs.examine-commit-message-ci-pr.outputs.output1}}
+          echo "GITHUB_OUTPUT 2 = ${{ neegs.examine-commit-message-ci-pr.outputs.output2}}
 
   CI:
     uses: ./.github/workflows/ci.yml
