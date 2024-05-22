@@ -21,15 +21,18 @@ jobs:
       - name: Setup Development Environment
         uses: ./.github/actions/pytest-plugins-environment
 
+      - name: Show event
+        run: echo ${{ github.event.workflow_call.head_commit.message }}
+
       - name: Evaluate Whether to Run Slow Tests
         if: ${{ ! contains(github.event.head_commit.message, '[run-slow-tests]') }}
         run: |
-          echo ${{ github.event.head_commit.message }}
+          echo ${{ github.event.workflow_call.head_commit.message }}
           echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
 
       - name: Run Tests of All Plugins
         run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS" 
+          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
           just test
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
