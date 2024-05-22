@@ -15,6 +15,10 @@ pyexasol = "^0.25"
 [tool.poetry.plugins.pytest11]
 itde = "exasol.pytest_itde"
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = "0.8.0"
