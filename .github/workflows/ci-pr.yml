@@ -33,5 +33,3 @@ jobs:
   CI:
     uses: ./.github/workflows/ci.yml
     secrets: inherit
-    with:
-      commit-message: ${{ github.event.head_commit.message }}
