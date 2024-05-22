@@ -2,6 +2,9 @@ name: CI
 
 on:
   workflow_call:
+    inputs:
+      commit-message:
+        type: string
     secrets:
       ALTERNATIVE_GITHUB_TOKEN:
         required: false
@@ -24,10 +27,13 @@ jobs:
       - name: Setup Development Environment
         uses: ./.github/actions/pytest-plugins-environment
 
+      - name: Show Commit Message of calling workflow
+        run: echo ${{ inputs.commit-message }}
+
       - name: Evaluate Whether to Run Slow Tests
         if: ${{ ! contains(github.event.head_commit.message, '[run-slow-tests]') }}
         run: |
-          echo ${{ github.event.workflow_call.head_commit.message }}
+          echo ${{ github.event.head_commit.message }}
           echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
 
       - name: Run Tests of All Plugins
