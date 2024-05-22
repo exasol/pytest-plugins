@@ -53,3 +53,12 @@ Before you can start developing in this workspace, please ensure you have the fo
 - `Python <https://www.python.org>`_
 - `Just <https://github.com/casey/just>`_
 
+Run Tests
+---------
+
+Slow Tests
+^^^^^^^^^^
+
+Some of the test cases verify connecting to a SaaS database instance and execution will take about 20 minutes.
+
+These test cases are disabled by default and will only be executed when the commit message contains the string `[run-slow-tests]`.
