@@ -21,10 +21,15 @@ jobs:
       - name: Setup Development Environment
         uses: ./.github/actions/pytest-plugins-environment
 
+      - name: Evaluate Whether to Run Slow Tests
+        if: "! contains(github.event.head_commit.message, '[run-slow-tests]')"
+        run: echo 'RUN_SLOW_TESTS=-m "not slow"' >> $GITHUB_ENV
+
       - name: Run Tests of All Plugins
         run: just test
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+          PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ env.RUN_SLOW_TESTS }}'
 

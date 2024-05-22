@@ -121,6 +121,7 @@ def test_id_of_existing_database(request, pytester, capsys):
     assert "Database not found" in captured.out
 
 
+@pytest.mark.slow
 def test_operational_database(request, pytester):
     testname = request.node.name
     pytester.makepyfile(** _testfile( f"""
