@@ -7,6 +7,7 @@ potentially long-running database instances in order to avoid unwanted costs.
 """
 
 from pathlib import Path
+import yaml
 
 FILE = "error_code_config.yml"
 
@@ -19,12 +20,9 @@ def read_from_yaml(dir: Path) -> str:
     config_file = dir / FILE
     if not config_file.exists():
         return None
-    content = config_file.read_text()
-    header = False
-    for line in content.splitlines():
-        line = line.strip()
-        if header:
-            return line.strip().replace(":", "")
-        if line.startswith("error-tags:"):
-            header = True
-    raise RuntimeError(f"Could not read project short tag from file {config_file}")
+    with open(config_file, 'r') as file:
+        ecc = yaml.safe_load(file)
+        try:
+            return next(t for t in ecc["error-tags"])
+        except Exception as ex:
+            raise RuntimeError(f"Could not read project short tag from file {config_file}")
