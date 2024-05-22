@@ -17,13 +17,16 @@ jobs:
 
       - name: Examine Commit Message in ci-pr
         run: |
+          export A=5
           git log -1 --pretty=format:"%b"
-          if (git log -1 --pretty=format:"%b" | grep "\[run-slow-tests\]"); then
+          if ! (git log -1 --pretty=format:"%b" | grep "\[run-slow-tests\]"); then
              export RUN_SLOW_TESTS='-m "not slow"'
           fi
 
       - name: Verify setting of env var in ci-pr
-        run: echo "RUN_SLOW_TESTS = $RUN_SLOW_TESTS"
+        run: |
+          echo "A = $A
+          echo "RUN_SLOW_TESTS = $RUN_SLOW_TESTS"
 
   CI:
     uses: ./.github/workflows/ci.yml
