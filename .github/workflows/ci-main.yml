@@ -10,7 +10,10 @@ on:
     - cron: "0 0 1/7 * *"
 
 jobs:
-  show-commit-message:
+
+  show-commit-message-1:
+    name: show commit message 1
+    runs-on: ubuntu-20.04
     run: echo ${{ github.event.head_commit.message }}
 
   CI:
