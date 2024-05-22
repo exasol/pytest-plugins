@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Show event
-        run: echo ${{ github.event.workflow_run }}
+      - name: Show Commit Message
+        run: echo ${{ inputs.commit-message }}
 
       - name: SCM Checkout
         uses: actions/checkout@v4
