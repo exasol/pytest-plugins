@@ -2,9 +2,6 @@ name: CI
 
 on:
   workflow_call:
-    inputs:
-      commit-message:
-        type: string
     secrets:
       ALTERNATIVE_GITHUB_TOKEN:
         required: false

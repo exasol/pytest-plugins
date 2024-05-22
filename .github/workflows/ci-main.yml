@@ -11,11 +11,6 @@ on:
 
 jobs:
 
-  show-commit-message-1:
-    name: show commit message 1
-    runs-on: ubuntu-20.04
-    run: echo ${{ github.event.head_commit.message }}
-
   CI:
     uses: ./.github/workflows/ci.yml
     secrets: inherit
