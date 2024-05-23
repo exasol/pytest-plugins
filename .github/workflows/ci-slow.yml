@@ -1,0 +1,12 @@
+name: Continuous Integration (incl. Slow Tests)
+
+on:
+  workflow_dispatch:
+
+jobs:
+
+  ci-slow:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      slow-tests: true

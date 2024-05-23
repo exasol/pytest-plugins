@@ -2,6 +2,9 @@ name: CI
 
 on:
   workflow_call:
+    inputs:
+      slow-tests:
+        type: string
     secrets:
       ALTERNATIVE_GITHUB_TOKEN:
         required: false
@@ -13,28 +16,38 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: SCM Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Set pytest markers
+        id: pytest-markers
+        if: ${{ inputs.slow-tests }}
+        run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
-      - name: Examine Git Log
-        id: git-log
+      - name: Examine Inputs
         run: |
-          git log -2
-          if ! (git log -2 --format="%b" | grep "\[run-slow-tests\]"); then
-             echo SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
-          fi
+          echo "input slow tests = ${{ inputs.slow-tests }}"
+          echo "pytest-markers = ${{ pytest-markers.outputs.slow-tests }}"
 
-      - name: Setup Development Environment
-        uses: ./.github/actions/pytest-plugins-environment
-
-      - name: Run Tests of All Plugins
-        run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          just test
-        env:
-          SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
-          SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
-          SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-          PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.git-log.outputs.SLOW_TESTS }}'
+#       - name: SCM Checkout
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+# 
+#       - name: Examine Git Log
+#         id: git-log
+#         run: |
+#           git log -2
+#           if ! (git log -2 --format="%b" | grep "\[run-slow-tests\]"); then
+#              echo SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
+#           fi
+# 
+#       - name: Setup Development Environment
+#         uses: ./.github/actions/pytest-plugins-environment
+# 
+#       - name: Run Tests of All Plugins
+#         run: |
+#           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
+#           just test
+#         env:
+#           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
+#           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
+#           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
+#           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.git-log.outputs.SLOW_TESTS }}'
