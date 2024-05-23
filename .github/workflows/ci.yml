@@ -4,8 +4,9 @@ on:
   workflow_call:
     inputs:
       slow-tests:
+        type: bool
         required: false
-        default: 'false'
+        default: false
     secrets:
       ALTERNATIVE_GITHUB_TOKEN:
         required: false
@@ -19,7 +20,7 @@ jobs:
     steps:
       - name: Set pytest markers
         id: pytest-markers
-        if: ${{ inputs.slow-tests == 'false' }}
+        if: ${{ ! inputs.slow-tests }}
         run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
       - name: Examine Inputs
