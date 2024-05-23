@@ -25,23 +25,18 @@ jobs:
         run: |
           echo "input slow tests = ${{ inputs.slow-tests }}"
           echo "pytest-markers = ${{ steps.pytest-markers.outputs.slow-tests }}"
+          echo "env PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
+        env:
+          PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
 
 #       - name: SCM Checkout
 #         uses: actions/checkout@v4
 #         with:
 #           fetch-depth: 0
-# 
-#       - name: Examine Git Log
-#         id: git-log
-#         run: |
-#           git log -2
-#           if ! (git log -2 --format="%b" | grep "\[run-slow-tests\]"); then
-#              echo SLOW_TESTS='-m "not slow"' >> "$GITHUB_OUTPUT"
-#           fi
-# 
+#
 #       - name: Setup Development Environment
 #         uses: ./.github/actions/pytest-plugins-environment
-# 
+#
 #       - name: Run Tests of All Plugins
 #         run: |
 #           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
@@ -50,4 +45,4 @@ jobs:
 #           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
 #           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
 #           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-#           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.git-log.outputs.SLOW_TESTS }}'
+#           PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
