@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Set pytest markers
         id: pytest-markers
-        if: ${{ inputs.slow-tests }}
+        if: ${{ ! inputs.slow-tests }}
         run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
       - name: Examine Inputs
