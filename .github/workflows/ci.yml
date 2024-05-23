@@ -24,7 +24,7 @@ jobs:
       - name: Examine Inputs
         run: |
           echo "input slow tests = ${{ inputs.slow-tests }}"
-          echo "pytest-markers = ${{ pytest-markers.outputs.slow-tests }}"
+          echo "pytest-markers = ${{ steps.pytest-markers.outputs.slow-tests }}"
 
 #       - name: SCM Checkout
 #         uses: actions/checkout@v4
