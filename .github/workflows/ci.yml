@@ -23,14 +23,6 @@ jobs:
         if: ${{ ! inputs.slow-tests }}
         run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
-      - name: Examine Inputs
-        run: |
-          echo "input slow tests = ${{ inputs.slow-tests }}"
-          echo "pytest-markers = ${{ steps.pytest-markers.outputs.slow-tests }}"
-          echo "env PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-        env:
-          PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
-
       - name: SCM Checkout
         uses: actions/checkout@v4
         with:
