@@ -6,11 +6,18 @@ default:
 
 # Run tests for one or multiple projects within this respository
 test +projects=PROJECTS:
-    #!/usr/bin/env bash
-    for p in {{projects}}; do
-        poetry -C ${p}/ install
-        poetry -C ${p}/ run nox -f ${p}/noxfile.py -s coverage
-    done
+    #!/usr/bin/env python3
+    import subprocess, sys
+    rc = 0
+    def run(command):
+        global rc
+        result = subprocess.run(command.split())
+        rc = result.returncode or rc
+
+    for p in "{{projects}}".split():
+        run(f"poetry -C {p}/ install")
+        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s coverage")
+    sys.exit(rc)
 
 # Create a release
 release project version:

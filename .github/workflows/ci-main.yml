@@ -1,4 +1,4 @@
-name: Continues Integration (Master)
+name: Continuous Integration (Main)
 
 on:
   workflow_dispatch:
@@ -13,3 +13,6 @@ jobs:
 
   CI:
     uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      slow-tests: true

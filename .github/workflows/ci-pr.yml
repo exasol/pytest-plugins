@@ -1,4 +1,4 @@
-name: Continues Integration (PR)
+name: Continuous Integration (PR)
 
 on:
   pull_request:
@@ -7,3 +7,6 @@ jobs:
 
   CI:
     uses: ./.github/workflows/ci.yml
+    secrets: inherit
+    with:
+      slow-tests: true

@@ -9,3 +9,4 @@ This version introduces the `pytest-exasol-saas` plugin providing pytest functio
 ## Features
 
 * #9: Added sub-project for exasol-saas-api
+* #10: Added pytest fixtures for usage in integration tests of external projects
