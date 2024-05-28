@@ -21,7 +21,9 @@ test +projects=PROJECTS:
 
 # Create a release
 release project version:
-    @echo "ensure environment variables are set: POETRY_HTTP_BASIC_PYPI_USERNAME and POETRY_HTTP_BASIC_PYPI_PASSWORD"
+    @echo "Ensure environment variables are set:"
+    @echo "- POETRY_HTTP_BASIC_PYPI_USERNAME=__token__"
+    @echo "- POETRY_HTTP_BASIC_PYPI_PASSWORD=<your token>"
     #!/usr/bin/env bash
-    echo poetry -C {{project}}/ build
-    echo poetry -C {{project}}/ publish
+    poetry -C $(pwd)/{{project}}/ build
+    poetry -C $(pwd)/{{project}}/ publish
