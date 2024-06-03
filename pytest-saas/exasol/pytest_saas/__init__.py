@@ -14,20 +14,20 @@ import exasol.pytest_saas.project_short_tag as pst
 
 def pytest_addoption(parser):
     parser.addoption(
-        f"--saas-database-id",
+        "--saas-database-id",
         help="""ID of the instance of an existing SaaS database to be
             used during the current pytest session instead of creating a
             dedicated instance temporarily.""",
     )
     parser.addoption(
-        f"--keep-saas-database",
+        "--keep-saas-database",
         action="store_true",
         default=False,
         help="""Keep the SaaS database instance created for the current
             pytest session for subsequent inspection or reuse.""",
     )
     parser.addoption(
-        f"--project-short-tag",
+        "--project-short-tag",
         help="""Short tag aka. "abbreviation" for your current project.
             See docstring in project_short_tag.py for more details.
             pytest plugin for exasol-saas-api will include this short tag into
@@ -86,16 +86,17 @@ def saas_database(
     will not be operational. The startup takes about 20 minutes.
     """
     db_id = request.config.getoption("--saas-database-id")
+    keep = request.config.getoption("--keep-saas-database")
     if db_id:
         yield api_access.get_database(db_id)
         return
-    with api_access.database(database_name) as db:
+    with api_access.database(database_name, keep) as db:
         yield db
 
 
 @pytest.fixture(scope="session")
 def operational_saas_database_id(api_access, saas_database) -> str:
     db = saas_database
-    api_access.add_allowed_ip()
-    api_access.wait_until_running(db.id)
-    return db.id
+    with api_access.allowed_ip():
+        api_access.wait_until_running(db.id)
+        yield db.id

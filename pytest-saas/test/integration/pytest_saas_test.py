@@ -111,7 +111,7 @@ def test_id_of_existing_database(request, pytester, capsys):
     because that there is no database with the specified ID.
     """
     testname = request.node.name
-    pytester.makepyfile(** _testfile( f"""
+    pytester.makepyfile(** _testfile(f"""
           def {testname}(saas_database):
               pass
           """))
@@ -124,9 +124,29 @@ def test_id_of_existing_database(request, pytester, capsys):
 @pytest.mark.slow
 def test_operational_database(request, pytester):
     testname = request.node.name
-    pytester.makepyfile(** _testfile( f"""
+    pytester.makepyfile(** _testfile(f"""
     def {testname}(operational_saas_database_id):
         assert operational_saas_database_id is not None
     """))
     result = pytester.runpytest()
     assert result.ret == pytest.ExitCode.OK
+
+
+def test_keep_database(request, pytester, api_access, capsys):
+    testname = request.node.name
+    pytester.makepyfile(** _testfile(f"""
+    def {testname}(saas_database):
+        db = saas_database
+        print(f"\\ndatabase-id: {{db.id}}")
+    """))
+    id = None
+    try:
+        result = pytester.runpytest("--keep-saas-database", "-s")
+        assert result.ret == pytest.ExitCode.OK
+        captured = capsys.readouterr()
+        for line in captured.out.splitlines():
+            if line.startswith("database-id: "):
+                id = line.split()[1]
+    finally:
+        if id:
+            api_access.delete_database(id)
