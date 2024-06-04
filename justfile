@@ -26,4 +26,4 @@ release project:
     @echo "- POETRY_HTTP_BASIC_PYPI_PASSWORD=<your token>"
     #!/usr/bin/env bash
     poetry -C $(pwd)/{{project}}/ build
-    echo poetry -C $(pwd)/{{project}}/ publish
+    poetry -C $(pwd)/{{project}}/ publish
