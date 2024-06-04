@@ -1,4 +1,4 @@
-name: Continues Delivery (Release)
+name: Continuous Delivery (Release)
 
 on:
   workflow_dispatch:
@@ -10,6 +10,7 @@ on:
         type: choice
         options:
         - "pytest-itde"
+        - "pytest-saas"
       version:
         description: 'Version number for the release'
         required: True
@@ -21,8 +22,20 @@ jobs:
     steps:
       - name: Check
         run: |
-          echo "Stub: validate that all preconditions for the release are meet"
+          echo "Stub: validate that all preconditions for the release are met"
+
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@0.9.0
 
       - name:
         run: |
-          just release ${{ inputs.project }} ${{ inputs.version }}
+          TAG="${{ inputs.project }}-${{ inputs.version }}"
+          git tag "${TAG}"
+          git push origin "${TAG}"
+          echo just release ${{ inputs.project }} ${{ inputs.version }}
+        env:
+          POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
+          POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
