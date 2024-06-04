@@ -30,9 +30,7 @@ Releasing a single plugin includes
 * Publish to pypi
 * Create a release on GitHub
 
-This requires to have a dedicated Git-tag for each release of each of the
-plugins.  The convention is to use the name of the plugin as prefix followed
-by a dash character and the version of the plugin, e.g. `pytest-saas-0.1.0`.
+This requires to have a dedicated Git-tag for each release of each of the plugins.  The convention is to use the name of the plugin as prefix followed by a dash character and the version of the plugin, e.g. `pytest-saas-0.1.0`.
 
 In order to create release for one of the plugins
 1. Open the GitHub repository in your browser
