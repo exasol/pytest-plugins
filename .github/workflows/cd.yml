@@ -44,5 +44,6 @@ jobs:
              --target main \
              dist/*
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
           POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
