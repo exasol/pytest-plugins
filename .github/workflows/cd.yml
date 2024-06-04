@@ -20,6 +20,13 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
+      - name: Fail if not running on main branch
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.setFailed('Not running on main branch, github.ref is ${{ github.ref }}. Please start this workflow only on main')
+
       - name: Check
         run: |
           echo "Stub: validate that all preconditions for the release are met"
@@ -33,9 +40,12 @@ jobs:
       - name:
         run: |
           TAG="${{ inputs.project }}-${{ inputs.version }}"
-          git tag "${TAG}"
-          git push origin "${TAG}"
           echo just release ${{ inputs.project }} ${{ inputs.version }}
+          echo gh release create ${GITHUB_REF_NAME} \
+             --title ${GITHUB_REF_NAME} \
+             --notes-file ./${PROJECT}/doc/changes/changes_${VERSION}.md \
+             --latest --target main \
+             dist/*
         env:
           POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
           POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
