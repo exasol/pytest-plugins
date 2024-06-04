@@ -1,4 +1,4 @@
-name: Continues Delivery (Release)
+name: Continuous Delivery (Release)
 
 on:
   workflow_dispatch:
@@ -6,23 +6,46 @@ on:
       project:
         description: 'Project to release'
         required: true
-        default: 'pytest-itde'
+        default: 'pytest-saas'
         type: choice
         options:
+        - "pytest-saas"
         - "pytest-itde"
       version:
         description: 'Version number for the release'
-        required: True
+        required: true
         type: int
 jobs:
   Release:
     runs-on: ubuntu-20.04
 
     steps:
-      - name: Check
-        run: |
-          echo "Stub: validate that all preconditions for the release are meet"
+      - name: Fail if not running on main branch
+        if: ${{ github.ref != 'refs/heads/main' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.setFailed('Not running on main branch, github.ref is ${{ github.ref }}. Please start this workflow only on main')
+
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Development Environment
+        uses: ./.github/actions/pytest-plugins-environment
 
       - name:
         run: |
-          just release ${{ inputs.project }} ${{ inputs.version }}
+          just release ${PROJECT}
+          gh release create ${TAG} \
+             --title ${TAG} \
+             --notes-file ./${PROJECT}/doc/changes/changes_${VERSION}.md \
+             --latest \
+             --target main \
+             ${PROJECT}/dist/*
+        env:
+          TAG: "${{ inputs.project }}-${{ inputs.version }}"
+          PROJECT: "${{ inputs.project }}"
+          VERSION: "${{ inputs.version }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
+          POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"

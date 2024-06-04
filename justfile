@@ -20,7 +20,7 @@ test +projects=PROJECTS:
     sys.exit(rc)
 
 # Create a release
-release project version:
+release project:
     @echo "Ensure environment variables are set:"
     @echo "- POETRY_HTTP_BASIC_PYPI_USERNAME=__token__"
     @echo "- POETRY_HTTP_BASIC_PYPI_PASSWORD=<your token>"
