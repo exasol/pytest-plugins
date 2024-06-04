@@ -6,7 +6,7 @@ on:
       project:
         description: 'Project to release'
         required: true
-        default: 'pytest-itde'
+        default: 'pytest-saas'
         type: choice
         options:
         - "pytest-saas"
@@ -35,15 +35,17 @@ jobs:
 
       - name:
         run: |
-          TAG="${{ inputs.project }}-${{ inputs.version }}"
-          just release ${{ inputs.project }}
+          just release ${PROJECT}
           gh release create ${TAG} \
              --title ${TAG} \
-             --notes-file ./${{ inputs.project }}/doc/changes/changes_${{ inputs.version }}.md \
+             --notes-file ./${PROJECT}/doc/changes/changes_${VERSION}.md \
              --latest \
              --target main \
-             dist/*
+             ${PROJECT}/dist/*
         env:
+          TAG: "${{ inputs.project }}-${{ inputs.version }}"
+          PROJECT: "${{ inputs.project }}"
+          VERSION: "${{ inputs.version }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
           POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
