@@ -27,10 +27,6 @@ jobs:
 #           script: |
 #             core.setFailed('Not running on main branch, github.ref is ${{ github.ref }}. Please start this workflow only on main')
 
-      - name: Check
-        run: |
-          echo "Stub: validate that all preconditions for the release are met"
-
       - name: SCM Checkout
         uses: actions/checkout@v4
 
@@ -40,11 +36,12 @@ jobs:
       - name:
         run: |
           TAG="${{ inputs.project }}-${{ inputs.version }}"
-          echo just release ${{ inputs.project }} ${{ inputs.version }}
-          echo gh release create ${TAG} \
+          just release ${{ inputs.project }}
+          gh release create ${TAG} \
              --title ${TAG} \
              --notes-file ./${{ inputs.project }}/doc/changes/changes_${{ inputs.version }}.md \
-             --latest --target main \
+             --latest \
+             --target main \
              dist/*
         env:
           POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
