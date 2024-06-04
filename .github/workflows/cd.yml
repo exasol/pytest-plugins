@@ -9,11 +9,11 @@ on:
         default: 'pytest-itde'
         type: choice
         options:
-        - "pytest-itde"
         - "pytest-saas"
+        - "pytest-itde"
       version:
         description: 'Version number for the release'
-        required: True
+        required: true
         type: int
 jobs:
   Release:
@@ -41,9 +41,9 @@ jobs:
         run: |
           TAG="${{ inputs.project }}-${{ inputs.version }}"
           echo just release ${{ inputs.project }} ${{ inputs.version }}
-          echo gh release create ${GITHUB_REF_NAME} \
-             --title ${GITHUB_REF_NAME} \
-             --notes-file ./${PROJECT}/doc/changes/changes_${VERSION}.md \
+          echo gh release create ${TAG} \
+             --title ${TAG} \
+             --notes-file ./${{ inputs.project }}/doc/changes/changes_${{ inputs.version }}.md \
              --latest --target main \
              dist/*
         env:
