@@ -1,0 +1,5 @@
+# 0.2.1 - 2024-06-07
+
+# Changes
+
+* Updated dependencies and relaxed version specifier for saas-api-python.
