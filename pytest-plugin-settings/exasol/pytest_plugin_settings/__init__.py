@@ -1,3 +1,6 @@
+import pytest
+from functools import singledispatch
+from collections.abc import Iterable
 from collections.abc import MappingView
 from collections import ChainMap
 from dataclasses import dataclass
@@ -5,7 +8,6 @@ from typing import (
     Generic,
     Optional,
     TypeVar,
-    Iterable,
 )
 from enum import Enum, auto
 
@@ -15,7 +17,7 @@ class Name:
     def normalize(name: str) -> str:
         name = name.replace("-", "_")
         name = name.lower()
-        name = name.strip('_')
+        name = name.strip("_")
         return name
 
     @staticmethod
@@ -29,6 +31,12 @@ class Name:
         name = Name.normalize(name)
         name = name.replace("_", "-")
         return f"--{name}"
+
+    @staticmethod
+    def to_ini(name: str) -> str:
+        name = Name.normalize(name)
+        name = name.replace("_", "-")
+        return name
 
     @staticmethod
     def to_pytest(name: str) -> str:
@@ -48,6 +56,10 @@ class Name:
     @property
     def cli(self) -> str:
         return self.to_cli(self._name)
+
+    @property
+    def ini(self) -> str:
+        return self.to_ini(self._name)
 
     @property
     def pytest(self) -> str:
@@ -78,6 +90,10 @@ class Setting(Generic[T]):
         return self.normalized_name.cli()
 
     @property
+    def ini(self) -> str:
+        return self.normalized_name.ini()
+
+    @property
     def pytest(self) -> str:
         return self.normalized_name.pytest()
 
@@ -95,7 +111,9 @@ class Group:
         self._settings = tuple(
             Setting(
                 prefix=group_name,
-                name=f"{setting.prefix}-{setting.name}",
+                name=f"{setting.prefix}-{setting.name}"
+                if setting.prefix
+                else setting.name,
                 type=setting.type,
                 help_text=setting.help_text,
             )
@@ -103,11 +121,16 @@ class Group:
         )
 
     @property
+    def name(self):
+        return self._name
+
+    @property
     def settings(self):
         return self._settings
 
 
 class Category(Enum):
+    ConfigFile = auto()
     Environment = auto()
     CommandLine = auto()
 
@@ -159,3 +182,37 @@ class Resolver(MappingView):
         }
         method = dispatcher[category]
         method(mapping)
+
+
+@singledispatch
+def add_to_pytest_settings(obj, parser):
+    raise TypeError("Unsupported type")
+
+
+@add_to_pytest_settings.register
+def _(setting: Setting, parser):
+    parser.addoption(setting.cli, help=setting.help)
+    parser.addini(name=setting.ini, help=setting.help)
+
+
+@add_to_pytest_settings.register
+def _(settings: Iterable, parser):
+    for setting in settings:
+        add_to_pytest_settings(setting, parser)
+
+
+@add_to_pytest_settings.register
+def _(group: Group, parser):
+    group_parser = parser.getgroup(group.name)
+    add_to_pytest_settings(group.settings, group_parser)
+
+
+# Write to readme and test, plugin should use the following hooks
+
+# def pytest_configure(config: pytest.Config):
+#   # Add settings/group to parser using add_to_pytest
+#   add_to_pytest(my_group)
+
+# def pytest_configure(config: pytest.Config):
+#   # hook up settings resolver and store in stash?
+#   pass
