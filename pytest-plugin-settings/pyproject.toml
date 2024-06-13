@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "pytest-plugin-settings"
+version = "0.1.0"
+description = "Add and manage pytest plugin settings"
+license = "MIT"
+authors = ["Nicola Coretti <nicola.coretti@exasol.com>"]
+readme = "README.md"
+packages = [{include = "exasol"}]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4"
+pytest = ">=7,<9"
+
+
+[tool.poetry.group.dev.dependencies]
+exasol-toolbox = ">=0.13.0,<1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.run]
+relative_files = true
+source = [
+    "exasol",
+]
+
+[tool.coverage.report]
+fail_under = 15
+
+
+[tool.black]
+line-length = 88
+verbose = false
+include = "\\.pyi?$"
+
+
+[tool.isort]
+profile = "black"
+force_grid_wrap = 2
+
+
+[tool.pylint.master]
+fail-under = 8.1
+
+[tool.pylint.format]
+max-line-length = 88
+max-module-lines = 800
+
+
+[[tool.mypy.overrides]]
+module = [
+    "test.unit.*",
+    "test.integration.*",
+    "exasol.toolbox.*",
+]
+ignore_errors = true
+ignore_missing_imports = true
+
