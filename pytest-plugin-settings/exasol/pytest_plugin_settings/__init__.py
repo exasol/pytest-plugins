@@ -1,14 +1,11 @@
+import os
 import pytest
 from functools import singledispatch
-from collections.abc import Iterable
+from collections.abc import IterableABC as IterableAbc
 from collections.abc import MappingView
 from collections import ChainMap
 from dataclasses import dataclass
-from typing import (
-    Generic,
-    Optional,
-    TypeVar,
-)
+from typing import Any, Dict, Generic, Optional, TypeVar, Iterable
 from enum import Enum, auto
 
 
@@ -105,7 +102,7 @@ class Setting(Generic[T]):
 
 
 class Group:
-    def __init__(self, name: str, settings: Iterable[Setting]):
+    def __init__(self, name: str, settings: IterableAbc[Setting]):
         group_name = Name.normalize(name)
         self._name = group_name
         self._settings = tuple(
@@ -137,12 +134,22 @@ class Category(Enum):
 
 class Resolver(MappingView):
     def __init__(
-        self, settings: Iterable[Setting], environment=None, cli_arguments=None
+        self,
+        settings: IterableAbc[Setting],
+        cli_arguments=None,
+        environment=None,
+        config=None,
     ):
         self._settings = tuple(settings)
         self._default = {s.normalized_name: s.default for s in self._settings}
-        self._env = environment or {}
-        self._cli = cli_arguments or {}
+        self._config = {}
+        self._env = {}
+        self._cli = {}
+
+        self.update(config, Category.ConfigFile)
+        self.update(environment, Category.Environment)
+        self.update(cli_arguments, Category.CommandLine)
+
         self._kwargs = ChainMap(self._cli, self._env, self._default)
 
     def __len__(self):
@@ -158,15 +165,16 @@ class Resolver(MappingView):
     def settings(self):
         return self._kwargs
 
-    def _environment(self, environment):
-        env = {
-            setting.normalized_name: setting.type(environment[setting.env])
-            for setting in self._settings
-            if setting.env in environment
+    def update(self, mapping, category):
+        dispatcher = {
+            Category.CommandLine: self._update_cli,
+            Category.Environment: self._update_environment,
+            Category.ConfigFile: self._update_config_file,
         }
-        self._env.update(env)
+        method = dispatcher[category]
+        method(mapping)
 
-    def _cli(self, cli_arguments):
+    def _update_cli(self, cli_arguments):
         cli = {
             setting.normalized_name: getattr(cli_arguments, setting.pytest)
             for setting in self.options
@@ -175,13 +183,43 @@ class Resolver(MappingView):
         }
         self._cli.update(cli)
 
-    def update(self, mapping, category):
-        dispatcher = {
-            Category.Environment: self._environment,
-            Category.CommandLine: self._cli,
+    def _update_environment(self, environment):
+        env = {
+            setting.normalized_name: setting.type(environment[setting.env])
+            for setting in self._settings
+            if setting.env in environment
         }
-        method = dispatcher[category]
-        method(mapping)
+        self._env.update(env)
+
+    def _update_config_file(self, config):
+        cfg = {
+            setting.normalized_name: setting.type(config[setting.ini])
+            for setting in self._settings
+            if setting.ini in config
+        }
+        self._config.update(cfg)
+
+
+class PytestResolver(Resolver):
+    def __init__(self, settings: Iterable[Setting], config: pytest.Config):
+        cli = from_pytest(settings, config)
+        cfg = from_pytest_ini(settings, config)
+        env = os.environ
+        super().__init__(cli_arguments=cli, environment=env, config=cfg)
+
+
+def from_pytest(settings: Iterable[Setting], config: pytest.Config) -> Dict[str, Any]:
+    pass
+
+
+def from_env(settings: Iterable[Setting], env: Dict[str, str]) -> Dict[str, Any]:
+    pass
+
+
+def from_pytest_ini(
+    settings: Iterable[Setting], config: pytest.Config
+) -> Dict[str, Any]:
+    pass
 
 
 @singledispatch
@@ -196,7 +234,7 @@ def _(setting: Setting, parser):
 
 
 @add_to_pytest_settings.register
-def _(settings: Iterable, parser):
+def _(settings: IterableAbc, parser):
     for setting in settings:
         add_to_pytest_settings(setting, parser)
 
