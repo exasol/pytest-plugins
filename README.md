@@ -16,6 +16,7 @@ Whether you're looking to use database interactions, enhance test reporting, or 
 
 | Plugin               | Description                                                                                                                | PYPI                                                               |
 |----------------------|----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
+| `pytest-plugin-settings` | Simplifies adding and managing pytest plugin settings | - |
 | `pytest-exasol-itde` | Fixture to enable simple usage with Exasol's project [ITDE](https://github.com/exasol/integration-test-docker-environment) | [pytest-exasol-itde](https://pypi.org/project/pytest-exasol-itde/) |
 | `pytest-exasol-saas` | Fixture to enable simple usage with Exasol's project [saas-api-python](https://github.com/exasol/saas-api-python/)         | [pytest-exasol-saas](https://pypi.org/project/pytest-exasol-saas/) |
 
