@@ -1,7 +1,7 @@
 import os
 import pytest
 from functools import singledispatch
-from collections.abc import IterableABC as IterableAbc
+from collections.abc import Iterable as IterableAbc
 from collections.abc import MappingView
 from collections import ChainMap
 from dataclasses import dataclass
@@ -75,24 +75,28 @@ class Setting(Generic[T]):
     help_text: str = ""
 
     @property
+    def _name(self) -> Name:
+        return Name(f"{self.prefix}-{self.name}")
+
+    @property
     def normalized_name(self) -> str:
-        return str(Name(f"{self.prefix}-{self.name}"))
+        return str(self._name)
 
     @property
     def env(self) -> str:
-        return self.normalized_name.env()
+        return self._name.env
 
     @property
     def cli(self) -> str:
-        return self.normalized_name.cli()
+        return self._name.cli
 
     @property
     def ini(self) -> str:
-        return self.normalized_name.ini()
+        return self._name.ini
 
     @property
     def pytest(self) -> str:
-        return self.normalized_name.pytest()
+        return self._name.pytest
 
     @property
     def help(self) -> str:
@@ -177,7 +181,7 @@ class Resolver(MappingView):
     def _update_cli(self, cli_arguments):
         cli = {
             setting.normalized_name: getattr(cli_arguments, setting.pytest)
-            for setting in self.options
+            for setting in self._settings
             if hasattr(cli_arguments, setting.pytest)
             and getattr(cli_arguments, setting.pytest) is not None
         }
@@ -205,32 +209,33 @@ class PytestResolver(Resolver):
         cli = from_pytest(settings, config)
         cfg = from_pytest_ini(settings, config)
         env = os.environ
-        super().__init__(cli_arguments=cli, environment=env, config=cfg)
+        super().__init__(settings, cli_arguments=cli, environment=env, config=cfg)
 
 
 def from_pytest(settings: Iterable[Setting], config: pytest.Config) -> Dict[str, Any]:
-    pass
+    return {}
 
 
 def from_env(settings: Iterable[Setting], env: Dict[str, str]) -> Dict[str, Any]:
-    pass
+    return {}
 
 
 def from_pytest_ini(
     settings: Iterable[Setting], config: pytest.Config
 ) -> Dict[str, Any]:
-    pass
+    return {}
 
 
 @singledispatch
 def add_to_pytest_settings(obj, parser):
-    raise TypeError("Unsupported type")
+    raise TypeError(f"Unsupported type: {obj.__class__.__name__}, Object name: {obj.__name__}")
 
 
 @add_to_pytest_settings.register
 def _(setting: Setting, parser):
     parser.addoption(setting.cli, help=setting.help)
-    parser.addini(name=setting.ini, help=setting.help)
+    p = parser if hasattr(parser, "addini") else parser.parser
+    p.addini(name=setting.ini, help=setting.help)
 
 
 @add_to_pytest_settings.register
