@@ -19,6 +19,19 @@ test +projects=PROJECTS:
         run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s coverage")
     sys.exit(rc)
 
+relock +projects=PROJECTS:
+    #!/usr/bin/env python3
+    import subprocess, sys
+    rc = 0
+    def run(command):
+        global rc
+        result = subprocess.run(command.split())
+        rc = result.returncode or rc
+
+    for p in "{{projects}}".split():
+        run(f"poetry -C {p}/ update")
+    sys.exit(rc)
+
 # Create a release
 release project:
     @echo "Ensure environment variables are set:"
