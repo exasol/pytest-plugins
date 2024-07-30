@@ -36,6 +36,7 @@ def _env(**kwargs):
           def test_no_cli_args(request):
               assert not request.config.getoption("--keep-saas-database")
               assert request.config.getoption("--saas-database-id") is None
+              assert reqeust.config.getoption("--idle-time") == "2"
           """),
           _cli_args(),
          ),
@@ -45,11 +46,13 @@ def _env(**kwargs):
               assert request.config.getoption("--keep-saas-database")
               assert "123" == request.config.getoption("--saas-database-id")
               assert "PST" == request.config.getoption("--project-short-tag")
+              assert "3.5" == request.config.getoption("--idle-time")
           """),
           _cli_args(
               "--keep-saas-database",
               "--project-short-tag", "PST",
               "--saas-database-id", "123",
+              "--idle-time", "3.5"
           ),
          ),
     ])

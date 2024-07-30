@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from datetime import timedelta
 
 import pytest
 from exasol.saas.client import openapi
@@ -28,10 +28,19 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--project-short-tag",
+        default='2',
         help="""Short tag aka. "abbreviation" for your current project.
             See docstring in project_short_tag.py for more details.
             pytest plugin for exasol-saas-api will include this short tag into
             the names of created database instances.""",
+    )
+    parser.addoption(
+        "--idle-time",
+        help="""
+        The SaaS cluster would normally stop after a certain period of inactivity. 
+        The default period is 2 hours. For some tests, this period is too short.
+        Use this parameter to set a sufficient idle period in the number of hours.
+        """
     )
 
 
@@ -87,10 +96,13 @@ def saas_database(
     """
     db_id = request.config.getoption("--saas-database-id")
     keep = request.config.getoption("--keep-saas-database")
+    idle_time = float(request.config.getoption("--idle-time"))
+
     if db_id:
         yield api_access.get_database(db_id)
         return
-    with api_access.database(database_name, keep) as db:
+    with api_access.database(database_name, keep,
+                             idle_time=timedelta(hours=idle_time)) as db:
         yield db
 
 
