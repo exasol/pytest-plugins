@@ -28,7 +28,6 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--project-short-tag",
-        default='2',
         help="""Short tag aka. "abbreviation" for your current project.
             See docstring in project_short_tag.py for more details.
             pytest plugin for exasol-saas-api will include this short tag into
@@ -36,6 +35,8 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--idle-time",
+        action="store_true",
+        default="2",
         help="""
         The SaaS cluster would normally stop after a certain period of inactivity. 
         The default period is 2 hours. For some tests, this period is too short.

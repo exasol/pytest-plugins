@@ -36,7 +36,7 @@ def _env(**kwargs):
           def test_no_cli_args(request):
               assert not request.config.getoption("--keep-saas-database")
               assert request.config.getoption("--saas-database-id") is None
-              assert reqeust.config.getoption("--idle-time") == "2"
+              assert request.config.getoption("--idle-time") == "2"
           """),
           _cli_args(),
          ),
