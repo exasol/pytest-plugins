@@ -52,7 +52,7 @@ def _env(**kwargs):
               "--keep-saas-database",
               "--project-short-tag", "PST",
               "--saas-database-id", "123",
-              "--idle-time", "3.5"
+              "--idle-time", "3.5",
           ),
          ),
     ])

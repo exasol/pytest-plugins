@@ -35,7 +35,7 @@ def pytest_addoption(parser):
     )
     parser.addoption(
         "--idle-time",
-        action="store_true",
+        action="store",
         default="2",
         help="""
         The SaaS cluster would normally stop after a certain period of inactivity. 
