@@ -4,6 +4,7 @@ from inspect import cleandoc
 from unittest import mock
 
 import pytest
+from exasol.saas import client as saas_client
 
 pytest_plugins = "pytester"
 
@@ -32,11 +33,13 @@ def _env(**kwargs):
 @pytest.mark.parametrize(
     "files,cli_args",
     [
-        ( _testfile("""
+        ( _testfile(f"""
           def test_no_cli_args(request):
+              import pytest
               assert not request.config.getoption("--keep-saas-database")
               assert request.config.getoption("--saas-database-id") is None
-              assert request.config.getoption("--idle-time") == "2"
+              assert float(request.config.getoption("--saas-max-idle-hours")) * 3600 == \
+                pytest.approx({saas_client.Limits.AUTOSTOP_DEFAULT_IDLE_TIME.total_seconds()})
           """),
           _cli_args(),
          ),
@@ -46,13 +49,13 @@ def _env(**kwargs):
               assert request.config.getoption("--keep-saas-database")
               assert "123" == request.config.getoption("--saas-database-id")
               assert "PST" == request.config.getoption("--project-short-tag")
-              assert "3.5" == request.config.getoption("--idle-time")
+              assert "3.5" == request.config.getoption("--saas-max-idle-hours")
           """),
           _cli_args(
               "--keep-saas-database",
               "--project-short-tag", "PST",
               "--saas-database-id", "123",
-              "--idle-time", "3.5",
+              "--saas-max-idle-hours", "3.5",
           ),
          ),
     ])
