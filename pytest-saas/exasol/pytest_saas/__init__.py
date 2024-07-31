@@ -1,8 +1,8 @@
 import os
-from pathlib import Path
+from datetime import timedelta
 
 import pytest
-from exasol.saas.client import openapi
+from exasol.saas import client as saas_client
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     create_saas_client,
@@ -32,6 +32,16 @@ def pytest_addoption(parser):
             See docstring in project_short_tag.py for more details.
             pytest plugin for exasol-saas-api will include this short tag into
             the names of created database instances.""",
+    )
+    parser.addoption(
+        "--saas-max-idle-hours",
+        action="store",
+        default=saas_client.Limits.AUTOSTOP_DEFAULT_IDLE_TIME.total_seconds() / 3600,
+        help="""
+        The SaaS cluster would normally stop after a certain period of inactivity. 
+        The default period is 2 hours. For some tests, this period is too short.
+        Use this parameter to set a sufficient idle period in the number of hours.
+        """
     )
 
 
@@ -80,17 +90,20 @@ def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
 @pytest.fixture(scope="session")
 def saas_database(
     request, api_access, database_name
-) -> openapi.models.database.Database:
+) -> saas_client.openapi.models.database.Database:
     """
     Note: The SaaS instance database returned by this fixture initially
     will not be operational. The startup takes about 20 minutes.
     """
     db_id = request.config.getoption("--saas-database-id")
     keep = request.config.getoption("--keep-saas-database")
+    idle_hours = float(request.config.getoption("--saas-max-idle-hours"))
+
     if db_id:
         yield api_access.get_database(db_id)
         return
-    with api_access.database(database_name, keep) as db:
+    with api_access.database(database_name, keep,
+                             idle_time=timedelta(hours=idle_hours)) as db:
         yield db
 
 
