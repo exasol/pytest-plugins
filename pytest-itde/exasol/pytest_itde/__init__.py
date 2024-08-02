@@ -1,5 +1,6 @@
 import os
 from typing import Tuple, Generator, Any
+from contextlib import contextmanager
 
 import pyexasol
 import pytest
@@ -169,70 +170,62 @@ def connection_factory():
         connection.close()
 
 
-@pytest.fixture(scope="session")
-def _bootstrap_db(itde_config, exasol_config, bucketfs_config, ssh_config):
+@contextmanager
+def bootstrap_db(itde_config, exasol_config, bucketfs_config, ssh_config):
     """Bootstraps the database should not be used from outside the itde plugin."""
 
-    def nop():
-        pass
-
-    def start_db(name, itde, exasol, bucketfs, ssh_access):
+    if itde_config.db_version != "external":
         from urllib.parse import urlparse
-
         from exasol_integration_test_docker_environment.lib import api
+        db_name = "pytest_exasol_db"
 
-        bucketfs_url = urlparse(bucketfs.url)
+        bucketfs_url = urlparse(bucketfs_config.url)
         _, cleanup_function = api.spawn_test_environment(
-            environment_name=name,
-            database_port_forward=exasol.port,
+            environment_name=db_name,
+            database_port_forward=exasol_config.port,
             bucketfs_port_forward=bucketfs_url.port,
-            ssh_port_forward=ssh_access.port,
+            ssh_port_forward=ssh_config.port,
             db_mem_size="4GB",
-            docker_db_image_version=itde.db_version,
+            docker_db_image_version=itde_config.db_version,
         )
-        return cleanup_function
-
-    db_name = "pytest_exasol_db"
-    bootstrap_db = itde_config.db_version != "external"
-
-    start = (
-        lambda: start_db(
-            db_name, itde_config, exasol_config, bucketfs_config, ssh_config
-        )
-        if bootstrap_db
-        else lambda: nop
-    )
-    stop = start()
-    yield
-    stop()
+        yield
+        cleanup_function()
+    else:
+        yield
 
 
 @pytest.fixture(scope="session")
 def itde(
-    _bootstrap_db,
     itde_config,
     exasol_config,
     bucketfs_config,
+    ssh_config,
     connection_factory,
 ) -> Generator[config.TestConfig, Any, Any]:
     """Starts a docker based test environment and returns the associated test config."""
-    connection = connection_factory(exasol_config)
 
-    for schema in itde_config.schemas:
-        connection.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE;")
-        connection.execute(f"CREATE SCHEMA {schema};")
-        connection.commit()
+    with bootstrap_db(itde_config=itde_config,
+                      exasol_config=exasol_config,
+                      bucketfs_config=bucketfs_config,
+                      ssh_config=ssh_config):
 
-    yield config.TestConfig(
-        db=exasol_config,
-        bucketfs=bucketfs_config,
-        itde=itde_config,
-        ctrl_connection=connection,
-    )
+        connection = connection_factory(exasol_config)
 
-    for schema in itde_config.schemas:
-        connection.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE;")
-        connection.commit()
+        for schema in itde_config.schemas:
+            connection.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE;")
+            connection.execute(f"CREATE SCHEMA {schema};")
+            connection.commit()
+
+        yield config.TestConfig(
+            db=exasol_config,
+            bucketfs=bucketfs_config,
+            itde=itde_config,
+            ctrl_connection=connection,
+        )
+
+        for schema in itde_config.schemas:
+            connection.execute(f"DROP SCHEMA IF EXISTS {schema} CASCADE;")
+            connection.commit()
 
 
 OPTION_GROUPS = (EXASOL, BUCKETFS, ITDE, SSH)
