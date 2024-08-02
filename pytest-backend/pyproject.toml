@@ -13,9 +13,8 @@ exasol-saas-api = ">=0.6.0,<1.0.0"
 pytest-exasol-itde = { path = "../pytest-itde" }
 pytest-exasol-saas = { path = "../pytest-saas" }
 
-# Do we need this entry point?
-# [tool.poetry.plugins.pytest11]
-# backend = "exasol.pytest_backend"
+[tool.poetry.plugins.pytest11]
+backend = "exasol.pytest_backend"
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = "0.9.0"

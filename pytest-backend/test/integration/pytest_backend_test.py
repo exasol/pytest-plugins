@@ -1,5 +1,5 @@
 from textwrap import dedent
-from pathlib import Path
+import re
 import pytest
 
 import pyexasol
@@ -8,19 +8,13 @@ import exasol.bucketfs as bfs
 pytest_plugins = ["pytester"]
 
 
-@pytest.fixture
-def read_conftest(request) -> str:
-    return Path(request.config.rootdir, 'exasol/pytest_backend/__init__.py').read_text()
-
-
 @pytest.mark.parametrize(
-    "test_code, cli_args, num_tests",
+    "test_case,cli_args,num_tests",
     [
         (
             dedent("""
-                from conftest import _BACKEND_ONPREM
                 def test_onprem_only(backend, use_onprem, use_saas):
-                    assert backend == _BACKEND_ONPREM
+                    assert backend == 'onprem'
                     assert use_onprem
                     assert not use_saas
             """),
@@ -29,9 +23,8 @@ def read_conftest(request) -> str:
         ),
         (
             dedent("""
-                from conftest import _BACKEND_SAAS
                 def test_saas_only(backend, use_onprem, use_saas):
-                    assert backend == _BACKEND_SAAS
+                    assert backend == 'saas'
                     assert not use_onprem
                     assert use_saas
             """),
@@ -57,14 +50,13 @@ def read_conftest(request) -> str:
             1
         ),
     ])
-def test_pass_options_via_cli(pytester, read_conftest, test_code, cli_args, num_tests):
+def test_pass_options_via_cli(pytester, test_case, cli_args, num_tests):
     """
     This test could also be called a unit test and verifies that the CLI
     arguments are registered correctly, can be passed to pytest, and are
     accessible within external test cases.
     """
-    pytester.makeconftest(read_conftest)
-    pytester.makepyfile(test_code)
+    pytester.makepyfile(test_case)
     result = pytester.runpytest(*cli_args)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=num_tests)
