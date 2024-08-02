@@ -52,6 +52,11 @@ def test_itde_smoke_test(make_test_files, pytester, files):
     assert result.ret == pytest.ExitCode.OK
 
 
+def test_itde_smoke_test_direct(itde):
+    # This smoke test just makes sure db spin up etc does not fail
+    assert True
+
+
 @default_version_only
 @pytest.mark.parametrize(
     "files",

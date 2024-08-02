@@ -69,7 +69,7 @@ def test_backend_aware_database_params(backend_aware_database_params):
 
 
 def test_backend_aware_bucketfs_params(backend_aware_bucketfs_params):
-    bfs_path = bfs.path.build_path(backend_aware_bucketfs_params, path='plugin_test')
+    bfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path='plugin_test')
     file_content = b'In God We Trust'
     bfs_path.write(file_content)
     data_back = b''.join(bfs_path.read())
