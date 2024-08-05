@@ -3,15 +3,15 @@ from typing import Any
 from datetime import timedelta
 from contextlib import ExitStack
 import ssl
+from urllib.parse import urlparse
 import pytest
 
+from exasol_integration_test_docker_environment.lib import api
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     create_saas_client,
     get_connection_params
 )
-
-from exasol.pytest_itde import bootstrap_db
 
 _BACKEND_ONPREM = 'onprem'
 _BACKEND_SAAS = 'saas'
@@ -67,13 +67,20 @@ def backend_aware_onprem_database(use_onprem,
                                   itde_config,
                                   exasol_config,
                                   bucketfs_config,
-                                  ssh_config) -> None:
+                                  ssh_config,
+                                  database_name) -> None:
     if use_onprem:
-        with bootstrap_db(itde_config=itde_config,
-                          exasol_config=exasol_config,
-                          bucketfs_config=bucketfs_config,
-                          ssh_config=ssh_config):
-            yield
+        bucketfs_url = urlparse(bucketfs_config.url)
+        _, cleanup_function = api.spawn_test_environment(
+            environment_name=database_name,
+            database_port_forward=exasol_config.port,
+            bucketfs_port_forward=bucketfs_url.port,
+            ssh_port_forward=ssh_config.port,
+            db_mem_size="4GB",
+            docker_db_image_version=itde_config.db_version,
+        )
+        yield
+        cleanup_function()
     else:
         yield
 
