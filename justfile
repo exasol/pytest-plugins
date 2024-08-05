@@ -1,4 +1,4 @@
-PROJECTS := "pytest-backend pytest-itde pytest-saas"
+PROJECTS := "pytest-itde"
 
 # Default target
 default:

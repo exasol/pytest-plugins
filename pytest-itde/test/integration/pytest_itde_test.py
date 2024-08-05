@@ -31,27 +31,6 @@ default_version_only=pytest.mark.skipif(
 )
 
 
-@default_version_only
-@pytest.mark.slow
-@pytest.mark.parametrize(
-    "files",
-    [
-        {
-            "test_smoke_test": cleandoc(
-                """
-                def test_itde_smoke_test(itde):
-                    # This smoke test just makes sure db spin up etc does not fail
-                    assert True
-                """
-            )
-        }], ids=_ids
-)
-def test_itde_smoke_test(make_test_files, pytester, files):
-    make_test_files(pytester, files)
-    result = pytester.runpytest()
-    assert result.ret == pytest.ExitCode.OK
-
-
 def test_itde_smoke_test_direct(itde):
     # This smoke test just makes sure db spin up etc does not fail
     assert True
