@@ -69,7 +69,7 @@ def backend_aware_onprem_database(use_onprem,
                                   bucketfs_config,
                                   ssh_config,
                                   database_name) -> None:
-    if use_onprem:
+    if use_onprem and (itde_config.db_version != "external"):
         bucketfs_url = urlparse(bucketfs_config.url)
         _, cleanup_function = api.spawn_test_environment(
             environment_name=database_name,

@@ -49,7 +49,7 @@ pytest_plugins = ["pytester"]
             [],
             1
         ),
-    ])
+    ], ids=["onprem_only", "saas_only", "default", "no_backend"])
 def test_pass_options_via_cli(pytester, test_case, cli_args, num_tests):
     """
     This test could also be called a unit test and verifies that the CLI
