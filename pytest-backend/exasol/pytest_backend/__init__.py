@@ -13,39 +13,35 @@ from exasol.saas.client.api_access import (
     get_connection_params
 )
 
+_BACKEND_OPTION = '--backend'
 _BACKEND_ONPREM = 'onprem'
 _BACKEND_SAAS = 'saas'
 
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--backend",
+        _BACKEND_OPTION,
         action="append",
         default=[],
-        help="""List of test backends (onprem, saas). By default, the tests will be
+        help=f"""List of test backends (onprem, saas). By default, the tests will be
             run on both backends. To select only one of the backends add the
-            argument --backend=<name-of-the-backend> to the command line. Both backends
-            can be selected like ... --backend=onprem --backend=saas, but this is the
-            same as the default.
+            argument {_BACKEND_OPTION}=<name-of-the-backend> to the command line. Both
+            backends can be selected like ... {_BACKEND_OPTION}=onprem {_BACKEND_OPTION}=saas,
+            but this is the same as the default.
             """,
     )
 
 
-def pytest_generate_tests(metafunc):
-    if "backend" in metafunc.fixturenames:
-        backend_options = metafunc.config.getoption("--backend")
-        if not backend_options:
-            backend_options = [_BACKEND_ONPREM, _BACKEND_SAAS]
-        metafunc.parametrize("backend", backend_options)
-
-
-@pytest.fixture
+@pytest.fixture(scope='session', params=[_BACKEND_ONPREM, _BACKEND_SAAS])
 def backend(request) -> str:
+    backend_options = request.config.getoption(_BACKEND_OPTION)
+    if backend_options and (request.param not in backend_options):
+        pytest.skip()
     return request.param
 
 
 def _is_backend_selected(request, backend: str) -> bool:
-    backend_options = request.config.getoption("--backend")
+    backend_options = request.config.getoption(_BACKEND_OPTION)
     if backend_options:
         return backend in backend_options
     else:
@@ -182,7 +178,7 @@ def backend_aware_saas_bucketfs_params(use_saas,
     return {}
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def backend_aware_database_params(backend,
                                   backend_aware_onprem_database_params,
                                   backend_aware_saas_database_params) -> dict[str, Any]:
@@ -200,7 +196,7 @@ def backend_aware_database_params(backend,
         ValueError(f'Unknown backend {backend}')
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def backend_aware_bucketfs_params(backend,
                                   backend_aware_onprem_bucketfs_params,
                                   backend_aware_saas_bucketfs_params) -> dict[str, Any]:

@@ -9,7 +9,7 @@ pytest_plugins = ["pytester"]
 
 
 @pytest.mark.parametrize(
-    "test_case,cli_args,num_tests",
+    "test_case,cli_args,num_passed,num_skipped",
     [
         (
             dedent("""
@@ -19,7 +19,7 @@ pytest_plugins = ["pytester"]
                     assert not use_saas
             """),
             ["--backend", "onprem"],
-            1
+            1, 1
         ),
         (
             dedent("""
@@ -29,7 +29,7 @@ pytest_plugins = ["pytester"]
                     assert use_saas
             """),
             ["--backend", "saas"],
-            1
+            1, 1
         ),
         (
             dedent("""
@@ -38,7 +38,7 @@ pytest_plugins = ["pytester"]
                     assert use_saas
                 """),
             [],
-            2
+            2, 0
         ),
         (
             dedent("""
@@ -47,10 +47,10 @@ pytest_plugins = ["pytester"]
                     assert use_saas
                 """),
             [],
-            1
+            1, 0
         ),
     ], ids=["onprem_only", "saas_only", "default", "no_backend"])
-def test_pass_options_via_cli(pytester, test_case, cli_args, num_tests):
+def test_pass_options_via_cli(pytester, test_case, cli_args, num_passed, num_skipped):
     """
     This test could also be called a unit test and verifies that the CLI
     arguments are registered correctly, can be passed to pytest, and are
@@ -59,7 +59,7 @@ def test_pass_options_via_cli(pytester, test_case, cli_args, num_tests):
     pytester.makepyfile(test_case)
     result = pytester.runpytest(*cli_args)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=num_tests)
+    result.assert_outcomes(passed=num_passed, skipped=num_skipped)
 
 
 def test_backend_aware_database_params(backend_aware_database_params):
