@@ -11,7 +11,7 @@ python = ">=3.9,<4"
 pytest = ">=7,<9"
 exasol-saas-api = ">=0.6.0,<1.0.0"
 pytest-exasol-itde = ">=0.2.0"
-pytest-exasol-saas = ">=0.2.1"
+pytest-exasol-saas = ">=0.2.2"
 
 [tool.poetry.plugins.pytest11]
 backend = "exasol.pytest_backend"
