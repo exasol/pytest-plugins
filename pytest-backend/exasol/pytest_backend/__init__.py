@@ -17,6 +17,9 @@ _BACKEND_OPTION = '--backend'
 _BACKEND_ONPREM = 'onprem'
 _BACKEND_SAAS = 'saas'
 
+itde_calls = 0
+saas_calls = 0
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -66,6 +69,12 @@ def backend_aware_onprem_database(use_onprem,
                                   ssh_config,
                                   database_name) -> None:
     if use_onprem and (itde_config.db_version != "external"):
+        global itde_calls
+        itde_calls += 1
+        print('-----------------')
+        print('| STARTING ITDE |')
+        print('-----------------')
+
         bucketfs_url = urlparse(bucketfs_config.url)
         _, cleanup_function = api.spawn_test_environment(
             environment_name=database_name,
@@ -89,6 +98,12 @@ def backend_aware_saas_database_id(request,
                                    saas_pat,
                                    saas_account_id) -> str:
     if use_saas:
+        global saas_calls
+        saas_calls += 1
+        print('-----------------')
+        print('| STARTING ITDE |')
+        print('-----------------')
+
         db_id = request.config.getoption("--saas-database-id")
         keep = request.config.getoption("--keep-saas-database")
         idle_hours = float(request.config.getoption("--saas-max-idle-hours"))
@@ -212,3 +227,13 @@ def backend_aware_bucketfs_params(backend,
         return backend_aware_saas_bucketfs_params
     else:
         ValueError(f'Unknown backend {backend}')
+
+
+@pytest.fixture
+def global_itde_calls() -> int:
+    return itde_calls
+
+
+@pytest.fixture
+def global_saas_calls() -> int:
+    return saas_calls
