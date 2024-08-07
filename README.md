@@ -14,10 +14,11 @@ Whether you're looking to use database interactions, enhance test reporting, or 
 
 ## Plugins
 
-| Plugin               | Description                                                                                                                | PYPI                                                               |
-|----------------------|----------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------|
-| `pytest-exasol-itde` | Fixture to enable simple usage with Exasol's project [ITDE](https://github.com/exasol/integration-test-docker-environment) | [pytest-exasol-itde](https://pypi.org/project/pytest-exasol-itde/) |
-| `pytest-exasol-saas` | Fixture to enable simple usage with Exasol's project [saas-api-python](https://github.com/exasol/saas-api-python/)         | [pytest-exasol-saas](https://pypi.org/project/pytest-exasol-saas/) |
+| Plugin                  | Description                                                                                                                | PYPI                                                                     |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
+| `pytest-exasol-itde`    | Fixture to enable simple usage with Exasol's project [ITDE](https://github.com/exasol/integration-test-docker-environment) | [pytest-exasol-itde](https://pypi.org/project/pytest-exasol-itde/)       |
+| `pytest-exasol-saas`    | Fixture to enable simple usage with Exasol's project [saas-api-python](https://github.com/exasol/saas-api-python/)         | [pytest-exasol-saas](https://pypi.org/project/pytest-exasol-saas/)       |
+| `pytest-exasol-backend` | Fixture aggregating functionality of both of the above plugins                                                             | [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/) |
 
 
 ## Installation
