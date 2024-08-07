@@ -1,5 +1,4 @@
 from textwrap import dedent
-import re
 import pytest
 
 import pyexasol
@@ -138,24 +137,30 @@ def test_backend_aware_bucketfs_params3(backend_aware_bucketfs_params, global_it
             dedent("""
 import pyexasol
 
-def test_backend_aware_database_params1(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params1(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert use_onprem
+    assert not use_saas
     assert global_itde_calls == 1
     assert global_saas_calls == 0
 
-def test_backend_aware_database_params2(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params2(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert use_onprem
+    assert not use_saas
     assert global_itde_calls == 1
     assert global_saas_calls == 0
 
-def test_backend_aware_database_params3(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params3(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert use_onprem
+    assert not use_saas
     assert global_itde_calls == 1
     assert global_saas_calls == 0
             """),
@@ -165,24 +170,30 @@ def test_backend_aware_database_params3(backend_aware_database_params, global_it
             dedent("""
 import pyexasol
 
-def test_backend_aware_database_params4(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params4(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert not use_onprem
+    assert use_saas
     assert global_itde_calls == 0
     assert global_saas_calls == 1
 
-def test_backend_aware_database_params5(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params5(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert not use_onprem
+    assert use_saas
     assert global_itde_calls == 0
     assert global_saas_calls == 1
 
-def test_backend_aware_database_params6(backend_aware_database_params, global_itde_calls, global_saas_calls):
+def test_backend_aware_database_params6(backend_aware_database_params, use_onprem, use_saas, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
     assert res
+    assert not use_onprem
+    assert use_saas
     assert global_itde_calls == 0
     assert global_saas_calls == 1
             """),
@@ -196,6 +207,6 @@ def test_limited_backend_via_cli(pytester, test_case, cli_args):
     accessible within external test cases.
     """
     pytester.makepyfile(test_case)
-    result = pytester.runpytest(*cli_args)
+    result = pytester.runpytest(*cli_args, '-s')
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=3, skipped=3)
