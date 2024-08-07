@@ -136,6 +136,8 @@ def test_backend_aware_bucketfs_params3(backend_aware_bucketfs_params, global_it
     [
         (
             dedent("""
+import pyexasol
+
 def test_backend_aware_database_params1(backend_aware_database_params, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
@@ -161,6 +163,8 @@ def test_backend_aware_database_params3(backend_aware_database_params, global_it
         ),
         (
             dedent("""
+import pyexasol
+
 def test_backend_aware_database_params4(backend_aware_database_params, global_itde_calls, global_saas_calls):
     conn = pyexasol.connect(**backend_aware_database_params)
     res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
