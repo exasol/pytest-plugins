@@ -17,6 +17,9 @@ _BACKEND_OPTION = '--backend'
 _BACKEND_ONPREM = 'onprem'
 _BACKEND_SAAS = 'saas'
 
+_onprem_stash_key = pytest.StashKey[bool]()
+_saas_stash_key = pytest.StashKey[bool]()
+
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -59,13 +62,20 @@ def use_saas(request) -> bool:
 
 
 @pytest.fixture(scope="session")
-def backend_aware_onprem_database(use_onprem,
+def backend_aware_onprem_database(request,
+                                  use_onprem,
                                   itde_config,
                                   exasol_config,
                                   bucketfs_config,
                                   ssh_config,
                                   database_name) -> None:
     if use_onprem and (itde_config.db_version != "external"):
+        # Guard against a potential issue with repeated call of a parameterised fixture
+        if _onprem_stash_key in request.session.stash:
+            raise RuntimeError(('Repeated call of the session level fixture '
+                                'backend_aware_onprem_database'))
+        request.session.stash[_onprem_stash_key] = True
+
         bucketfs_url = urlparse(bucketfs_config.url)
         _, cleanup_function = api.spawn_test_environment(
             environment_name=database_name,
@@ -89,6 +99,12 @@ def backend_aware_saas_database_id(request,
                                    saas_pat,
                                    saas_account_id) -> str:
     if use_saas:
+        # Guard against a potential issue with repeated call of a parameterised fixture
+        if _saas_stash_key in request.session.stash:
+            raise RuntimeError(('Repeated call of the session level fixture '
+                                'backend_aware_saas_database_id'))
+        request.session.stash[_saas_stash_key] = True
+
         db_id = request.config.getoption("--saas-database-id")
         keep = request.config.getoption("--keep-saas-database")
         idle_hours = float(request.config.getoption("--saas-max-idle-hours"))
