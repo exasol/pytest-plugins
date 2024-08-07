@@ -4,6 +4,8 @@ import pytest
 import pyexasol
 import exasol.bucketfs as bfs
 
+from exasol.pytest_backend import *
+
 pytest_plugins = ["pytester"]
 
 

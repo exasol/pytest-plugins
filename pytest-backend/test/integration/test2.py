@@ -1,7 +1,7 @@
-import pytest
-
 import pyexasol
 import exasol.bucketfs as bfs
+
+from exasol.pytest_backend import *
 
 
 def test_backend_aware_database_params11(backend_aware_database_params, global_itde_calls, global_saas_calls):
