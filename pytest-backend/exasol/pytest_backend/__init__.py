@@ -17,8 +17,8 @@ _BACKEND_OPTION = '--backend'
 _BACKEND_ONPREM = 'onprem'
 _BACKEND_SAAS = 'saas'
 
-_onprem_stash_key = pytest.StashKey[bool]()
-_saas_stash_key = pytest.StashKey[bool]()
+itde_calls = 0
+saas_calls = 0
 
 
 def pytest_addoption(parser):
@@ -62,19 +62,18 @@ def use_saas(request) -> bool:
 
 
 @pytest.fixture(scope="session")
-def backend_aware_onprem_database(request,
-                                  use_onprem,
+def backend_aware_onprem_database(use_onprem,
                                   itde_config,
                                   exasol_config,
                                   bucketfs_config,
                                   ssh_config,
                                   database_name) -> None:
     if use_onprem and (itde_config.db_version != "external"):
-        # Guard against a potential issue with repeated call of a parameterised fixture
-        if _onprem_stash_key in request.session.stash:
-            raise RuntimeError(('Repeated call of the session level fixture '
-                                'backend_aware_onprem_database'))
-        request.session.stash[_onprem_stash_key] = True
+        global itde_calls
+        itde_calls += 1
+        print('-----------------')
+        print('| STARTING ITDE |')
+        print('-----------------')
 
         bucketfs_url = urlparse(bucketfs_config.url)
         _, cleanup_function = api.spawn_test_environment(
@@ -99,11 +98,11 @@ def backend_aware_saas_database_id(request,
                                    saas_pat,
                                    saas_account_id) -> str:
     if use_saas:
-        # Guard against a potential issue with repeated call of a parameterised fixture
-        if _saas_stash_key in request.session.stash:
-            raise RuntimeError(('Repeated call of the session level fixture '
-                                'backend_aware_saas_database_id'))
-        request.session.stash[_saas_stash_key] = True
+        global saas_calls
+        saas_calls += 1
+        print('-----------------')
+        print('| STARTING ITDE |')
+        print('-----------------')
 
         db_id = request.config.getoption("--saas-database-id")
         keep = request.config.getoption("--keep-saas-database")
@@ -228,3 +227,13 @@ def backend_aware_bucketfs_params(backend,
         return backend_aware_saas_bucketfs_params
     else:
         ValueError(f'Unknown backend {backend}')
+
+
+@pytest.fixture
+def global_itde_calls() -> int:
+    return itde_calls
+
+
+@pytest.fixture
+def global_saas_calls() -> int:
+    return saas_calls
