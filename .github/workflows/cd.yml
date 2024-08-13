@@ -9,6 +9,7 @@ on:
         default: 'pytest-saas'
         type: choice
         options:
+        - "pytest-backend"
         - "pytest-saas"
         - "pytest-itde"
       version:
