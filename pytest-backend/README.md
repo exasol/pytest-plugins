@@ -12,7 +12,7 @@ SaaS backends. This eliminates the need to build different sets of tests for dif
 
 ## Installation
 
-The pytest-exasol-saas plugin can be installed using pip:
+The pytest-exasol-backend plugin can be installed using pip:
 
 ```shell
 pip install pytest-exasol-backend
