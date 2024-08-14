@@ -16,7 +16,13 @@ from exasol.saas.client.api_access import (
     timestamp_name
 )
 import exasol.pytest_backend.project_short_tag as pst
-import exasol.pytest_backend.itde as itde
+from exasol.pytest_backend.itde import (
+    itde_pytest_addoption,
+    exasol_config,
+    bucketfs_config,
+    ssh_config,
+    itde_config
+)
 
 _BACKEND_OPTION = '--backend'
 _BACKEND_ONPREM = 'onprem'
@@ -68,7 +74,7 @@ def pytest_addoption(parser):
         Use this parameter to set a sufficient idle period in the number of hours.
         """
     )
-    itde.itde_pytest_addoption(parser)
+    itde_pytest_addoption(parser)
 
 
 @pytest.fixture(scope='session', params=[_BACKEND_ONPREM, _BACKEND_SAAS])
