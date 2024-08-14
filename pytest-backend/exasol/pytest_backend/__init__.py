@@ -16,12 +16,12 @@ from exasol.saas.client.api_access import (
     timestamp_name
 )
 import exasol.pytest_backend.project_short_tag as pst
-from exasol.pytest_backend.itde_config import (
+from exasol.pytest_backend.itde import (
     itde_pytest_addoption,
-    ONPREM_DB_OPTIONS, OnpremDBConfig,
-    ONPREM_BFS_OPTIONS, OnpremBfsConfig,
-    SSH_OPTIONS, SshConfig,
-    ITDE_OPTIONS, ItdeConfig
+    exasol_config,
+    bucketfs_config,
+    ssh_config,
+    itde_config
 )
 
 _BACKEND_OPTION = '--backend'
@@ -101,38 +101,6 @@ def use_onprem(request) -> bool:
 @pytest.fixture(scope='session')
 def use_saas(request) -> bool:
     return _is_backend_selected(request, _BACKEND_SAAS)
-
-
-@pytest.fixture(scope="session")
-def exasol_config(request) -> OnpremDBConfig:
-    """Returns the configuration settings of the exasol db for this session."""
-    cli_arguments = request.config.option
-    kwargs = ONPREM_DB_OPTIONS.kwargs(os.environ, cli_arguments)
-    return OnpremDBConfig(**kwargs)
-
-
-@pytest.fixture(scope="session")
-def bucketfs_config(request) -> OnpremBfsConfig:
-    """Returns the configuration settings of the bucketfs for this session."""
-    cli_arguments = request.config.option
-    kwargs = ONPREM_BFS_OPTIONS.kwargs(os.environ, cli_arguments)
-    return OnpremBfsConfig(**kwargs)
-
-
-@pytest.fixture(scope="session")
-def ssh_config(request) -> SshConfig:
-    """Returns the configuration settings for SSH access in this session."""
-    cli_arguments = request.config.option
-    kwargs = SSH_OPTIONS.kwargs(os.environ, cli_arguments)
-    return SshConfig(**kwargs)
-
-
-@pytest.fixture(scope="session")
-def itde_config(request) -> ItdeConfig:
-    """Returns the configuration settings of the ITDE for this session."""
-    cli_arguments = request.config.option
-    kwargs = ITDE_OPTIONS.kwargs(os.environ, cli_arguments)
-    return ItdeConfig(**kwargs)
 
 
 @pytest.fixture(scope="session")
