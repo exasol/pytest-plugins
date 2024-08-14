@@ -2,19 +2,19 @@ import pytest
 from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
 
 from exasol.pytest_backend.itde_config import (
-    Option,
-    OptionGroup,
+    ItdeOption,
+    ItdeOptionGroup,
 )
 
 OPTIONS = (
-    Option(
+    ItdeOption(
         name="port",
         prefix="exasol",
         type=int,
         default=9999,
         help_text="Port to connect to",
     ),
-    Option(
+    ItdeOption(
         name="URL",
         prefix="exasol",
         type=str,
@@ -42,7 +42,7 @@ def test_get_pytest_option_name_for_option(option, expected):
 
 
 def test_help_of_option_without_default_value():
-    option = Option(
+    option = ItdeOption(
         name="port",
         prefix="exasol",
         type=int,
@@ -54,7 +54,7 @@ def test_help_of_option_without_default_value():
 
 
 def test_help_of_option_with_default_value():
-    option = Option(
+    option = ItdeOption(
         name="port",
         prefix="exasol",
         type=int,
@@ -116,8 +116,8 @@ BUCKETFS_OPTIONS = (
 @pytest.mark.parametrize(
     "group,expected",
     (
-        (OptionGroup(prefix="exasol", options=EXASOL_OPTIONS), "exasol"),
-        (OptionGroup(prefix="bucket", options=BUCKETFS_OPTIONS), "bucket"),
+        (ItdeOptionGroup(prefix="exasol", options=EXASOL_OPTIONS), "exasol"),
+        (ItdeOptionGroup(prefix="bucket", options=BUCKETFS_OPTIONS), "bucket"),
     ),
 )
 def test_option_group_prefix_property(group, expected):
@@ -129,30 +129,30 @@ def test_option_group_prefix_property(group, expected):
     "group,expected",
     (
         (
-            OptionGroup(prefix="exasol", options=EXASOL_OPTIONS),
-            (
-                Option(
+                ItdeOptionGroup(prefix="exasol", options=EXASOL_OPTIONS),
+                (
+                    ItdeOption(
                     prefix="exasol",
                     name="host",
                     type=str,
                     default="localhost",
                     help_text="Host to connect to",
                 ),
-                Option(
+                    ItdeOption(
                     prefix="exasol",
                     name="port",
                     type=int,
                     default=8563,
                     help_text="Port on which the exasol db is listening",
                 ),
-                Option(
+                    ItdeOption(
                     prefix="exasol",
                     name="username",
                     type=str,
                     default="SYS",
                     help_text="Username used to authenticate against the exasol db",
                 ),
-                Option(
+                    ItdeOption(
                     prefix="exasol",
                     name="password",
                     type=str,
@@ -178,7 +178,7 @@ class PyTestArgs:
     "group,env,cli,expected",
     (
         (
-            OptionGroup(
+                ItdeOptionGroup(
                 prefix="db",
                 options=(
                     {
@@ -189,12 +189,12 @@ class PyTestArgs:
                     },
                 ),
             ),
-            {},
-            PyTestArgs(),
-            {"port": 9999},
+                {},
+                PyTestArgs(),
+                {"port": 9999},
         ),
         (
-            OptionGroup(
+                ItdeOptionGroup(
                 prefix="db",
                 options=(
                     {
@@ -205,12 +205,12 @@ class PyTestArgs:
                     },
                 ),
             ),
-            {"DB_PORT": "7777"},
-            PyTestArgs(),
-            {"port": 7777},
+                {"DB_PORT": "7777"},
+                PyTestArgs(),
+                {"port": 7777},
         ),
         (
-            OptionGroup(
+                ItdeOptionGroup(
                 prefix="db",
                 options=(
                     {
@@ -221,9 +221,9 @@ class PyTestArgs:
                     },
                 ),
             ),
-            {"DB_PORT": "7777"},
-            PyTestArgs(db_port=8888),
-            {"port": 8888},
+                {"DB_PORT": "7777"},
+                PyTestArgs(db_port=8888),
+                {"port": 8888},
         ),
     ),
 )

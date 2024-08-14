@@ -6,11 +6,13 @@ from typing import (
     TypeVar,
 )
 
+from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
+
 T = TypeVar("T")
 
 
 @dataclass(frozen=True)
-class Option(Generic[T]):
+class ItdeOption(Generic[T]):
     name: str
     prefix: str
     type: T
@@ -58,14 +60,14 @@ class Option(Generic[T]):
         return f"{self.help_text} (default: {self.default})."
 
 
-class OptionGroup:
+class ItdeOptionGroup:
     """
     Wraps a set of pytest options.
     """
 
     def __init__(self, prefix, options):
         self._prefix = prefix
-        self._options = tuple(Option(prefix=prefix, **kwargs) for kwargs in options)
+        self._options = tuple(ItdeOption(prefix=prefix, **kwargs) for kwargs in options)
         self._default = {o.name: o.default for o in self._options}
         self._env = {}
         self._cli = {}
@@ -105,7 +107,7 @@ class OptionGroup:
 
 
 @dataclass
-class Exasol:
+class OnpremDBConfig:
     """Exasol database configuration"""
 
     host: str
@@ -115,7 +117,7 @@ class Exasol:
 
 
 @dataclass
-class BucketFs:
+class OnpremBfsConfig:
     """Bucketfs configuration"""
 
     url: str
@@ -124,14 +126,111 @@ class BucketFs:
 
 
 @dataclass
-class Ssh:
+class SshConfig:
     """SSH configuration"""
 
     port: int
 
 
 @dataclass
-class Itde:
+class ItdeConfig:
     """Itde configuration settings"""
 
     db_version: str
+
+
+ONPREM_DB_OPTIONS = ItdeOptionGroup(
+    prefix="exasol",
+    options=(
+        {
+            "name": "host",
+            "type": str,
+            "default": "localhost",
+            "help_text": "Host to connect to",
+        },
+        {
+            "name": "port",
+            "type": int,
+            "default": Ports.forward.database,
+            "help_text": "Port on which the exasol db is listening",
+        },
+        {
+            "name": "username",
+            "type": str,
+            "default": "SYS",
+            "help_text": "Username used to authenticate against the exasol db",
+        },
+        {
+            "name": "password",
+            "type": str,
+            "default": "exasol",
+            "help_text": "Password used to authenticate against the exasol db",
+        },
+    ),
+)
+
+ONPREM_BFS_OPTIONS = ItdeOptionGroup(
+    prefix="bucketfs",
+    options=(
+        {
+            "name": "url",
+            "type": str,
+            "default": f"http://127.0.0.1:{Ports.forward.bucketfs}",
+            "help_text": "Base url used to connect to the bucketfs service",
+        },
+        {
+            "name": "username",
+            "type": str,
+            "default": "w",
+            "help_text": "Username used to authenticate against the bucketfs service",
+        },
+        {
+            "name": "password",
+            "type": str,
+            "default": "write",
+            "help_text": "Password used to authenticate against the bucketfs service",
+        },
+    ),
+)
+
+SSH_OPTIONS = ItdeOptionGroup(
+    prefix="ssh",
+    options=(
+        {
+            "name": "port",
+            "type": int,
+            "default": Ports.forward.ssh,
+            "help_text": "Port on which external processes can access the database via SSH protocol",
+        },
+    ),
+)
+
+
+ITDE_OPTIONS = ItdeOptionGroup(
+    prefix="itde",
+    options=(
+        {
+            "name": "db_version",
+            "type": str,
+            "default": "8.18.1",
+            "help_text": "DB version to start, if value is 'external' an existing instance will be used",
+        },
+    ),
+)
+
+_ITDE_OPTION_GROUPS = (ONPREM_DB_OPTIONS, ONPREM_BFS_OPTIONS, ITDE_OPTIONS, SSH_OPTIONS)
+
+
+def _add_option_group(parser, group):
+    parser_group = parser.getgroup(group.prefix)
+    for option in group.options:
+        parser_group.addoption(
+            option.cli,
+            type=option.type,
+            help=option.help,
+        )
+
+
+def itde_pytest_addoption(parser):
+    for group in _ITDE_OPTION_GROUPS:
+        _add_option_group(parser, group)
