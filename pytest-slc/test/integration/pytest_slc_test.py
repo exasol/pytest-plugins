@@ -1,77 +1,42 @@
-from textwrap import dedent
-import re
-import pytest
+from pathlib import Path
+import requests
+import textwrap
 
 import pyexasol
-import exasol.bucketfs as bfs
-
-pytest_plugins = ["pytester"]
+from exasol.python_extension_common.deployment.language_container_validator import temp_schema
 
 
-@pytest.mark.parametrize(
-    "test_case,cli_args,num_passed,num_skipped",
-    [
-        (
-            dedent("""
-                def test_onprem_only(backend, use_onprem, use_saas):
-                    assert backend == 'onprem'
-                    assert use_onprem
-                    assert not use_saas
-            """),
-            ["--backend", "onprem"],
-            1, 1
-        ),
-        (
-            dedent("""
-                def test_saas_only(backend, use_onprem, use_saas):
-                    assert backend == 'saas'
-                    assert not use_onprem
-                    assert use_saas
-            """),
-            ["--backend", "saas"],
-            1, 1
-        ),
-        (
-            dedent("""
-                def test_default(backend, use_onprem, use_saas):
-                    assert use_onprem
-                    assert use_saas
-                """),
-            [],
-            2, 0
-        ),
-        (
-            dedent("""
-                def test_no_backend(use_onprem, use_saas):
-                    assert use_onprem
-                    assert use_saas
-                """),
-            [],
-            1, 0
-        ),
-    ], ids=["onprem_only", "saas_only", "default", "no_backend"])
-def test_pass_options_via_cli(pytester, test_case, cli_args, num_passed, num_skipped):
-    """
-    This test could also be called a unit test and verifies that the CLI
-    arguments are registered correctly, can be passed to pytest, and are
-    accessible within external test cases.
-    """
-    pytester.makepyfile(test_case)
-    result = pytester.runpytest(*cli_args)
-    assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=num_passed, skipped=num_skipped)
+SLC_NAME = "template-Exasol-all-python-3.10_release.tar.gz"
+SLC_VERSION = "8.0.0"
+SLC_URL = ("https://github.com/exasol/script-languages-release/releases/"
+           f"download/{SLC_VERSION}/{SLC_NAME}")
 
 
-def test_backend_aware_database_params(backend_aware_database_params):
-    conn = pyexasol.connect(**backend_aware_database_params)
-    res = conn.execute('SELECT SESSION_ID FROM SYS.EXA_ALL_SESSIONS;').fetchall()
-    assert res
+def download_container(container_path: Path) -> None:
+    response = requests.get(SLC_URL, allow_redirects=True)
+    response.raise_for_status()
+    container_path.write_bytes(response.content)
 
 
-def test_backend_aware_bucketfs_params(backend_aware_bucketfs_params):
-    bfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path='plugin_test')
-    file_content = b'In God We Trust'
-    bfs_path.write(file_content)
-    data_back = b''.join(bfs_path.read())
-    bfs_path.rm()
-    assert data_back == file_content
+def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
+    with temp_schema(conn) as schema:
+        udf_name = 'TEST_UDF'
+        conn.execute(textwrap.dedent(f"""
+            CREATE OR REPLACE {language_alias} SCALAR SCRIPT {schema}."{udf_name}"()
+            RETURNS BOOLEAN AS
+            def run(ctx):
+                return True
+            /
+            """))
+        result = conn.execute(f'SELECT {schema}."{udf_name}"()').fetchall()
+        assert result[0][0] is True
+
+
+def test_upload_slc(upload_slc, backend_aware_database_params, tmp_path):
+
+    container_path = tmp_path / 'container'
+    language_alias = 'PYTHON3_PYTEST_SLC'
+
+    download_container(container_path)
+    upload_slc(container_file_path=container_path, language_alias=language_alias)
+    assert_udf_running(pyexasol.connect(backend_aware_database_params), language_alias)

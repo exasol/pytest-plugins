@@ -711,6 +711,26 @@ simplejson = ">=3.16.0"
 "stopwatch.py" = ">=1.0.0"
 
 [[package]]
+name = "exasol-python-extension-common"
+version = "0.4.0"
+description = "A collection of common utilities for Exasol extensions."
+optional = false
+python-versions = "<4.0.0,>=3.10.0"
+files = [
+    {file = "exasol_python_extension_common-0.4.0-py3-none-any.whl", hash = "sha256:561120c634569edec3b5b0e02fed5a9826d5c8093ce8312ae33dedf88dcdbe34"},
+    {file = "exasol_python_extension_common-0.4.0.tar.gz", hash = "sha256:3d6a58018e78d0fa3de22b83a2857a8889460fd43ba4b3b8d19ac7e3c103d70e"},
+]
+
+[package.dependencies]
+click = ">=8.1.7,<9.0.0"
+exasol-bucketfs = ">=0.10.0"
+exasol-saas-api = ">=0.7.0,<1.0.0"
+exasol-script-languages-container-tool = ">=0.20.0"
+pyexasol = ">=0.25.0,<1.0.0"
+requests = ">=2.32.0"
+tenacity = ">=8.3.0,<9.0.0"
+
+[[package]]
 name = "exasol-saas-api"
 version = "0.7.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
@@ -729,6 +749,24 @@ python-dateutil = ">=2.8.0,<3.0.0"
 requests = ">=2.31.0,<3.0.0"
 tenacity = ">=8.2.3,<9.0.0"
 types-requests = ">=2.31.0.6,<3.0.0.0"
+
+[[package]]
+name = "exasol-script-languages-container-tool"
+version = "0.21.0"
+description = "Script Languages Container Tool"
+optional = false
+python-versions = "<4,>=3.10"
+files = [
+    {file = "exasol_script_languages_container_tool-0.21.0-py3-none-any.whl", hash = "sha256:06a1c26dc819dc52ded6189f1944bd7f65a3af5f38e188c58ec092b9f4928c62"},
+    {file = "exasol_script_languages_container_tool-0.21.0.tar.gz", hash = "sha256:2336029332d849e9a1b08c7c642a70fd667374f17bb5576eed7f4439b3dc0468"},
+]
+
+[package.dependencies]
+exasol-integration-test-docker-environment = ">=3.1.0,<4.0.0"
+importlib_metadata = ">=4.6.0"
+importlib-resources = ">=5.4.0"
+networkx = ">=2.8.2,<3.0.0"
+requests = ">=2.31.0,<3.0.0"
 
 [[package]]
 name = "exasol-toolbox"
@@ -1005,9 +1043,6 @@ files = [
     {file = "importlib_resources-6.4.0-py3-none-any.whl", hash = "sha256:50d10f043df931902d4194ea07ec57960f66a80449ff867bfe782b4c486ba78c"},
     {file = "importlib_resources-6.4.0.tar.gz", hash = "sha256:cdb2b453b8046ca4e3798eb1d84f3cce1446a0e8e7b5ef4efb600f19fc398145"},
 ]
-
-[package.dependencies]
-zipp = {version = ">=3.1.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (<7.2.5)", "sphinx (>=3.5)", "sphinx-lint"]
@@ -1359,21 +1394,21 @@ nicer-shell = ["ipython"]
 
 [[package]]
 name = "networkx"
-version = "3.2.1"
+version = "2.8.8"
 description = "Python package for creating and manipulating graphs and networks"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.8"
 files = [
-    {file = "networkx-3.2.1-py3-none-any.whl", hash = "sha256:f18c69adc97877c42332c170849c96cefa91881c99a7cb3e95b7c659ebdc1ec2"},
-    {file = "networkx-3.2.1.tar.gz", hash = "sha256:9f1bb5cf3409bf324e0a722c20bdb4c20ee39bf1c30ce8ae499c8502b0b5e0c6"},
+    {file = "networkx-2.8.8-py3-none-any.whl", hash = "sha256:e435dfa75b1d7195c7b8378c3859f0445cd88c6b0375c181ed66823a9ceb7524"},
+    {file = "networkx-2.8.8.tar.gz", hash = "sha256:230d388117af870fce5647a3c52401fcf753e94720e6ea6b4197a5355648885e"},
 ]
 
 [package.extras]
-default = ["matplotlib (>=3.5)", "numpy (>=1.22)", "pandas (>=1.4)", "scipy (>=1.9,!=1.11.0,!=1.11.1)"]
-developer = ["changelist (==0.4)", "mypy (>=1.1)", "pre-commit (>=3.2)", "rtoml"]
-doc = ["nb2plots (>=0.7)", "nbconvert (<7.9)", "numpydoc (>=1.6)", "pillow (>=9.4)", "pydata-sphinx-theme (>=0.14)", "sphinx (>=7)", "sphinx-gallery (>=0.14)", "texext (>=0.6.7)"]
-extra = ["lxml (>=4.6)", "pydot (>=1.4.2)", "pygraphviz (>=1.11)", "sympy (>=1.10)"]
-test = ["pytest (>=7.2)", "pytest-cov (>=4.0)"]
+default = ["matplotlib (>=3.4)", "numpy (>=1.19)", "pandas (>=1.3)", "scipy (>=1.8)"]
+developer = ["mypy (>=0.982)", "pre-commit (>=2.20)"]
+doc = ["nb2plots (>=0.6)", "numpydoc (>=1.5)", "pillow (>=9.2)", "pydata-sphinx-theme (>=0.11)", "sphinx (>=5.2)", "sphinx-gallery (>=0.11)", "texext (>=0.6.6)"]
+extra = ["lxml (>=4.6)", "pydot (>=1.4.2)", "pygraphviz (>=1.9)", "sympy (>=1.10)"]
+test = ["codecov (>=2.1)", "pytest (>=7.2)", "pytest-cov (>=4.0)"]
 
 [[package]]
 name = "nodeenv"
@@ -1639,7 +1674,6 @@ mccabe = ">=0.6,<0.8"
 platformdirs = ">=2.2.0"
 tomli = {version = ">=1.1.0", markers = "python_version < \"3.11\""}
 tomlkit = ">=0.10.1"
-typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""}
 
 [package.extras]
 spelling = ["pyenchant (>=3.2,<4.0)"]
@@ -1737,36 +1771,20 @@ tomli = {version = ">=1.0.0", markers = "python_version < \"3.11\""}
 testing = ["argcomplete", "attrs (>=19.2.0)", "hypothesis (>=3.56)", "mock", "nose", "pygments (>=2.7.2)", "requests", "setuptools", "xmlschema"]
 
 [[package]]
-name = "pytest-exasol-itde"
-version = "0.2.0"
+name = "pytest-exasol-backend"
+version = "0.1.0"
 description = ""
 optional = false
-python-versions = "<4,>=3.8"
+python-versions = "<4,>=3.9"
 files = [
-    {file = "pytest_exasol_itde-0.2.0-py3-none-any.whl", hash = "sha256:1bd03f5120db7e83d86a3d3b57234e13849c5e510a2bb8fb76ad99e692847339"},
-    {file = "pytest_exasol_itde-0.2.0.tar.gz", hash = "sha256:154ca613dea25f6be4d527bee15cf4ee007159dc0c415c3852aa510354c40daf"},
+    {file = "pytest_exasol_backend-0.1.0-py3-none-any.whl", hash = "sha256:72e89d1629838c73e47bd409e5ca1b95e94649995021e2b55aa7fd10a46533c6"},
+    {file = "pytest_exasol_backend-0.1.0.tar.gz", hash = "sha256:c3d831eed3ead7c43d6ee450f7ed9132e9eae5fccd7a1455d95d1631aece1e55"},
 ]
 
 [package.dependencies]
 exasol-integration-test-docker-environment = ">=3.1.0,<4.0.0"
-pyexasol = ">=0.25,<1"
-pytest = ">=7,<9"
-
-[[package]]
-name = "pytest-exasol-saas"
-version = "0.2.2"
-description = ""
-optional = false
-python-versions = "<4,>=3.8"
-files = [
-    {file = "pytest_exasol_saas-0.2.2-py3-none-any.whl", hash = "sha256:4f9924edcd5d70ba61ea9ac5c965c7af017f7e65666ed19b9d4ce15aa0da5eff"},
-    {file = "pytest_exasol_saas-0.2.2.tar.gz", hash = "sha256:50b2e233cc18d40d3a4711e0fff3f7db29c25e99c3b9a0cf1f8f29d5a08f5f95"},
-]
-
-[package.dependencies]
 exasol-saas-api = ">=0.6.0,<1.0.0"
 pytest = ">=7,<9"
-pyyaml = ">=6.0.1,<7.0.0"
 
 [[package]]
 name = "pytest-prysk"
@@ -2172,7 +2190,6 @@ babel = ">=2.9"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 docutils = ">=0.18.1,<0.20"
 imagesize = ">=1.3"
-importlib-metadata = {version = ">=4.8", markers = "python_version < \"3.10\""}
 Jinja2 = ">=3.0"
 packaging = ">=21.0"
 Pygments = ">=2.13"
@@ -2410,7 +2427,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-metadata = {version = ">=3.6", markers = "python_version < \"3.10\""}
 typing-extensions = ">=4.10.0"
 
 [package.extras]
@@ -2608,5 +2624,5 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9,<4"
-content-hash = "4ccf6630353ba8ffef76d822e02092f1c7c66cf5ae0cf7bcd726ee812897fbe7"
+python-versions = ">=3.10,<4"
+content-hash = "997f7c4b01ab4a6b300c68314ad3d63de11397f79625dd99b050d94793b5baf6"
