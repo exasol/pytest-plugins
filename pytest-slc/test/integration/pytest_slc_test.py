@@ -12,10 +12,12 @@ SLC_URL = ("https://github.com/exasol/script-languages-release/releases/"
            f"download/{SLC_VERSION}/{SLC_NAME}")
 
 
-def download_container(container_path: Path) -> None:
+def download_container(save_dir: Path) -> Path:
     response = requests.get(SLC_URL, allow_redirects=True)
     response.raise_for_status()
+    container_path = save_dir / SLC_NAME
     container_path.write_bytes(response.content)
+    return container_path
 
 
 def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
@@ -34,9 +36,8 @@ def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
 
 def test_upload_slc(upload_slc, backend_aware_database_params, tmp_path):
 
-    container_path = tmp_path / 'container'
+    container_path = download_container(tmp_path)
     language_alias = 'PYTHON3_PYTEST_SLC'
 
-    download_container(container_path)
     upload_slc(container_file_path=container_path, language_alias=language_alias)
     assert_udf_running(pyexasol.connect(**backend_aware_database_params), language_alias)
