@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Any
+import os
 from datetime import timedelta
 from contextlib import ExitStack
 import ssl
@@ -7,10 +8,20 @@ from urllib.parse import urlparse
 import pytest
 
 from exasol_integration_test_docker_environment.lib import api
+from exasol.saas import client as saas_client
 from exasol.saas.client.api_access import (
     OpenApiAccess,
     create_saas_client,
-    get_connection_params
+    get_connection_params,
+    timestamp_name
+)
+import exasol.pytest_backend.project_short_tag as pst
+from exasol.pytest_backend.itde import (
+    itde_pytest_addoption,
+    exasol_config,
+    bucketfs_config,
+    ssh_config,
+    itde_config
 )
 
 _BACKEND_OPTION = '--backend'
@@ -33,6 +44,37 @@ def pytest_addoption(parser):
             but this is the same as the default.
             """,
     )
+    parser.addoption(
+        "--project-short-tag",
+        help="""Short tag aka. "abbreviation" for your current project.
+            See docstring in project_short_tag.py for more details.
+            pytest plugin for exasol-saas-api will include this short tag into
+            the names of created database instances.""",
+    )
+    parser.addoption(
+        "--saas-database-id",
+        help="""ID of the instance of an existing SaaS database to be
+            used during the current pytest session instead of creating a
+            dedicated instance temporarily.""",
+    )
+    parser.addoption(
+        "--keep-saas-database",
+        action="store_true",
+        default=False,
+        help="""Keep the SaaS database instance created for the current
+            pytest session for subsequent inspection or reuse.""",
+    )
+    parser.addoption(
+        "--saas-max-idle-hours",
+        action="store",
+        default=saas_client.Limits.AUTOSTOP_DEFAULT_IDLE_TIME.total_seconds() / 3600,
+        help="""
+        The SaaS cluster would normally stop after a certain period of inactivity. 
+        The default period is 2 hours. For some tests, this period is too short.
+        Use this parameter to set a sufficient idle period in the number of hours.
+        """
+    )
+    itde_pytest_addoption(parser)
 
 
 @pytest.fixture(scope='session', params=[_BACKEND_ONPREM, _BACKEND_SAAS])
@@ -89,6 +131,48 @@ def backend_aware_onprem_database(request,
         cleanup_function()
     else:
         yield
+
+
+def _env(var: str) -> str:
+    result = os.environ.get(var)
+    if result:
+        return result
+    raise RuntimeError(f"Environment variable {var} is empty.")
+
+
+@pytest.fixture(scope="session")
+def saas_host() -> str:
+    return _env("SAAS_HOST")
+
+
+@pytest.fixture(scope="session")
+def saas_pat() -> str:
+    return _env("SAAS_PAT")
+
+
+@pytest.fixture(scope="session")
+def saas_account_id() -> str:
+    return _env("SAAS_ACCOUNT_ID")
+
+
+@pytest.fixture(scope="session")
+def project_short_tag(request):
+    return (
+        request.config.getoption("--project-short-tag")
+        or os.environ.get("PROJECT_SHORT_TAG")
+        or pst.read_from_yaml(request.config.rootpath)
+    )
+
+
+@pytest.fixture(scope="session")
+def database_name(project_short_tag):
+    return timestamp_name(project_short_tag)
+
+
+@pytest.fixture(scope="session")
+def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
+    with create_saas_client(saas_host, saas_pat) as client:
+        yield OpenApiAccess(client, saas_account_id)
 
 
 @pytest.fixture(scope="session")
