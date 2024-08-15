@@ -24,7 +24,7 @@ def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
     with temp_schema(conn) as schema:
         udf_name = 'TEST_UDF'
         conn.execute(textwrap.dedent(f"""
-            CREATE OR REPLACE {language_alias} SCALAR SCRIPT {schema}."{udf_name}"()
+            CREATE OR REPLACE {language_alias} SCALAR SCRIPT "{schema}"."{udf_name}"()
             RETURNS BOOLEAN AS
             def run(ctx):
                 return True
