@@ -39,4 +39,4 @@ def test_upload_slc(upload_slc, backend_aware_database_params, tmp_path):
 
     download_container(container_path)
     upload_slc(container_file_path=container_path, language_alias=language_alias)
-    assert_udf_running(pyexasol.connect(backend_aware_database_params), language_alias)
+    assert_udf_running(pyexasol.connect(**backend_aware_database_params), language_alias)

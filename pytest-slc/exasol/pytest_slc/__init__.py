@@ -15,8 +15,8 @@ def upload_slc(backend_aware_database_params,
     def func(container_file_path: str | Path,
              language_alias: str,
              bucketfs_path: str = ''):
-        pyexasol_connection = pyexasol.connect(backend_aware_database_params)
-        bucketfs_path = bfs.path.build_path(backend_aware_bucketfs_params, path=bucketfs_path)
+        pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
+        bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path=bucketfs_path)
         deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
                                              bucketfs_path=bucketfs_path,
                                              language_alias=language_alias)
