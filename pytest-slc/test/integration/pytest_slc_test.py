@@ -30,7 +30,7 @@ def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
                 return True
             /
             """))
-        result = conn.execute(f'SELECT {schema}."{udf_name}"()').fetchall()
+        result = conn.execute(f'SELECT "{schema}"."{udf_name}"()').fetchall()
         assert result[0][0] is True
 
 
