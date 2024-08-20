@@ -1,5 +1,4 @@
 from textwrap import dedent
-import re
 import pytest
 
 import pyexasol

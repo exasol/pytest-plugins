@@ -10,6 +10,7 @@ from typing import (
 )
 
 from nox import Session
+from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ONPREM, BACKEND_SAAS)
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,9 @@ class Config:
         _session: Session, _config: Config, _context: MutableMapping[str, Any]
     ) -> bool:
         """Implement if project specific behaviour is required"""
+        fwd_args = _context.get('fwd-args', [])
+        fwd_args.extend([BACKEND_OPTION, BACKEND_ONPREM, BACKEND_OPTION, BACKEND_SAAS])
+        _context['fwd-args'] = fwd_args
         return True
 
     @staticmethod
