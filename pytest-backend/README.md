@@ -9,6 +9,7 @@ SaaS backends. This eliminates the need to build different sets of tests for dif
 * Provides session level fixtures that can be turned into connection factories for the database and the BucketFS.
 * Automatically makes the tests running on the selected backends.
 * Allows selecting either or both backends from the CLI that executes the pytest.
+* Starts the selected backends preemptively and in parallel.
 
 ## Installation
 
@@ -59,11 +60,28 @@ def test_something_backend_sensitive(backend):
         raise RuntimeError(f'Unknown backend {backend}')
 ```
 
-# Selecting Backends in CLI
+## Selecting Backends in CLI
 
-By default, both backends are selected for testing. To run the tests on one backed only, 
-the `--backend` option can be used. The command below runs the tests on an on-prem database.
+By default, none of the backends is selected for testing. Please use the `--backend` option to specify the target backend.
+The command below runs the tests on an on-prem database.
 
 ```shell
 pytest --backend=onprem my_test_suite.py
 ```
+
+This following command runs the test on two backends.
+
+```shell
+pytest --backend=onprem --backend=saas my_test_suite.py
+```
+
+The next command runs the test on all backends, which currently is equivalent to the previous command since there
+are only two backends available.
+
+```shell
+pytest --backend=all my_test_suite.py
+```
+
+Please note that all selected backends starts preemptively, regardless of their actual usage in tests.
+Therefore, it is important to make sure the backends are not selected where they are not needed,
+for instance when running unit tests only.

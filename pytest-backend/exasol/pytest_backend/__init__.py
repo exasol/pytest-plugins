@@ -27,6 +27,7 @@ from .itde import (
 BACKEND_OPTION = '--backend'
 BACKEND_ONPREM = 'onprem'
 BACKEND_SAAS = 'saas'
+BACKEND_ALL = 'all'
 
 
 def pytest_addoption(parser):
@@ -34,11 +35,11 @@ def pytest_addoption(parser):
         BACKEND_OPTION,
         action="append",
         default=[],
-        help=f"""List of test backends (onprem, saas). By default, the tests will be
-            run on both backends. To select only one of the backends add the
-            argument {BACKEND_OPTION}=<name-of-the-backend> to the command line. Both
-            backends can be selected like ... {BACKEND_OPTION}=onprem {BACKEND_OPTION}=saas,
-            but this is the same as the default.
+        help=f"""List of test backends ({BACKEND_ONPREM}, {BACKEND_SAAS}). The target 
+            backends must be specified explicitly. To select all backends add the argument 
+            {BACKEND_OPTION}={BACKEND_ALL} to the command line. To select only one
+            of the backends add the argument {BACKEND_OPTION}={BACKEND_ONPREM} or
+            {BACKEND_OPTION}={BACKEND_SAAS} instead.
             """,
     )
     parser.addoption(
@@ -74,17 +75,16 @@ def pytest_addoption(parser):
     itde_pytest_addoption(parser)
 
 
+def _is_backend_selected(request, backend: str) -> bool:
+    backend_options = set(request.config.getoption(BACKEND_OPTION))
+    return bool(backend_options.intersection({backend, BACKEND_ALL}))
+
+
 @pytest.fixture(scope='session', params=[BACKEND_ONPREM, BACKEND_SAAS])
 def backend(request) -> str:
-    backend_options = request.config.getoption(BACKEND_OPTION)
-    if request.param not in backend_options:
+    if not _is_backend_selected(request, request.param):
         pytest.skip()
     return request.param
-
-
-def _is_backend_selected(request, backend: str) -> bool:
-    backend_options = request.config.getoption(BACKEND_OPTION)
-    return backend in backend_options
 
 
 @pytest.fixture(scope='session')
@@ -103,7 +103,10 @@ def start_itde(itde_config,
                bucketfs_config,
                ssh_config,
                database_name) -> None:
-
+    """
+    This function controls the ITDE with the help of parallelized
+    version of the @contextmanager.
+    """
     bucketfs_url = urlparse(bucketfs_config.url)
     env_info, cleanup_func = api.spawn_test_environment(
         environment_name=database_name,
@@ -124,7 +127,14 @@ def backend_aware_onprem_database_async(use_onprem,
                                         bucketfs_config,
                                         ssh_config,
                                         database_name):
+    """
+    If the onprem is a selected backend, this fixture starts brining up the ITDE and keeps
+    it running for the duration of the session. It returns before the ITDE is ready. The
+    "autouse" parameter assures that the ITDE, and other lengthy setup procedures are started
+    preemptively before they are needed anywhere in the tests.
 
+    The fixture shall not be used directly in tests.
+    """
     if use_onprem and (itde_config.db_version != "external"):
         with start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database_name) as itde_task:
             yield itde_task
@@ -134,6 +144,9 @@ def backend_aware_onprem_database_async(use_onprem,
 
 @pytest.fixture(scope="session")
 def backend_aware_onprem_database(backend_aware_onprem_database_async) -> None:
+    """
+    If the onprem is a selected backend, this fixture waits till the ITDE becomes available.
+    """
     if backend_aware_onprem_database_async is not None:
         backend_aware_onprem_database_async.wait()
 
@@ -194,6 +207,15 @@ def backend_aware_saas_database_id_async(request,
                                          use_saas,
                                          database_name,
                                          saas_api_access) -> str:
+    """
+    If the saas is a selected backend, this fixture starts building a temporary SaaS
+    database and keeps it running for the duration of the session. It returns before the
+    database is ready. The "autouse" parameter assures that the SaaS database, and other
+    lengthy setup procedures are started preemptively before they are needed anywhere in
+    the tests.
+
+    The fixture shall not be used directly in tests.
+    """
     if saas_api_access is not None:
         keep = request.config.getoption("--keep-saas-database")
         idle_hours = float(request.config.getoption("--saas-max-idle-hours"))
@@ -213,6 +235,10 @@ def backend_aware_saas_database_id_async(request,
 @pytest.fixture(scope="session")
 def backend_aware_saas_database_id(saas_api_access,
                                    backend_aware_saas_database_id_async) -> str:
+    """
+    If the saas is a selected backend, this fixture waits until the temporary SaaS database
+    becomes available.
+    """
     if saas_api_access is not None:
         saas_api_access.wait_until_running(backend_aware_saas_database_id_async)
     yield backend_aware_saas_database_id_async
