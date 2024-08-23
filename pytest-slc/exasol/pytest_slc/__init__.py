@@ -2,8 +2,7 @@
 @pytest.fixture(scope='session', autouse=True)
 def extension_build_slc_async(export_slc_async):
     with language_container_factory() as slc_builder:
-        with export_slc_async(slc_builder) as slc_export_task:
-            yield slc_export_task
+        yield export_slc_async(slc_builder)
 
 @pytest.fixture(scope='session')
 def extension_upload_slc(extension_build_slc_async, upload_slc):
@@ -41,9 +40,9 @@ def upload_slc(backend_aware_database_params,
                backend_aware_bucketfs_params):
     def func(slc_builder: LanguageContainerBuilder,
              export_result,
-             bucketfs_path: str = '') -> None:
+             bucketfs_path: str = '') -> bool:
         if export_result is None:
-            return
+            return False
 
         # Get the container parameters
         export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
@@ -57,5 +56,6 @@ def upload_slc(backend_aware_database_params,
                                              bucketfs_path=bucketfs_path,
                                              language_alias=language_alias)
         deployer.run(container_file=Path(container_file_path), alter_system=True, allow_override=True)
+        return True
 
     return func

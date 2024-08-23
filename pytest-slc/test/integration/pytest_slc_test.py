@@ -14,8 +14,7 @@ def extension_build_slc_async(export_slc_async):
     with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as slc_builder:
         project_directory = find_path_backwards("pyproject.toml", __file__).parent
         slc_builder.prepare_flavor(project_directory)
-        with export_slc_async(slc_builder) as slc_export_task:
-            yield slc_export_task
+        yield export_slc_async(slc_builder)
 
 
 @pytest.fixture(scope='session')
@@ -38,4 +37,5 @@ def assert_udf_running(conn: pyexasol.ExaConnection):
 
 
 def test_upload_slc(extension_upload_slc, backend_aware_database_params):
-    assert_udf_running(pyexasol.connect(**backend_aware_database_params))
+    if extension_upload_slc:
+        assert_udf_running(pyexasol.connect(**backend_aware_database_params))
