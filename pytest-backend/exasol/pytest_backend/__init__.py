@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Any
 import os
 from datetime import timedelta
-from contextlib import ExitStack
 import ssl
 from urllib.parse import urlparse
 import pytest
@@ -16,32 +15,31 @@ from exasol.saas.client.api_access import (
     timestamp_name
 )
 import exasol.pytest_backend.project_short_tag as pst
-from exasol.pytest_backend.itde import (
+from .parallel_task import paralleltask
+from .itde import (
     itde_pytest_addoption,
     exasol_config,
     bucketfs_config,
     ssh_config,
-    itde_config
+    itde_config,
 )
 
-_BACKEND_OPTION = '--backend'
-_BACKEND_ONPREM = 'onprem'
-_BACKEND_SAAS = 'saas'
-
-_onprem_stash_key = pytest.StashKey[bool]()
-_saas_stash_key = pytest.StashKey[bool]()
+BACKEND_OPTION = '--backend'
+BACKEND_ONPREM = 'onprem'
+BACKEND_SAAS = 'saas'
+BACKEND_ALL = 'all'
 
 
 def pytest_addoption(parser):
     parser.addoption(
-        _BACKEND_OPTION,
+        BACKEND_OPTION,
         action="append",
         default=[],
-        help=f"""List of test backends (onprem, saas). By default, the tests will be
-            run on both backends. To select only one of the backends add the
-            argument {_BACKEND_OPTION}=<name-of-the-backend> to the command line. Both
-            backends can be selected like ... {_BACKEND_OPTION}=onprem {_BACKEND_OPTION}=saas,
-            but this is the same as the default.
+        help=f"""List of test backends ({BACKEND_ONPREM}, {BACKEND_SAAS}). The target 
+            backends must be specified explicitly. To select all backends add the argument 
+            {BACKEND_OPTION}={BACKEND_ALL} to the command line. To select only one
+            of the backends add the argument {BACKEND_OPTION}={BACKEND_ONPREM} or
+            {BACKEND_OPTION}={BACKEND_SAAS} instead.
             """,
     )
     parser.addoption(
@@ -77,60 +75,80 @@ def pytest_addoption(parser):
     itde_pytest_addoption(parser)
 
 
-@pytest.fixture(scope='session', params=[_BACKEND_ONPREM, _BACKEND_SAAS])
+def _is_backend_selected(request, backend: str) -> bool:
+    backend_options = set(request.config.getoption(BACKEND_OPTION))
+    return bool(backend_options.intersection({backend, BACKEND_ALL}))
+
+
+@pytest.fixture(scope='session', params=[BACKEND_ONPREM, BACKEND_SAAS])
 def backend(request) -> str:
-    backend_options = request.config.getoption(_BACKEND_OPTION)
-    if backend_options and (request.param not in backend_options):
+    if not _is_backend_selected(request, request.param):
         pytest.skip()
     return request.param
 
 
-def _is_backend_selected(request, backend: str) -> bool:
-    backend_options = request.config.getoption(_BACKEND_OPTION)
-    if backend_options:
-        return backend in backend_options
-    else:
-        return True
-
-
 @pytest.fixture(scope='session')
 def use_onprem(request) -> bool:
-    return _is_backend_selected(request, _BACKEND_ONPREM)
+    return _is_backend_selected(request, BACKEND_ONPREM)
 
 
 @pytest.fixture(scope='session')
 def use_saas(request) -> bool:
-    return _is_backend_selected(request, _BACKEND_SAAS)
+    return _is_backend_selected(request, BACKEND_SAAS)
+
+
+@paralleltask
+def start_itde(itde_config,
+               exasol_config,
+               bucketfs_config,
+               ssh_config,
+               database_name) -> None:
+    """
+    This function controls the ITDE with the help of parallelized
+    version of the @contextmanager.
+    """
+    bucketfs_url = urlparse(bucketfs_config.url)
+    env_info, cleanup_func = api.spawn_test_environment(
+        environment_name=database_name,
+        database_port_forward=exasol_config.port,
+        bucketfs_port_forward=bucketfs_url.port,
+        ssh_port_forward=ssh_config.port,
+        db_mem_size="4GB",
+        docker_db_image_version=itde_config.db_version,
+    )
+    yield env_info
+    cleanup_func()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def backend_aware_onprem_database_async(use_onprem,
+                                        itde_config,
+                                        exasol_config,
+                                        bucketfs_config,
+                                        ssh_config,
+                                        database_name):
+    """
+    If the onprem is a selected backend, this fixture starts brining up the ITDE and keeps
+    it running for the duration of the session. It returns before the ITDE is ready. The
+    "autouse" parameter assures that the ITDE, and other lengthy setup procedures are started
+    preemptively before they are needed anywhere in the tests.
+
+    The fixture shall not be used directly in tests.
+    """
+    if use_onprem and (itde_config.db_version != "external"):
+        with start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database_name) as itde_task:
+            yield itde_task
+    else:
+        yield None
 
 
 @pytest.fixture(scope="session")
-def backend_aware_onprem_database(request,
-                                  use_onprem,
-                                  itde_config,
-                                  exasol_config,
-                                  bucketfs_config,
-                                  ssh_config,
-                                  database_name) -> None:
-    if use_onprem and (itde_config.db_version != "external"):
-        # Guard against a potential issue with repeated call of a parameterised fixture
-        if _onprem_stash_key in request.session.stash:
-            raise RuntimeError(('Repeated call of the session level fixture '
-                                'backend_aware_onprem_database'))
-        request.session.stash[_onprem_stash_key] = True
-
-        bucketfs_url = urlparse(bucketfs_config.url)
-        _, cleanup_function = api.spawn_test_environment(
-            environment_name=database_name,
-            database_port_forward=exasol_config.port,
-            bucketfs_port_forward=bucketfs_url.port,
-            ssh_port_forward=ssh_config.port,
-            db_mem_size="4GB",
-            docker_db_image_version=itde_config.db_version,
-        )
-        yield
-        cleanup_function()
-    else:
-        yield
+def backend_aware_onprem_database(backend_aware_onprem_database_async) -> None:
+    """
+    If the onprem is a selected backend, this fixture waits till the ITDE becomes available.
+    """
+    if backend_aware_onprem_database_async is not None:
+        backend_aware_onprem_database_async.wait()
 
 
 def _env(var: str) -> str:
@@ -170,48 +188,60 @@ def database_name(project_short_tag):
 
 
 @pytest.fixture(scope="session")
-def api_access(saas_host, saas_pat, saas_account_id) -> OpenApiAccess:
-    with create_saas_client(saas_host, saas_pat) as client:
-        yield OpenApiAccess(client, saas_account_id)
+def saas_api_access(request,
+                    use_saas,
+                    saas_host,
+                    saas_pat,
+                    saas_account_id) -> OpenApiAccess | None:
+    if use_saas and (not request.config.getoption("--saas-database-id")):
+        client = create_saas_client(host=saas_host, pat=saas_pat)
+        api_access = OpenApiAccess(client=client, account_id=saas_account_id)
+        with api_access.allowed_ip():
+            yield api_access
+    else:
+        yield None
 
 
-@pytest.fixture(scope="session")
-def backend_aware_saas_database_id(request,
-                                   use_saas,
-                                   database_name,
-                                   saas_host,
-                                   saas_pat,
-                                   saas_account_id) -> str:
-    if use_saas:
-        # Guard against a potential issue with repeated call of a parameterised fixture
-        if _saas_stash_key in request.session.stash:
-            raise RuntimeError(('Repeated call of the session level fixture '
-                                'backend_aware_saas_database_id'))
-        request.session.stash[_saas_stash_key] = True
+@pytest.fixture(scope="session", autouse=True)
+def backend_aware_saas_database_id_async(request,
+                                         use_saas,
+                                         database_name,
+                                         saas_api_access) -> str:
+    """
+    If the saas is a selected backend, this fixture starts building a temporary SaaS
+    database and keeps it running for the duration of the session. It returns before the
+    database is ready. The "autouse" parameter assures that the SaaS database, and other
+    lengthy setup procedures are started preemptively before they are needed anywhere in
+    the tests.
 
-        db_id = request.config.getoption("--saas-database-id")
+    The fixture shall not be used directly in tests.
+    """
+    if saas_api_access is not None:
         keep = request.config.getoption("--keep-saas-database")
         idle_hours = float(request.config.getoption("--saas-max-idle-hours"))
 
-        with ExitStack() as stack:
-            # Create and configure the SaaS client.
-            client = create_saas_client(host=saas_host, pat=saas_pat)
-            api_access = OpenApiAccess(client=client, account_id=saas_account_id)
-            stack.enter_context(api_access.allowed_ip())
-
-            if db_id:
-                # Return the id of an existing database if it's provided
-                yield db_id
-            else:
-                # Create a temporary database and waite till it becomes operational
-                db = stack.enter_context(api_access.database(
-                    name=database_name,
-                    keep=keep,
-                    idle_time=timedelta(hours=idle_hours)))
-                api_access.wait_until_running(db.id)
-                yield db.id
+        # Create a temporary database
+        with saas_api_access.database(
+                name=database_name,
+                keep=keep,
+                idle_time=timedelta(hours=idle_hours)) as db:
+            yield db.id
+    elif use_saas:
+        yield request.config.getoption("--saas-database-id")
     else:
         yield ''
+
+
+@pytest.fixture(scope="session")
+def backend_aware_saas_database_id(saas_api_access,
+                                   backend_aware_saas_database_id_async) -> str:
+    """
+    If the saas is a selected backend, this fixture waits until the temporary SaaS database
+    becomes available.
+    """
+    if saas_api_access is not None:
+        saas_api_access.wait_until_running(backend_aware_saas_database_id_async)
+    yield backend_aware_saas_database_id_async
 
 
 @pytest.fixture(scope="session")
@@ -250,7 +280,7 @@ def backend_aware_onprem_bucketfs_params(use_onprem,
                                          bucketfs_config) -> dict[str, Any]:
     if use_onprem:
         return {
-            'backend': _BACKEND_ONPREM,
+            'backend': BACKEND_ONPREM,
             'url': bucketfs_config.url,
             'username': bucketfs_config.username,
             'password': bucketfs_config.password,
@@ -269,7 +299,7 @@ def backend_aware_saas_bucketfs_params(use_saas,
                                        backend_aware_saas_database_id) -> dict[str, Any]:
     if use_saas:
         return {
-            'backend': _BACKEND_SAAS,
+            'backend': BACKEND_SAAS,
             'url': saas_host,
             'account_id': saas_account_id,
             'database_id': backend_aware_saas_database_id,
@@ -288,9 +318,9 @@ def backend_aware_database_params(backend,
     Usage example:
     connection = pyexasol.connect(**backend_aware_database_params, compression=True)
     """
-    if backend == _BACKEND_ONPREM:
+    if backend == BACKEND_ONPREM:
         return backend_aware_onprem_database_params
-    elif backend == _BACKEND_SAAS:
+    elif backend == BACKEND_SAAS:
         return backend_aware_saas_database_params
     else:
         ValueError(f'Unknown backend {backend}')
@@ -306,9 +336,9 @@ def backend_aware_bucketfs_params(backend,
     Usage example:
     bfs_path = exasol.bucketfs.path.build_path(**backend_aware_bucketfs_params, path=path_in_bucket)
     """
-    if backend == _BACKEND_ONPREM:
+    if backend == BACKEND_ONPREM:
         return backend_aware_onprem_bucketfs_params
-    elif backend == _BACKEND_SAAS:
+    elif backend == BACKEND_SAAS:
         return backend_aware_saas_bucketfs_params
     else:
         ValueError(f'Unknown backend {backend}')
