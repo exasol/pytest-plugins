@@ -25,12 +25,11 @@ def export_slc_async(use_onprem, use_saas):
         if use_onprem or use_saas:
             @paralleltask
             def export_runner():
-                print('****** CALLING BUILDER EXPORT ******')
-                export_result = slc_builder.export(*args, **kwargs)
-                yield export_result
+                # export_result = slc_builder.export(*args, **kwargs)
+                # yield export_result
+                yield None
 
             with export_runner() as export_task:
-                print('****** ASYNC EXPORT STARTED *******')
                 yield slc_builder, export_task
         else:
             yield slc_builder, None
@@ -41,8 +40,11 @@ def export_slc_async(use_onprem, use_saas):
 def upload_slc(backend_aware_database_params,
                backend_aware_bucketfs_params):
     def func(slc_builder: LanguageContainerBuilder,
-             export_result,
+             export_task,
              bucketfs_path: str = '') -> bool:
+        if export_task is None:
+            return False
+        export_result = export_task.get_output()
         if export_result is None:
             return False
 
@@ -51,8 +53,6 @@ def upload_slc(backend_aware_database_params,
         container_file_path = Path(export_info.cache_file)
         language_alias = slc_builder.language_alias
 
-        print('****** UPLOADING THE CONTAINER TO DB **************')
-
         # Upload the container to the database
         pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
         bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path=bucketfs_path)
@@ -60,7 +60,6 @@ def upload_slc(backend_aware_database_params,
                                              bucketfs_path=bucketfs_path,
                                              language_alias=language_alias)
         deployer.run(container_file=Path(container_file_path), alter_system=True, allow_override=True)
-        print('****** UPLOADING FINISHED **************')
         return True
 
     return func
