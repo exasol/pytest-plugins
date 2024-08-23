@@ -1,20 +1,56 @@
+"""
+@pytest.fixture(scope='session', autouse=True)
+def extension_build_slc_async(export_slc_async):
+    with language_container_factory() as slc_builder:
+        with export_slc_async(slc_builder) as slc_export_task:
+            yield slc_export_task
+
+@pytest.fixture(scope='session')
+def extension_upload_slc(extension_build_slc_async, upload_slc):
+    upload_slc(*extension_build_slc_async, 'optional_bucketfs_path')
+"""
 from __future__ import annotations
-from typing import Callable
 from pathlib import Path
+from exasol.pytest_backend import paralleltask
 import pytest
 
 import pyexasol
 import exasol.bucketfs as bfs
 from exasol.python_extension_common.deployment.language_container_deployer import LanguageContainerDeployer
+from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
+
+
+@pytest.fixture(scope='session')
+def export_slc_async(use_onprem, use_saas):
+    def func(slc_builder: LanguageContainerBuilder, *args, **kwargs):
+        if use_onprem or use_saas:
+            @paralleltask
+            def export_runner():
+                export_result = slc_builder.export(*args, **kwargs)
+                yield export_result
+
+            with export_runner() as export_task:
+                yield slc_builder, export_task
+        else:
+            yield slc_builder, None
+    return func
 
 
 @pytest.fixture(scope="session")
 def upload_slc(backend_aware_database_params,
-               backend_aware_bucketfs_params) -> Callable[[str | Path, str, str], None]:
+               backend_aware_bucketfs_params):
+    def func(slc_builder: LanguageContainerBuilder,
+             export_result,
+             bucketfs_path: str = '') -> None:
+        if export_result is None:
+            return
 
-    def func(container_file_path: str | Path,
-             language_alias: str,
-             bucketfs_path: str = ''):
+        # Get the container parameters
+        export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
+        container_file_path = Path(export_info.cache_file)
+        language_alias = slc_builder.language_alias
+
+        # Upload the container to the database
         pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
         bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path=bucketfs_path)
         deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,

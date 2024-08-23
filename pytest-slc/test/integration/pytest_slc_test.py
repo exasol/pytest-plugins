@@ -1,30 +1,33 @@
-from pathlib import Path
-import requests
 import textwrap
-
+import pytest
 import pyexasol
+
 from exasol.python_extension_common.deployment.language_container_validator import temp_schema
+from exasol.python_extension_common.deployment.language_container_builder import (
+    LanguageContainerBuilder, find_path_backwards)
+
+LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC'
 
 
-SLC_NAME = "template-Exasol-all-python-3.10_release.tar.gz"
-SLC_VERSION = "8.0.0"
-SLC_URL = ("https://github.com/exasol/script-languages-release/releases/"
-           f"download/{SLC_VERSION}/{SLC_NAME}")
+@pytest.fixture(scope='session', autouse=True)
+def extension_build_slc_async(export_slc_async):
+    with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as slc_builder:
+        project_directory = find_path_backwards("pyproject.toml", __file__).parent
+        slc_builder.prepare_flavor(project_directory)
+        with export_slc_async(slc_builder) as slc_export_task:
+            yield slc_export_task
 
 
-def download_container(save_dir: Path) -> Path:
-    response = requests.get(SLC_URL, allow_redirects=True)
-    response.raise_for_status()
-    container_path = save_dir / SLC_NAME
-    container_path.write_bytes(response.content)
-    return container_path
+@pytest.fixture(scope='session')
+def extension_upload_slc(extension_build_slc_async, upload_slc):
+    upload_slc(*extension_build_slc_async, 'container')
 
 
-def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
+def assert_udf_running(conn: pyexasol.ExaConnection):
     with temp_schema(conn) as schema:
         udf_name = 'TEST_UDF'
         conn.execute(textwrap.dedent(f"""
-            CREATE OR REPLACE {language_alias} SCALAR SCRIPT "{schema}"."{udf_name}"()
+            CREATE OR REPLACE {LANGUAGE_ALIAS} SCALAR SCRIPT "{schema}"."{udf_name}"()
             RETURNS BOOLEAN AS
             def run(ctx):
                 return True
@@ -34,10 +37,5 @@ def assert_udf_running(conn: pyexasol.ExaConnection, language_alias: str):
         assert result[0][0] is True
 
 
-def test_upload_slc(upload_slc, backend_aware_database_params, tmp_path):
-
-    container_path = download_container(tmp_path)
-    language_alias = 'PYTHON3_PYTEST_SLC'
-
-    upload_slc(container_file_path=container_path, language_alias=language_alias)
-    assert_udf_running(pyexasol.connect(**backend_aware_database_params), language_alias)
+def test_upload_slc(extension_upload_slc, backend_aware_database_params):
+    assert_udf_running(pyexasol.connect(**backend_aware_database_params))
