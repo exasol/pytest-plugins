@@ -1,6 +1,6 @@
 from textwrap import dedent
 import pytest
-from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL)
 
 pytest_plugins = ["pytester"]
 
@@ -45,6 +45,6 @@ def test_upload_slc(extension_upload_slc, backend_aware_database_params):
 
 def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
-    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=1, skipped=1)
