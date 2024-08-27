@@ -15,10 +15,9 @@ LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC'
 
 @pytest.fixture(scope='session', autouse=True)
 def extension_build_slc_async(export_slc_async):
-    print('*** Running the extension_build_slc_async fixture ***')
     with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as slc_builder:
-        project_directory = find_path_backwards("pyproject.toml", __file__).parent
-        slc_builder.prepare_flavor(project_directory)
+        # project_directory = find_path_backwards("pyproject.toml", __file__).parent
+        # slc_builder.prepare_flavor(project_directory)
         # yield export_slc_async(slc_builder)
         yield slc_builder, None
 
@@ -42,7 +41,6 @@ def assert_udf_running(conn: pyexasol.ExaConnection):
         assert result[0][0] is True
 
 def test_upload_slc(extension_upload_slc, backend_aware_database_params):
-    print('*** Running the test ***')
     # if extension_upload_slc:
     #    assert_udf_running(pyexasol.connect(**backend_aware_database_params))
     assert True
@@ -51,6 +49,6 @@ def test_upload_slc(extension_upload_slc, backend_aware_database_params):
 
 def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
-    result = pytester.runpytest('-s', BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=2, skipped=0)
