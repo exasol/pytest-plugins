@@ -32,7 +32,7 @@ def assert_udf_running(conn: pyexasol.ExaConnection):
             'RETURNS BOOLEAN AS '
             'def run(ctx): '
             'return True '
-            '/'
+            '\n/'
         )
         conn.execute(udf_create_sql)
         result = conn.execute(f'SELECT "{{schema}}"."{{udf_name}}"()').fetchall()
