@@ -25,7 +25,7 @@ def extension_export_slc(extension_export_slc_async, export_slc):
     return export_slc(*extension_export_slc_async)
 
 @pytest.fixture(scope='session')
-def extension_upload_slc(extension_export_slc, upload_slc)
+def extension_upload_slc(extension_export_slc, upload_slc):
     upload_slc(*extension_export_slc, 'container')
 
 def assert_udf_running(conn: pyexasol.ExaConnection):
