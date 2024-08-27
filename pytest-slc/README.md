@@ -21,7 +21,7 @@ Note, that by default this test will run twice - once for each backend.
 import pytest
 
 @pytest.fixture(scope='session', autouse=True)
-def extension_build_slc_async(export_slc_async, use_onprem, use_saas):
+def extension_export_slc_async(export_slc_async, use_onprem, use_saas):
     if use_onprem or use_saas:
         with language_container_factory() as container_builder:
             yield export_slc_async(container_builder)
