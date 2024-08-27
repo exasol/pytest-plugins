@@ -4,7 +4,7 @@ from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
 
 pytest_plugins = ["pytester"]
 
-_test_code = dedent(f"""
+_test_code = dedent(fr"""
 import pyexasol
 import pytest
 from exasol.python_extension_common.deployment.language_container_validator import temp_schema
