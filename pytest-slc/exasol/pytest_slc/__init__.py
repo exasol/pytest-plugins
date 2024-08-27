@@ -25,9 +25,7 @@ def export_slc_async(use_onprem, use_saas):
         if use_onprem or use_saas:
             @paralleltask
             def export_runner():
-                # export_result = slc_builder.export(*args, **kwargs)
-                # yield export_result
-                yield None
+                yield slc_builder.export(*args, **kwargs)
 
             with export_runner() as export_task:
                 yield slc_builder, export_task
@@ -43,10 +41,9 @@ def upload_slc(backend_aware_database_params,
              export_task,
              bucketfs_path: str = '') -> bool:
         if export_task is None:
+            # Perhaps none of the backends are enabled.
             return False
         export_result = export_task.get_output()
-        if export_result is None:
-            return False
 
         # Get the container parameters
         export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
