@@ -51,4 +51,4 @@ def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
     result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=1, skipped=1)
+    result.assert_outcomes(passed=2, skipped=0)

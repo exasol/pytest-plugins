@@ -29,8 +29,12 @@ def extension_export_slc_async(export_slc_async, use_onprem, use_saas):
         yield None, None
 
 @pytest.fixture(scope='session')
-def extension_upload_slc(extension_build_slc_async, upload_slc):
-    upload_slc(*extension_build_slc_async)
+def extension_export_slc(extension_export_slc_async, export_slc):
+    return export_slc(*extension_export_slc_async)
+
+@pytest.fixture(scope='session')
+def extension_upload_slc(extension_export_slc, upload_slc):
+    upload_slc(*extension_export_slc)
 
 def test_something_with_slc(extension_upload_slc):
     ...
