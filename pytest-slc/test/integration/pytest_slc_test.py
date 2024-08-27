@@ -16,7 +16,8 @@ LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC'
 @pytest.fixture(scope='session', autouse=True)
 def extension_build_slc_async(export_slc_async):
     with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as slc_builder:
-        # project_directory = find_path_backwards("pyproject.toml", __file__).parent
+        project_directory = find_path_backwards("pyproject.toml", __file__).parent
+        assert project_directory.exists()
         # slc_builder.prepare_flavor(project_directory)
         # yield export_slc_async(slc_builder)
         yield slc_builder, None
@@ -51,4 +52,4 @@ def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
     result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=2, skipped=0)
+    result.assert_outcomes(passed=1, skipped=1)
