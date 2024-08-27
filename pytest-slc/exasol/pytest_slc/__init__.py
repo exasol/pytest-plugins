@@ -28,9 +28,9 @@ def export_slc_async(use_onprem, use_saas):
                 yield slc_builder.export(*args, **kwargs)
 
             with export_runner() as export_task:
-                yield slc_builder, export_task
+                return slc_builder, export_task
         else:
-            yield slc_builder, None
+            return slc_builder, None
     return func
 
 
@@ -39,10 +39,10 @@ def upload_slc(backend_aware_database_params,
                backend_aware_bucketfs_params):
     def func(slc_builder: LanguageContainerBuilder,
              export_task,
-             bucketfs_path: str = '') -> bool:
+             bucketfs_path: str = ''):
         if export_task is None:
             # Perhaps none of the backends are enabled.
-            return False
+            return
         export_result = export_task.get_output()
 
         # Get the container parameters
@@ -57,6 +57,5 @@ def upload_slc(backend_aware_database_params,
                                              bucketfs_path=bucketfs_path,
                                              language_alias=language_alias)
         deployer.run(container_file=Path(container_file_path), alter_system=True, allow_override=True)
-        return True
 
     return func

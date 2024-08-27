@@ -22,7 +22,7 @@ def extension_build_slc_async(export_slc_async):
 
 @pytest.fixture(scope='session')
 def extension_upload_slc(extension_build_slc_async, upload_slc):
-    return upload_slc(*extension_build_slc_async, 'container')
+    upload_slc(*extension_build_slc_async, 'container')
 
 def assert_udf_running(conn: pyexasol.ExaConnection):
     with temp_schema(conn) as schema:
