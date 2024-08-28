@@ -8,9 +8,16 @@ import exasol.bucketfs as bfs
 from exasol.python_extension_common.deployment.language_container_deployer import LanguageContainerDeployer
 from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
 
+BFS_CONTAINER_DIRECTORY = 'container'
+
 
 @pytest.fixture(scope='session')
-def export_slc_async(use_onprem, use_saas):
+def slc_builder() -> LanguageContainerBuilder:
+    raise NotImplementedError("The slc_builder fixture must be supplied by the user.")
+
+
+@pytest.fixture(scope='session', autouse=True)
+def export_slc_async(slc_builder: LanguageContainerBuilder, use_onprem: bool, use_saas: bool):
     """
     The fixture provides a helper function that starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task. It must be called from a user's
@@ -33,21 +40,19 @@ def export_slc_async(use_onprem, use_saas):
 
     The container will not be built if none of the backends is in use.
     """
-    def func(slc_builder: LanguageContainerBuilder, *args, **kwargs):
-        if use_onprem or use_saas:
-            @paralleltask
-            def export_runner():
-                yield slc_builder.export(*args, **kwargs)
+    if (not (use_onprem or use_saas)) or (slc_builder is None):
+        return None
 
-            with export_runner() as export_task:
-                return slc_builder, export_task
-        else:
-            return slc_builder, None
-    return func
+    @paralleltask
+    def export_runner():
+        yield slc_builder.export()
+
+    with export_runner() as export_task:
+        return export_task
 
 
 @pytest.fixture(scope='session')
-def export_slc():
+def export_slc(slc_builder, export_slc_async) -> Path | None:
     """
     The fixture provides a helper function that waits for the LanguageContainerBuilder.export()
     function to finish. It will then return the container path and the language alias. The
@@ -58,19 +63,18 @@ def export_slc():
     def extension_export_slc(extension_export_slc_async, export_slc):
         return export_slc(*extension_export_slc_async)
     """
-    def func(slc_builder: LanguageContainerBuilder | None, export_task):
-        if (slc_builder is None) or (export_task is None):
-            # Perhaps none of the backends is enabled.
-            return None, None
-        export_result = export_task.get_output()
-        export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
-        return Path(export_info.cache_file), slc_builder.language_alias
-    return func
+    if (slc_builder is None) or (export_slc_async is None):
+        # Perhaps none of the backends is enabled.
+        return None
+
+    export_result = export_slc_async.get_output()
+    export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
+    return Path(export_info.cache_file)
 
 
 @pytest.fixture(scope="session")
-def upload_slc(backend_aware_database_params,
-               backend_aware_bucketfs_params):
+def upload_slc(slc_builder, export_slc,
+               backend_aware_database_params, backend_aware_bucketfs_params):
     """
     The fixture provides a helper function that uploads language container
     to a database. The expected input is the output of the export_slc, plus the optional path
@@ -81,12 +85,11 @@ def upload_slc(backend_aware_database_params,
     def extension_upload_slc(extension_export_slc, upload_slc):
         upload_slc(*extension_export_slc, 'optional_bucketfs_path')
     """
-    def func(container_path: Path | None, language_alias: str | None, bucketfs_path: str = ''):
-        if container_path and language_alias:
-            pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
-            bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path=bucketfs_path)
-            deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
-                                                 bucketfs_path=bucketfs_path,
-                                                 language_alias=language_alias)
-            deployer.run(container_file=Path(container_path), alter_system=True, allow_override=True)
-    return func
+    if (slc_builder is not None) and (export_slc is not None):
+        pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
+        bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
+                                            path=BFS_CONTAINER_DIRECTORY)
+        deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
+                                             bucketfs_path=bucketfs_path,
+                                             language_alias=slc_builder.language_alias)
+        deployer.run(container_file=export_slc, alter_system=True, allow_override=True)
