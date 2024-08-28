@@ -34,7 +34,7 @@ def assert_udf_running(conn: pyexasol.ExaConnection):
         result = conn.execute(f'SELECT "{{schema}}"."{{udf_name}}"()').fetchall()
         assert result[0][0] is True
 
-def test_upload_slc(extension_upload_slc, backend_aware_database_params):
+def test_upload_slc(upload_slc, backend_aware_database_params):
     assert_udf_running(pyexasol.connect(**backend_aware_database_params))
 """)
 
@@ -43,4 +43,4 @@ def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
     result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=2, skipped=0)
+    result.assert_outcomes(passed=1, skipped=1)
