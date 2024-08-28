@@ -12,12 +12,12 @@ BFS_CONTAINER_DIRECTORY = 'container'
 
 
 @pytest.fixture(scope='session')
-def slc_builder() -> LanguageContainerBuilder:
-    raise NotImplementedError("The slc_builder fixture must be supplied by the user.")
+def slc_builder() -> LanguageContainerBuilder | None:
+    return None
 
 
 @pytest.fixture(scope='session', autouse=True)
-def export_slc_async(slc_builder: LanguageContainerBuilder, use_onprem: bool, use_saas: bool):
+def export_slc_async(slc_builder, use_onprem: bool, use_saas: bool):
     """
     The fixture provides a helper function that starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task. It must be called from a user's
