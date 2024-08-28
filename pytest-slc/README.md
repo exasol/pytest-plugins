@@ -1,7 +1,7 @@
 # pytest-exasol-slc Plugin
 
-The `pytest-exasol-slc` plugin provides a pytest fixture for building and uploading a script language container
-into the database. The fixture is backend agnostic. It runs for the selected backends
+The `pytest-exasol-slc` plugin provides a pytest fixtures for building and uploading a script language container
+into the database. The fixtures are backend agnostic. They run for the selected backends
 (see the documentation for the `pytest-exasol-backend` plugin).
 
 ## Installation
@@ -20,22 +20,14 @@ Note, that by default this test will run twice - once for each backend.
 ```python
 import pytest
 
-@pytest.fixture(scope='session', autouse=True)
-def extension_export_slc_async(export_slc_async, use_onprem, use_saas):
+@pytest.fixture(scope='session')
+def slc_builder(use_onprem, use_saas):
     if use_onprem or use_saas:
         with language_container_factory() as container_builder:
-            yield export_slc_async(container_builder)
+            yield container_builder
     else:
-        yield None, None
+        yield None
 
-@pytest.fixture(scope='session')
-def extension_export_slc(extension_export_slc_async, export_slc):
-    return export_slc(*extension_export_slc_async)
-
-@pytest.fixture(scope='session')
-def extension_upload_slc(extension_export_slc, upload_slc):
-    upload_slc(*extension_export_slc)
-
-def test_something_with_slc(extension_upload_slc):
+def test_something_with_slc(upload_slc):
     ...
 ```

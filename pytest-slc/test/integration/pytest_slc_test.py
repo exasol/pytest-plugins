@@ -1,6 +1,6 @@
 from textwrap import dedent
 import pytest
-from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL)
 
 pytest_plugins = ["pytester"]
 
@@ -15,10 +15,10 @@ LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC'
 
 @pytest.fixture(scope='session')
 def slc_builder() -> LanguageContainerBuilder:
-    with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as slc_builder:
+    with LanguageContainerBuilder('test_container', LANGUAGE_ALIAS) as container_builder:
         project_directory = find_path_backwards("pyproject.toml", "{__file__}").parent
-        slc_builder.prepare_flavor(project_directory)
-        yield slc_builder
+        container_builder.prepare_flavor(project_directory)
+        yield container_builder
 
 def assert_udf_running(conn: pyexasol.ExaConnection):
     with temp_schema(conn) as schema:
@@ -41,6 +41,6 @@ def test_upload_slc(upload_slc, backend_aware_database_params):
 
 def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
-    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=1, skipped=1)
+    result.assert_outcomes(passed=2, skipped=0)
