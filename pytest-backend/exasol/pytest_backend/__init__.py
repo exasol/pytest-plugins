@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 import pytest
 
 from exasol_integration_test_docker_environment.lib import api
+from exasol_integration_test_docker_environment.lib.data.environment_info import EnvironmentInfo
 from exasol.saas import client as saas_client
 from exasol.saas.client.api_access import (
     OpenApiAccess,
@@ -102,7 +103,7 @@ def start_itde(itde_config,
                exasol_config,
                bucketfs_config,
                ssh_config,
-               database_name) -> None:
+               database_name):
     """
     This function controls the ITDE with the help of parallelized
     version of the @contextmanager.
@@ -143,12 +144,13 @@ def backend_aware_onprem_database_async(use_onprem,
 
 
 @pytest.fixture(scope="session")
-def backend_aware_onprem_database(backend_aware_onprem_database_async) -> None:
+def backend_aware_onprem_database(backend_aware_onprem_database_async) -> EnvironmentInfo | None:
     """
     If the onprem is a selected backend, this fixture waits till the ITDE becomes available.
     """
     if backend_aware_onprem_database_async is not None:
-        backend_aware_onprem_database_async.wait()
+        return backend_aware_onprem_database_async.get_output()
+    return None
 
 
 def _env(var: str) -> str:
