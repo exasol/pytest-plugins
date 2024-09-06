@@ -10,7 +10,6 @@ def test_pytest_all_backends(pytester):
     test_code = dedent(r"""
         import json
         import pytest
-        import pyexasol
         import exasol.bucketfs as bfs
 
         TEST_SCHEMA = 'PYTEXT_TEST_SCHEMA'
@@ -48,10 +47,10 @@ def test_pytest_all_backends(pytester):
                 '    bfs_params.update(json.loads(conn_obj.user))\n'
                 '    bfs_params.update(json.loads(conn_obj.password))\n'
                 '    return json.dumps(bfs_params)\n'
-                '\;'
+                '/'
             )
             pyexasol_connection.execute(sql)
-            sql = f'SELECT {udf_name}();'
+            sql = f'SELECT "{udf_name}"();'
             bfs_params_str = pyexasol_connection.execute(sql).fetchval()
 
             # Read from the bucket using this connection object
