@@ -72,10 +72,7 @@ def pyexasol_connection(backend_aware_database_params,
     creating it if it doesn't exist. In the latter case the schema gets
     deleted and the end of the fixture's life span.
     """
-    with pyexasol.connect(**backend_aware_database_params,
-                          encryption=True,
-                          websocket_sslopt={"cert_reqs": ssl.CERT_NONE},
-                          compression=True) as conn:
+    with pyexasol.connect(**backend_aware_database_params, compression=True) as conn:
         sql = f"SELECT * FROM SYS.EXA_SCHEMAS WHERE SCHEMA_NAME = '{db_schema_name}';"
         no_schema = len(conn.execute(sql).fetchall()) == 0
         if no_schema:
