@@ -14,12 +14,13 @@ Whether you're looking to use database interactions, enhance test reporting, or 
 
 ## Plugins
 
-| Plugin                  | Description                                                                                                                | PYPI                                                                     |
-|-------------------------|----------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-| `pytest-exasol-itde`    | Fixture to enable simple usage with Exasol's project [ITDE](https://github.com/exasol/integration-test-docker-environment) | [pytest-exasol-itde](https://pypi.org/project/pytest-exasol-itde/)       |
-| `pytest-exasol-saas`    | Fixture to enable simple usage with Exasol's project [saas-api-python](https://github.com/exasol/saas-api-python/)         | [pytest-exasol-saas](https://pypi.org/project/pytest-exasol-saas/)       |
-| `pytest-exasol-backend` | Fixture aggregating functionality of both of the above plugins                                                             | [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/) |
-| `pytest-exasol-slc`     | Fixture for uploading a script language container                                                                          | [pytest-exasol-slc](https://pypi.org/project/pytest-exasol-slc/)         |
+| Plugin                    | Description                                                                                                                | PYPI                                                                         |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------|
+| `pytest-exasol-itde`      | Fixture to enable simple usage with Exasol's project [ITDE](https://github.com/exasol/integration-test-docker-environment) | [pytest-exasol-itde](https://pypi.org/project/pytest-exasol-itde/)           |
+| `pytest-exasol-saas`      | Fixture to enable simple usage with Exasol's project [saas-api-python](https://github.com/exasol/saas-api-python/)         | [pytest-exasol-saas](https://pypi.org/project/pytest-exasol-saas/)           |
+| `pytest-exasol-backend`   | Fixture aggregating functionality of both of the above plugins                                                             | [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/)     |
+| `pytest-exasol-slc`       | Fixture for uploading a script language container                                                                          | [pytest-exasol-slc](https://pypi.org/project/pytest-exasol-slc/)             |
+| `pytest-exasol-extension` | Fixture for setting up a database for an extension test                                                                    | [pytest-exasol-extension](https://pypi.org/project/pytest-exasol-extension/) |
 
 
 ## Installation
