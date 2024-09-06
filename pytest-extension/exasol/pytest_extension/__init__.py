@@ -1,7 +1,6 @@
 from __future__ import annotations
 from typing import Any, Callable
 import json
-import ssl
 import random
 import string
 import pyexasol

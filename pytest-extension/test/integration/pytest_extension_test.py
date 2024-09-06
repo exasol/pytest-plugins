@@ -1,12 +1,12 @@
 from textwrap import dedent
 import pytest
 
-from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL)
 
 pytest_plugins = ["pytester"]
 
 
-def test_pytest_all_backends(pytester):
+def test_extension_all_backends(pytester):
     test_code = dedent(r"""
         import json
         import pytest
@@ -53,7 +53,7 @@ def test_pytest_all_backends(pytester):
             sql = f'SELECT "{udf_name}"();'
             bfs_params_str = pyexasol_connection.execute(sql).fetchval()
 
-            # Read from the bucket using this connection object
+            # Read from the bucket using data in the connection object
             bfs_params = json.loads(bfs_params_str)
             bfs_path = bfs.path.build_path(**bfs_params)
             file_content_back = b"".join(bfs_path.read())
@@ -61,6 +61,6 @@ def test_pytest_all_backends(pytester):
             assert file_content_back == file_content
     """)
     pytester.makepyfile(test_code)
-    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=2, skipped=2)
+    result.assert_outcomes(passed=4, skipped=0)
