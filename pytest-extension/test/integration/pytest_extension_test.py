@@ -27,7 +27,7 @@ def test_pytest_all_backends(pytester):
                                              backend_aware_bucketfs_params):
             conn_name = 'test_connection'
             path_in_bucket = 'test_path'
-            udf_name = 'extract_connection_object'
+            udf_name = 'EXTRACT_CONNECTION_OBJECT'
 
             # Write something to the bucket
             file_content = b'Gravity Sucks'
@@ -51,7 +51,7 @@ def test_pytest_all_backends(pytester):
                 '\;'
             )
             pyexasol_connection.execute(sql)
-            sql = f'SELECT "{udf_name}"();'
+            sql = f'SELECT {udf_name}();'
             bfs_params_str = pyexasol_connection.execute(sql).fetchval()
 
             # Read from the bucket using this connection object
