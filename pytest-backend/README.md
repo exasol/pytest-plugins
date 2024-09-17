@@ -85,3 +85,21 @@ pytest --backend=all my_test_suite.py
 Please note that all selected backends starts preemptively, regardless of their actual usage in tests.
 Therefore, it is important to make sure the backends are not selected where they are not needed,
 for instance when running unit tests only.
+
+## Setting ITDE parameters in CLI
+
+Sometimes the default ITDE parameters cannot satisfy the test requirements. The plugin allows setting
+some of the parameters of the [api.spawn_test_environment(...)](https://github.com/exasol/integration-test-docker-environment/blob/92cc67b8f9ab78c52106c1c4ba19fe64811bcb2c/exasol_integration_test_docker_environment/lib/api/spawn_test_environment.py#L35)
+function. The parameter values can be provided in the CLI options. Currently, it is possible to set values of the following parameters:
+ - db-mem-size
+ - db-disk-size
+ - nameserver
+ - db-version
+
+In the example below the tests are run using an instance of the DockerDB with increased memory. 
+
+```shell
+pytest --backend=onprem --db-mem-size "8 GiB" my_test_suite.py
+```
+
+These options are ignored if the "onprem" backend is not selected.

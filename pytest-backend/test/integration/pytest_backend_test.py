@@ -2,6 +2,8 @@ from textwrap import dedent
 import pytest
 
 from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_backend.itde import (
+    DEFAULT_ITDE_DB_VERSION, DEFAULT_ITDE_DB_MEM_SIZE, DEFAULT_ITDE_DB_DISK_SIZE)
 
 pytest_plugins = ["pytester"]
 
@@ -43,3 +45,34 @@ def test_pytest_single_backend(pytester):
     result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=1, skipped=1)
+
+
+def test_itde_options(pytester):
+    db_mem_size = '2 TB'
+    db_disk_size = '100 TB'
+    nameserver1 = 'my_nameserver1'
+    nameserver2 = 'my_nameserver2'
+    db_version = '1000.100.10.1'
+
+    test_code = dedent(f"""
+        def test_backend_aware_database_params(itde_config):
+            assert itde_config.db_mem_size == '{db_mem_size}'
+            assert itde_config.db_disk_size == '{db_disk_size}'
+            assert itde_config.nameserver == ['{nameserver1}', '{nameserver2}']
+            assert itde_config.db_version == '{db_version}'
+    """)
+    pytester.makepyfile(test_code)
+    result = pytester.runpytest('--itde-db-mem-size', f"{db_mem_size}",
+                                '--itde-db-disk-size', f"{db_disk_size}",
+                                '--itde-nameserver', f"{nameserver1}",
+                                '--itde-nameserver', f"{nameserver2}",
+                                '--itde-db-version', f"{db_version}")
+    assert result.ret == pytest.ExitCode.OK
+    result.assert_outcomes(passed=1)
+
+
+def test_default_itde_options(itde_config):
+    assert itde_config.db_mem_size == DEFAULT_ITDE_DB_MEM_SIZE
+    assert itde_config.db_disk_size == DEFAULT_ITDE_DB_DISK_SIZE
+    assert itde_config.nameserver == []
+    assert itde_config.db_version == DEFAULT_ITDE_DB_VERSION
