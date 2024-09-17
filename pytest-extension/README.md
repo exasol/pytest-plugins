@@ -1,6 +1,6 @@
 # pytest-exasol-extension Plugin
 
-The `pytest-exasol-extension` plugin provides a pytest fixtures for preparing a database for the extension tests.
+The `pytest-exasol-extension` plugin provides pytest fixtures for preparing a database for the extension tests.
 The fixtures are backend agnostic. They run for the selected backends
 (see the documentation for the `pytest-exasol-backend` plugin).
 
@@ -21,6 +21,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def db_schema_name() -> str:
+    """Let's override a randomly generated db schema for the test, giving it a meaningful name."""
     return 'MY_TEST_SCHEMA'
 
 def test_something(pyexasol_connection):

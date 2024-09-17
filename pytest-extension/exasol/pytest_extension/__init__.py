@@ -72,16 +72,16 @@ def pyexasol_connection(backend_aware_database_params,
     deleted and the end of the fixture's life span.
     """
     with pyexasol.connect(**backend_aware_database_params, compression=True) as conn:
-        sql = f"SELECT * FROM SYS.EXA_SCHEMAS WHERE SCHEMA_NAME = '{db_schema_name}';"
-        no_schema = len(conn.execute(sql).fetchall()) == 0
-        if no_schema:
-            conn.execute(f'CREATE SCHEMA "{db_schema_name}";')
-        conn.execute(f'OPEN SCHEMA "{db_schema_name}";')
+        sql = f"SELECT * FROM SYS.EXA_SCHEMAS WHERE SCHEMA_NAME = '{db_schema_name}'"
+        use_temp_schema = len(conn.execute(sql).fetchall()) == 0
+        if use_temp_schema:
+            conn.execute(f'CREATE SCHEMA "{db_schema_name}"')
+        conn.execute(f'OPEN SCHEMA "{db_schema_name}"')
         try:
             yield conn
         finally:
-            if no_schema:
-                conn.execute(f'DROP SCHEMA "{db_schema_name}" CASCADE;')
+            if use_temp_schema:
+                conn.execute(f'DROP SCHEMA "{db_schema_name}" CASCADE')
 
 
 @pytest.fixture(scope='session')
