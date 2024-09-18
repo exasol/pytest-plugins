@@ -37,6 +37,9 @@ class ItdeConfig:
     """Itde configuration settings"""
 
     db_version: str
+    db_mem_size: str
+    db_disk_size: str
+    nameserver: list
 
 
 _ONPREM_DB_OPTIONS = config.OptionGroup(
@@ -105,6 +108,9 @@ _SSH_OPTIONS = config.OptionGroup(
     ),
 )
 
+DEFAULT_ITDE_DB_VERSION = "8.18.1"
+DEFAULT_ITDE_DB_MEM_SIZE = "2 GiB"
+DEFAULT_ITDE_DB_DISK_SIZE = "2 GiB"
 
 _ITDE_OPTIONS = config.OptionGroup(
     prefix="itde",
@@ -112,9 +118,32 @@ _ITDE_OPTIONS = config.OptionGroup(
         {
             "name": "db_version",
             "type": str,
-            "default": "8.18.1",
+            "default": DEFAULT_ITDE_DB_VERSION,
             "help_text": "DB version to start, if value is 'external' an existing instance will be used",
         },
+        {
+            "name": "db_mem_size",
+            "type": str,
+            "default": DEFAULT_ITDE_DB_MEM_SIZE,
+            "help_text": ("The main memory used by the database. Format <number> <unit>, e.g. 1 GiB. "
+                          "The minimum size is 1 GB, below that the database will not start."),
+        },
+        {
+            "name": "db_disk_size",
+            "type": str,
+            "default": DEFAULT_ITDE_DB_DISK_SIZE,
+            "help_text": ("The disk size available for the database. Format <number> <unit>, e.g. 1 GiB. "
+                          "The minimum size is 100 MiB. However, the setup creates volume files with "
+                          "at least 2 GB larger size, because the database needs at least so much more disk."),
+        },
+        {
+            "name": "nameserver",
+            "type": str,
+            "default": [],
+            "help_text": ("A nameserver to be added to the list of DNS nameservers which the docker-db "
+                          "should use for resolving domain names. This option can be repeated "
+                          "multiple times.")
+        }
     ),
 )
 
@@ -126,8 +155,10 @@ def _add_option_group(parser, group):
     for option in group.options:
         parser_group.addoption(
             option.cli,
+            default=option.default,
             type=option.type,
             help=option.help,
+            action='append' if isinstance(option.default, list) else 'store'
         )
 
 

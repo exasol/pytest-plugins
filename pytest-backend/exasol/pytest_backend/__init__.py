@@ -114,7 +114,9 @@ def start_itde(itde_config,
         database_port_forward=exasol_config.port,
         bucketfs_port_forward=bucketfs_url.port,
         ssh_port_forward=ssh_config.port,
-        db_mem_size="4GB",
+        db_mem_size=itde_config.db_mem_size,
+        db_disk_size=itde_config.db_disk_size,
+        nameserver=tuple(itde_config.nameserver),
         docker_db_image_version=itde_config.db_version,
     )
     yield env_info
@@ -161,18 +163,18 @@ def _env(var: str) -> str:
 
 
 @pytest.fixture(scope="session")
-def saas_host() -> str:
-    return _env("SAAS_HOST")
+def saas_host(use_saas) -> str:
+    return _env("SAAS_HOST") if use_saas else ""
 
 
 @pytest.fixture(scope="session")
-def saas_pat() -> str:
-    return _env("SAAS_PAT")
+def saas_pat(use_saas) -> str:
+    return _env("SAAS_PAT") if use_saas else ""
 
 
 @pytest.fixture(scope="session")
-def saas_account_id() -> str:
-    return _env("SAAS_ACCOUNT_ID")
+def saas_account_id(use_saas) -> str:
+    return _env("SAAS_ACCOUNT_ID") if use_saas else ""
 
 
 @pytest.fixture(scope="session")
