@@ -66,13 +66,15 @@ def export_slc(slc_builder, export_slc_async) -> Path | None:
 def upload_slc(slc_builder, export_slc,
                pyexasol_connection, backend_aware_bucketfs_params):
     """
-    The fixture uploads language container to a database, according to the selected
-    backends.
+    The fixture provides a function uploading the language container to a database,
+    according to the selected backends.
     """
-    if (slc_builder is not None) and (export_slc is not None):
-        bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
-                                            path=BFS_CONTAINER_DIRECTORY)
-        deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
-                                             bucketfs_path=bucketfs_path,
-                                             language_alias=slc_builder.language_alias)
-        deployer.run(container_file=export_slc, alter_system=True, allow_override=True)
+    def func(language_alias: str) -> None:
+        if (slc_builder is not None) and (export_slc is not None):
+            bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
+                                                path=BFS_CONTAINER_DIRECTORY)
+            deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
+                                                 bucketfs_path=bucketfs_path,
+                                                 language_alias=language_alias)
+            deployer.run(container_file=export_slc, alter_system=True, allow_override=True)
+    return func

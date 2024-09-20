@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-exasol-slc"
-version = "0.2.1"
+version = "0.3.0"
 description = ""
 authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
 readme = "README.md"
