@@ -3,7 +3,6 @@ from pathlib import Path
 from exasol.pytest_backend import paralleltask
 import pytest
 
-import pyexasol
 import exasol.bucketfs as bfs
 from exasol.python_extension_common.deployment.language_container_deployer import LanguageContainerDeployer
 from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
@@ -65,13 +64,12 @@ def export_slc(slc_builder, export_slc_async) -> Path | None:
 
 @pytest.fixture(scope="session")
 def upload_slc(slc_builder, export_slc,
-               backend_aware_database_params, backend_aware_bucketfs_params):
+               pyexasol_connection, backend_aware_bucketfs_params):
     """
     The fixture uploads language container to a database, according to the selected
     backends.
     """
     if (slc_builder is not None) and (export_slc is not None):
-        pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
         bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
                                             path=BFS_CONTAINER_DIRECTORY)
         deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
