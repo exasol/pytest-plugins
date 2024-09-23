@@ -15,8 +15,12 @@ pip install pytest-exasol-slc
 ## Usage in Tests
 
 Below is an example of a test that requires a script language container to be built and deployed in the database.
-Here, we override the default `language_alias` fixture providing a "meaningful" name. The language container will be
-activated with this language alias. Note, that by default the test will run twice - once for each backend.
+The example test case overrides two fixtures used internally by the fixture `deployed_slc` in this plugin:
+* Fixture `language_alias` provides a meaningful name for the language alias.
+* Fixture `slc_builder` prepares the structure of the SLC used in the example test case.
+
+The language container will be activated with value returned by the fixture `language_alias`.
+Note, that by default the test will run twice - once for each backend.
 
 ```python
 import pytest
