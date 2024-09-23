@@ -43,7 +43,7 @@ def test_deploy_slc(deploy_slc, deployed_slc, backend_aware_database_params):
     # We will activate the SLC also with an alternative alias and check that both
     # the main and the alternative alias work.
     deploy_slc("{ALT_LANGUAGE_ALIAS}")
-    for lang_alias in ["{MAIN_LANGUAGE_ALIAS}", "{ALT_LANGUAGE_ALIAS}"] 
+    for lang_alias in ["{MAIN_LANGUAGE_ALIAS}", "{ALT_LANGUAGE_ALIAS}"]:
         assert_udf_running(pyexasol.connect(**backend_aware_database_params), lang_alias)
 """)
 
