@@ -1,11 +1,12 @@
 from __future__ import annotations
 from pathlib import Path
+import getpass
 from exasol.pytest_backend import paralleltask
 import pytest
 
-import pyexasol
 import exasol.bucketfs as bfs
-from exasol.python_extension_common.deployment.language_container_deployer import LanguageContainerDeployer
+from exasol.python_extension_common.deployment.language_container_deployer import (
+    LanguageContainerDeployer, LanguageActivationLevel)
 from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
 
 BFS_CONTAINER_DIRECTORY = 'container'
@@ -63,18 +64,49 @@ def export_slc(slc_builder, export_slc_async) -> Path | None:
     return Path(export_info.cache_file)
 
 
+@pytest.fixture(scope='session')
+def language_alias(project_short_tag):
+    """
+    The user can override this fixture if they want to provide a more meaningful
+    name for the language alias.
+    """
+    owner = getpass.getuser()
+    return f"PYTHON3-{project_short_tag or 'EXTENSION'}-{owner}"
+
+
 @pytest.fixture(scope="session")
-def upload_slc(slc_builder, export_slc,
-               backend_aware_database_params, backend_aware_bucketfs_params):
+def deploy_slc(slc_builder, export_slc,
+               pyexasol_connection, backend_aware_bucketfs_params):
     """
-    The fixture uploads language container to a database, according to the selected
-    backends.
+    The fixture provides a function deploying the language container in a database.
+    The function can be called multiple times, allowing to activate the container with
+    multiple aliases. However, the container will be uploaded only once.
     """
-    if (slc_builder is not None) and (export_slc is not None):
-        pyexasol_connection = pyexasol.connect(**backend_aware_database_params)
-        bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
-                                            path=BFS_CONTAINER_DIRECTORY)
-        deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
-                                             bucketfs_path=bucketfs_path,
-                                             language_alias=slc_builder.language_alias)
-        deployer.run(container_file=export_slc, alter_system=True, allow_override=True)
+    bucket_file_path = ''
+
+    def func(language_alias: str) -> None:
+        nonlocal bucket_file_path
+        if (slc_builder is not None) and (export_slc is not None):
+            bucketfs_path = bfs.path.build_path(**backend_aware_bucketfs_params,
+                                                path=BFS_CONTAINER_DIRECTORY)
+            deployer = LanguageContainerDeployer(pyexasol_connection=pyexasol_connection,
+                                                 bucketfs_path=bucketfs_path,
+                                                 language_alias=language_alias)
+            if bucket_file_path:
+                # The container has already been uploaded and just needs to be activated
+                for alter_type in [LanguageActivationLevel.Session, LanguageActivationLevel.System]:
+                    deployer.activate_container(bucket_file_path, alter_type, allow_override=True)
+            else:
+                bucket_file_path = export_slc.name
+                deployer.run(container_file=export_slc, bucket_file_path=bucket_file_path,
+                             alter_system=True, allow_override=True)
+    return func
+
+
+@pytest.fixture(scope="session")
+def deployed_slc(deploy_slc, language_alias) -> None:
+    """
+    The fixture calls deploy_slc() once, with the language_alis defined in the fixture
+    with the corresponded name.
+    """
+    deploy_slc(language_alias)
