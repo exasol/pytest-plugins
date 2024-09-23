@@ -2,8 +2,8 @@
 
 ## Summary
 
-🚀 Made this plugin depending on the pytest-extension, using its pyexasol_connection fixture
+🚀 Starting with this release `pytest-exasol-slc` connects to the database using a fixture from `pytest-exasol-extension`.
 
 ## Bug fixes
 
-* #58: Use the pyexasol_connection fixture from the pytest-extension.
+* #58: Used the `pyexasol_connection` fixture from the `pytest-exasol-extension`.
