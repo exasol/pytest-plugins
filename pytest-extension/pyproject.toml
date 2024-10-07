@@ -11,6 +11,7 @@ python = ">=3.10,<4"
 pytest = ">=7,<9"
 pytest-exasol-backend = ">=0.2.0"
 pyexasol = ">=0.26.0,<1"
+exasol-python-extension-common = ">=0.7.0,<1"
 
 [tool.poetry.plugins.pytest11]
 ext = "exasol.pytest_extension"
@@ -18,6 +19,7 @@ ext = "exasol.pytest_extension"
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = "0.9.0"
 exasol-bucketfs = ">=0.12.0"
+click = "^8.1.7"
 
 [build-system]
 requires = ["poetry-core"]

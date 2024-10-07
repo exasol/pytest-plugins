@@ -36,4 +36,8 @@ def test_something_else(bucketfs_connection_factory):
     ...
 ```
 
+The next two fixtures are used to test various deployment scenarios. The first one collects the CLI parameters
+required to open a database connection.
+
+
 Note, that by default the tests will run twice - once for each backend.
