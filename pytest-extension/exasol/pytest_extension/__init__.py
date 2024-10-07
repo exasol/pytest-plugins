@@ -166,4 +166,8 @@ def database_cli_args(database_std_params) -> str:
 
 @pytest.fixture(scope='session')
 def bucketfs_cli_args(bucketfs_std_params) -> str:
-    return _cli_params_to_args(bucketfs_std_params)
+    cli_args = _cli_params_to_args(bucketfs_std_params)
+    # Work around for the bug in PEC, the StdParams.path_in_bucket not having a default value.
+    if StdParams.path_in_bucket not in bucketfs_std_params:
+        cli_args += f' -{StdParams.path_in_bucket.name.replace("_", "-")} ""'
+    return cli_args
