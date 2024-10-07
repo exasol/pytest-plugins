@@ -78,7 +78,7 @@ def test_extension_all_backends(pytester):
                 bfs_path.write(TEST_FILE_CONTENT)
                 file_content = b"".join(bfs_path.read())
                 assert file_content == TEST_FILE_CONTENT
-            except Exception ex:
+            except Exception as ex:
                 print(ex)
                 raise ex
 
