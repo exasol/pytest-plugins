@@ -129,6 +129,10 @@ def saas_std_params(use_saas,
 def database_std_params(backend,
                         onprem_database_std_params,
                         saas_std_params) -> dict[str, Any]:
+    """
+    This is a collection of StdParams parameters required to open a
+    database connection for either DockerDB or SaaS test database.
+    """
     if backend == BACKEND_ONPREM:
         return onprem_database_std_params
     elif backend == BACKEND_SAAS:
@@ -141,6 +145,10 @@ def database_std_params(backend,
 def bucketfs_std_params(backend,
                         onprem_bucketfs_std_params,
                         saas_std_params) -> dict[str, Any]:
+    """
+    This is a collection of StdParams parameters required to connect
+    to the BucketFS on either DockerDB or SaaS test database.
+    """
     if backend == BACKEND_ONPREM:
         return onprem_bucketfs_std_params
     elif backend == BACKEND_SAAS:
@@ -161,13 +169,19 @@ def _cli_params_to_args(cli_params) -> str:
 
 @pytest.fixture(scope='session')
 def database_cli_args(database_std_params) -> str:
+    """
+    CLI argument string for testing a command that involves connecting to the database.
+    """
     return _cli_params_to_args(database_std_params)
 
 
 @pytest.fixture(scope='session')
 def bucketfs_cli_args(bucketfs_std_params) -> str:
+    """
+    CLI argument string for testing a command that involves connecting to the BucketFS .
+    """
     cli_args = _cli_params_to_args(bucketfs_std_params)
-    # Work around for the bug in PEC, the StdParams.path_in_bucket not having a default value.
+    # Work around for the bug in PEC (Issue#78 - no default for the StdParams.path_in_bucket)
     if StdParams.path_in_bucket not in bucketfs_std_params:
         cli_args += f' --{StdParams.path_in_bucket.name.replace("_", "-")} ""'
     return cli_args
