@@ -37,6 +37,7 @@ def test_extension_all_backends(pytester):
 
             # Write something to the bucket
             bfs_path = bfs.path.build_path(**backend_aware_bucketfs_params, path=path_in_bucket)
+            bfs_path = bfs_path / 'test_file1.txt'
             bfs_path.write(TEST_FILE_CONTENT)
 
             # Create a connection object
@@ -72,7 +73,7 @@ def test_extension_all_backends(pytester):
                 assert res
 
         def validate_bucketfs_std_params(**kwargs):
-            bfs_path = create_bucketfs_location(**kwargs)
+            bfs_path = create_bucketfs_location(**kwargs) / 'test_file2.txt'
             bfs_path.write(TEST_FILE_CONTENT)
             file_content = b"".join(bfs_path.read())
             assert file_content == TEST_FILE_CONTENT
