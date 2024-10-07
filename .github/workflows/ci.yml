@@ -34,10 +34,9 @@ jobs:
       - name: Run Tests of All Plugins
         run: |
           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          # just test
-          pytest -s --backend=onprem pytest-extension/test/integration/tmp_test.py
+          just test
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
-          # PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
+          PYTEST_ADDOPTS: '-o log_cli=true -o log_cli_level=INFO ${{ steps.pytest-markers.outputs.slow-tests }}'
