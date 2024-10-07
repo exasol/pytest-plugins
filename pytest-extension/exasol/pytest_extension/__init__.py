@@ -169,5 +169,5 @@ def bucketfs_cli_args(bucketfs_std_params) -> str:
     cli_args = _cli_params_to_args(bucketfs_std_params)
     # Work around for the bug in PEC, the StdParams.path_in_bucket not having a default value.
     if StdParams.path_in_bucket not in bucketfs_std_params:
-        cli_args += f' -{StdParams.path_in_bucket.name.replace("_", "-")} ""'
+        cli_args += f' --{StdParams.path_in_bucket.name.replace("_", "-")} ""'
     return cli_args
