@@ -72,15 +72,11 @@ def test_extension_all_backends(pytester):
                 assert res
 
         def validate_bucketfs_std_params(**kwargs):
-            try:
-                bfs_path = create_bucketfs_location(**kwargs)
-                bfs_path = bfs_path / 'test_file.txt'
-                bfs_path.write(TEST_FILE_CONTENT)
-                file_content = b"".join(bfs_path.read())
-                assert file_content == TEST_FILE_CONTENT
-            except Exception as ex:
-                print(ex)
-                raise ex
+            bfs_path = create_bucketfs_location(**kwargs)
+            bfs_path = bfs_path / 'test_file.txt'
+            bfs_path.write(TEST_FILE_CONTENT)
+            file_content = b"".join(bfs_path.read())
+            assert file_content == TEST_FILE_CONTENT
 
         def validate_cli_args(backend, cli_args, base_tag, callback):
             if backend == BACKEND_ONPREM:
