@@ -1,4 +1,5 @@
-PROJECTS := "pytest-slc pytest-extension pytest-backend pytest-saas pytest-itde"
+# PROJECTS := "pytest-slc pytest-extension pytest-backend pytest-saas pytest-itde"
+PROJECTS := "pytest-extension"
 
 # Default target
 default:
