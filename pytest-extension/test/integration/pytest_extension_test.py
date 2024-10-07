@@ -15,7 +15,7 @@ def test_extension_all_backends(pytester):
         import exasol.bucketfs as bfs
         from exasol.python_extension_common.connections.pyexasol_connection import open_pyexasol_connection
         from exasol.python_extension_common.connections.bucketfs_location import create_bucketfs_location
-        from exasol.python_extension_common.cli.std_options import StdParams, (StdTags, select_std_options)
+        from exasol.python_extension_common.cli.std_options import (StdParams, StdTags, select_std_options)
         from exasol.pytest_backend import (BACKEND_ONPREM, BACKEND_SAAS)
 
         TEST_SCHEMA = 'PYTEXT_TEST_SCHEMA'
