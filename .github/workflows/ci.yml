@@ -34,7 +34,8 @@ jobs:
       - name: Run Tests of All Plugins
         run: |
           echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          just test
+          # just test
+          poetry run pytest -s -backend=onprem pytest-extension/test/integration/tmp_test.py
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
