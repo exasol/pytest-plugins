@@ -149,21 +149,21 @@ def bucketfs_std_params(backend,
         ValueError(f'Unknown backend {backend}')
 
 
-def _params_to_args(**kwargs) -> str:
+def _cli_params_to_args(cli_params) -> str:
     def arg_string(k: str, v: Any):
         k = k.replace("_", "-")
         if isinstance(v, bool):
             return f'--{k}' if v else f'--no-{k}'
         return f'--{k} "{v}"'
 
-    return ' '.join(arg_string(k, v) for k, v in kwargs.items())
+    return ' '.join(arg_string(k, v) for k, v in cli_params.items())
 
 
 @pytest.fixture(scope='session')
 def database_cli_args(database_std_params) -> str:
-    return _params_to_args(database_std_params)
+    return _cli_params_to_args(database_std_params)
 
 
 @pytest.fixture(scope='session')
 def bucketfs_cli_args(bucketfs_std_params) -> str:
-    return _params_to_args(bucketfs_std_params)
+    return _cli_params_to_args(bucketfs_std_params)
