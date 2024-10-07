@@ -72,11 +72,15 @@ def test_extension_all_backends(pytester):
                 assert res
 
         def validate_bucketfs_std_params(**kwargs):
-            bfs_path = create_bucketfs_location(**kwargs)
-            # bfs_path = bfs_path / 'test_file.txt'
-            # bfs_path.write(TEST_FILE_CONTENT)
-            # file_content = b"".join(bfs_path.read())
-            # assert file_content == TEST_FILE_CONTENT
+            try:
+                bfs_path = create_bucketfs_location(**kwargs)
+                bfs_path = bfs_path / 'test_file.txt'
+                bfs_path.write(TEST_FILE_CONTENT)
+                file_content = b"".join(bfs_path.read())
+                assert file_content == TEST_FILE_CONTENT
+            except Exception ex:
+                print(ex)
+                raise ex
 
         def validate_cli_args(backend, cli_args, base_tag, callback):
             if backend == BACKEND_ONPREM:
@@ -103,6 +107,6 @@ def test_extension_all_backends(pytester):
             validate_cli_args(backend, bucketfs_cli_args, StdTags.BFS, validate_bucketfs_std_params)       
     """)
     pytester.makepyfile(test_code)
-    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest('-s', BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=6, skipped=6)
