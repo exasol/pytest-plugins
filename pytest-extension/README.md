@@ -45,7 +45,8 @@ of standard cli parameters (`StdParams`) defined in the `exasol-python-extension
 
 The next two fixtures - `database_cli_args` and `bucketfs_cli_args` - give the same parameters as the previous two
 but in the form of command line arguments. They are helpful for testing the CLI directly, for example using the
-click.CliRunner as in the samples below.
+click.CliRunner as in the samples below. There is also a fixture - `cli_args` - that combines these two argument
+strings.
 
 ```python
 import click
