@@ -150,11 +150,16 @@ def bucketfs_std_params(backend,
     to the BucketFS on either DockerDB or SaaS test database.
     """
     if backend == BACKEND_ONPREM:
-        return onprem_bucketfs_std_params
+        bfs_std_params = onprem_bucketfs_std_params
     elif backend == BACKEND_SAAS:
-        return saas_std_params
+        bfs_std_params = saas_std_params
     else:
         ValueError(f'Unknown backend {backend}')
+
+    # Work around for the bug in PEC (Issue#78 - no default for the StdParams.path_in_bucket)
+    if StdParams.path_in_bucket.name not in bfs_std_params:
+        bfs_std_params[StdParams.path_in_bucket.name] = ''
+    return bfs_std_params
 
 
 def _cli_params_to_args(cli_params) -> str:
@@ -180,8 +185,14 @@ def bucketfs_cli_args(bucketfs_std_params) -> str:
     """
     CLI argument string for testing a command that involves connecting to the BucketFS .
     """
-    cli_args = _cli_params_to_args(bucketfs_std_params)
-    # Work around for the bug in PEC (Issue#78 - no default for the StdParams.path_in_bucket)
-    if StdParams.path_in_bucket not in bucketfs_std_params:
-        cli_args += f' --{StdParams.path_in_bucket.name.replace("_", "-")} ""'
-    return cli_args
+    return _cli_params_to_args(bucketfs_std_params)
+
+
+def cli_args(database_std_params, bucketfs_std_params):
+    """
+    CLI argument string for testing a command that involves connecting to both
+    the database and the BucketFS.
+    """
+    std_params = dict(database_std_params)
+    std_params.update(bucketfs_std_params)
+    return _cli_params_to_args(database_std_params)
