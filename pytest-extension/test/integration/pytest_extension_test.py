@@ -74,17 +74,22 @@ def test_extension_all_backends(pytester):
         bfs_kwargs = None
 
         def validate_bucketfs_std_params(**kwargs):
-            global bfs_kwargs
-            # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
-            if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
-                kwargs[StdParams.path_in_bucket.name] = ''
-            if bfs_kwargs is None:
-                bfs_kwargs = dict(kwargs)
-            bfs_path = create_bucketfs_location(**bfs_kwargs)
-            bfs_path = bfs_path / 'test_file.txt'
-            bfs_path.write(TEST_FILE_CONTENT)
-            file_content = b"".join(bfs_path.read())
-            assert file_content == TEST_FILE_CONTENT
+            error == ''
+            try:
+                global bfs_kwargs
+                # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
+                if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
+                    kwargs[StdParams.path_in_bucket.name] = ''
+                if bfs_kwargs is None:
+                    bfs_kwargs = dict(kwargs)
+                bfs_path = create_bucketfs_location(**bfs_kwargs)
+                bfs_path = bfs_path / 'test_file.txt'
+                bfs_path.write(TEST_FILE_CONTENT)
+                file_content = b"".join(bfs_path.read())
+                assert file_content == TEST_FILE_CONTENT
+            except Exception as ex:
+                error = str(ex)
+            assert not error
 
         def validate_cli_args(backend, cli_args, base_tag, callback):
             if backend == BACKEND_ONPREM:
