@@ -74,6 +74,7 @@ def test_extension_all_backends(pytester):
         bfs_kwargs = None
 
         def validate_bucketfs_std_params(**kwargs):
+            global bfs_kwargs
             # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
             if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
                 kwargs[StdParams.path_in_bucket.name] = ''
