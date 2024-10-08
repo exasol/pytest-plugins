@@ -17,7 +17,7 @@ test +projects=PROJECTS:
 
     for p in "{{projects}}".split():
         run(f"poetry -C {p}/ install")
-        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s integration_tests")
+        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s integration-tests")
         # run(f"poetry -C {p}/ run pytest -s {p}/test")
     sys.exit(rc)
 
