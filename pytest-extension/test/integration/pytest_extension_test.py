@@ -72,6 +72,9 @@ def test_extension_all_backends(pytester):
                 assert res
 
         def validate_bucketfs_std_params(**kwargs):
+            # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
+            if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
+                kwargs[StdParams.path_in_bucket.name] = ''
             bfs_path = create_bucketfs_location(**kwargs)
             bfs_path = bfs_path / 'test_file.txt'
             bfs_path.write(TEST_FILE_CONTENT)
