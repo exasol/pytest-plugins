@@ -25,6 +25,12 @@ def test_extension_all_backends(pytester):
         def db_schema_name() -> str:
             return TEST_SCHEMA
 
+        def test_database_cli_args(backend, database_cli_args):
+            validate_cli_args(backend, database_cli_args, StdTags.DB, validate_database_std_params)
+
+        def test_bucketfs_cli_args(backend, bucketfs_cli_args):
+            validate_cli_args(backend, bucketfs_cli_args, StdTags.BFS, validate_bucketfs_std_params)       
+
         def test_pyexasol_connection(pyexasol_connection):
             assert pyexasol_connection.execute(f"SELECT CURRENT_SCHEMA;").fetchval() == TEST_SCHEMA
 
@@ -98,12 +104,6 @@ def test_extension_all_backends(pytester):
 
         def test_bucketfs_std_params(bucketfs_std_params):
             validate_bucketfs_std_params(**bucketfs_std_params, path_in_bucket='test_bucketfs_std_params')
-
-        def test_database_cli_args(backend, database_cli_args):
-            validate_cli_args(backend, database_cli_args, StdTags.DB, validate_database_std_params)
-
-        def test_bucketfs_cli_args(backend, bucketfs_cli_args):
-            validate_cli_args(backend, bucketfs_cli_args, StdTags.BFS, validate_bucketfs_std_params)       
     """)
     pytester.makepyfile(test_code)
     result = pytester.runpytest('-s', BACKEND_OPTION, BACKEND_ONPREM)
