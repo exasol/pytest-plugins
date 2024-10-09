@@ -3,6 +3,7 @@ import pytest
 import click
 from click.testing import CliRunner
 import exasol.bucketfs as bfs
+import time
 from exasol.python_extension_common.connections.pyexasol_connection import open_pyexasol_connection
 from exasol.python_extension_common.connections.bucketfs_location import create_bucketfs_location
 from exasol.python_extension_common.cli.std_options import (StdParams, StdTags, select_std_options)
@@ -75,6 +76,7 @@ def validate_bucketfs_std_params(**kwargs):
     bfs_path.write(TEST_FILE_CONTENT)
     file_content = b"".join(bfs_path.read())
     assert file_content == TEST_FILE_CONTENT
+    time.sleep(30)
 
 
 def validate_cli_args(backend, cli_args, base_tag, callback):
@@ -87,7 +89,7 @@ def validate_cli_args(backend, cli_args, base_tag, callback):
     opts = select_std_options(tags)
     cmd = click.Command('whatever', params=opts, callback=callback)
     runner = CliRunner()
-    runner.invoke(cmd, args=cli_args, catch_exceptions=False, standalone_mode=False)
+    runner.invoke(cmd, args=cli_args, catch_exceptions=False)
 
 
 def test_database_std_params(database_std_params):
