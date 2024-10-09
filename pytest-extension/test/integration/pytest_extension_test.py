@@ -91,7 +91,7 @@ def test_extension_all_backends(pytester):
             opts = select_std_options(tags)
             cmd = click.Command('whatever', params=opts, callback=callback)
             runner = CliRunner()
-            runner.invoke(cmd, args=cli_args, catch_exceptions=False, standalone_mode=False)
+            runner.invoke(cmd, args=cli_args, catch_exceptions=False)
 
         def test_database_std_params(database_std_params):
             validate_database_std_params(**database_std_params)

@@ -1,4 +1,4 @@
-PROJECTS := "pytest-slc pytest-extension pytest-backend pytest-saas pytest-itde"
+PROJECTS := "pytest-extension pytest-slc pytest-backend pytest-saas pytest-itde"
 
 # Default target
 default:
@@ -16,10 +16,7 @@ test +projects=PROJECTS:
 
     for p in "{{projects}}".split():
         run(f"poetry -C {p}/ install")
-        # run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s coverage")
-        # Running tests in the nox session for the pytest-extension produces an error without a meaningful explanation.
-        # It is yet to be investigated.
-        run(f"poetry -C {p}/ run pytest -s {p}/test")
+        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s coverage")
     sys.exit(rc)
 
 relock +projects=PROJECTS:
