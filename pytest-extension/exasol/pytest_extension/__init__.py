@@ -1,54 +1,15 @@
 from __future__ import annotations
 from typing import Any, Callable
-import json
 import random
 import string
+from urllib.parse import urlparse
 import pyexasol
 import pytest
 
 from exasol.pytest_backend import BACKEND_ONPREM, BACKEND_SAAS
-
-
-def _to_json_str(bucketfs_params: dict[str, Any], selected: list[str]) -> str:
-    filtered_kwargs = {k: v for k, v in bucketfs_params.items()
-                       if (k in selected) and (v is not None)}
-    return json.dumps(filtered_kwargs)
-
-
-def _create_bucketfs_connection(pyexasol_connection: pyexasol.ExaConnection,
-                                conn_name: str,
-                                conn_to: str,
-                                conn_user: str,
-                                conn_password: str) -> None:
-
-    query = (f"CREATE OR REPLACE  CONNECTION {conn_name} "
-             f"TO '{conn_to}' "
-             f"USER '{conn_user}' "
-             f"IDENTIFIED BY '{conn_password}'")
-    pyexasol_connection.execute(query)
-
-
-def _create_bucketfs_connection_onprem(pyexasol_connection: pyexasol.ExaConnection,
-                                       conn_name: str,
-                                       bucketfs_params: dict[str, Any]) -> None:
-    conn_to = _to_json_str(bucketfs_params, [
-        'backend', 'url', 'service_name', 'bucket_name', 'path', 'verify'])
-    conn_user = _to_json_str(bucketfs_params, ['username'])
-    conn_password = _to_json_str(bucketfs_params, ['password'])
-
-    _create_bucketfs_connection(pyexasol_connection, conn_name,
-                                conn_to, conn_user, conn_password)
-
-
-def _create_bucketfs_connection_saas(pyexasol_connection: pyexasol.ExaConnection,
-                                     conn_name: str,
-                                     bucketfs_params: dict[str, Any]) -> None:
-    conn_to = _to_json_str(bucketfs_params, ['backend', 'url', 'path'])
-    conn_user = _to_json_str(bucketfs_params, ['account_id', 'database_id'])
-    conn_password = _to_json_str(bucketfs_params, ['pat'])
-
-    _create_bucketfs_connection(pyexasol_connection, conn_name,
-                                conn_to, conn_user, conn_password)
+from exasol.python_extension_common.cli.std_options import StdParams
+from exasol.python_extension_common.connections.bucketfs_location import (
+    create_bucketfs_conn_object_onprem, create_bucketfs_conn_object_saas)
 
 
 @pytest.fixture(scope="session")
@@ -105,10 +66,129 @@ def bucketfs_connection_factory(backend,
         else:
             bucketfs_params = backend_aware_bucketfs_params
         if backend == BACKEND_ONPREM:
-            _create_bucketfs_connection_onprem(pyexasol_connection, conn_name, bucketfs_params)
+            create_bucketfs_conn_object_onprem(pyexasol_connection, conn_name, bucketfs_params)
         elif backend == BACKEND_SAAS:
-            _create_bucketfs_connection_saas(pyexasol_connection, conn_name, bucketfs_params)
+            create_bucketfs_conn_object_saas(pyexasol_connection, conn_name, bucketfs_params)
         else:
             raise ValueError(f'Unsupported backend {backend}')
 
     return func
+
+
+@pytest.fixture(scope="session")
+def onprem_database_std_params(use_onprem,
+                               backend_aware_onprem_database,
+                               exasol_config) -> dict[str, Any]:
+    if use_onprem:
+        return {
+            StdParams.dsn.name: f'{exasol_config.host}:{exasol_config.port}',
+            StdParams.db_user.name: exasol_config.username,
+            StdParams.db_password.name: exasol_config.password,
+            StdParams.use_ssl_cert_validation.name: False
+        }
+    return {}
+
+
+@pytest.fixture(scope="session")
+def onprem_bucketfs_std_params(use_onprem,
+                               backend_aware_onprem_database,
+                               bucketfs_config) -> dict[str, Any]:
+    if use_onprem:
+        parsed_url = urlparse(bucketfs_config.url)
+        host, port = parsed_url.netloc.split(":")
+        return {
+            StdParams.bucketfs_host.name: host,
+            StdParams.bucketfs_port.name: port,
+            StdParams.bucketfs_use_https.name: parsed_url.scheme.lower() == 'https',
+            StdParams.bucketfs_user.name: bucketfs_config.username,
+            StdParams.bucketfs_password.name: bucketfs_config.password,
+            StdParams.bucketfs_name.name: 'bfsdefault',
+            StdParams.bucket.name: 'default',
+            StdParams.use_ssl_cert_validation.name: False
+        }
+    return {}
+
+
+@pytest.fixture(scope="session")
+def saas_std_params(use_saas,
+                    saas_host,
+                    saas_pat,
+                    saas_account_id,
+                    backend_aware_saas_database_id) -> dict[str, Any]:
+    if use_saas:
+        return {
+            StdParams.saas_url.name: saas_host,
+            StdParams.saas_account_id.name: saas_account_id,
+            StdParams.saas_database_id.name: backend_aware_saas_database_id,
+            StdParams.saas_token.name: saas_pat
+        }
+    return {}
+
+
+@pytest.fixture(scope="session")
+def database_std_params(backend,
+                        onprem_database_std_params,
+                        saas_std_params) -> dict[str, Any]:
+    """
+    This is a collection of StdParams parameters required to open a
+    database connection for either DockerDB or SaaS test database.
+    """
+    if backend == BACKEND_ONPREM:
+        return onprem_database_std_params
+    elif backend == BACKEND_SAAS:
+        return saas_std_params
+    else:
+        ValueError(f'Unknown backend {backend}')
+
+
+@pytest.fixture(scope="session")
+def bucketfs_std_params(backend,
+                        onprem_bucketfs_std_params,
+                        saas_std_params) -> dict[str, Any]:
+    """
+    This is a collection of StdParams parameters required to connect
+    to the BucketFS on either DockerDB or SaaS test database.
+    """
+    if backend == BACKEND_ONPREM:
+        return onprem_bucketfs_std_params
+    elif backend == BACKEND_SAAS:
+        return saas_std_params
+    else:
+        ValueError(f'Unknown backend {backend}')
+
+
+def _cli_params_to_args(cli_params) -> str:
+    def arg_string(k: str, v: Any):
+        k = k.replace("_", "-")
+        if isinstance(v, bool):
+            return f'--{k}' if v else f'--no-{k}'
+        return f'--{k} "{v}"'
+
+    return ' '.join(arg_string(k, v) for k, v in cli_params.items())
+
+
+@pytest.fixture(scope='session')
+def database_cli_args(database_std_params) -> str:
+    """
+    CLI argument string for testing a command that involves connecting to the database.
+    """
+    return _cli_params_to_args(database_std_params)
+
+
+@pytest.fixture(scope='session')
+def bucketfs_cli_args(bucketfs_std_params) -> str:
+    """
+    CLI argument string for testing a command that involves connecting to the BucketFS .
+    """
+    return _cli_params_to_args(bucketfs_std_params)
+
+
+@pytest.fixture(scope='session')
+def cli_args(database_std_params, bucketfs_std_params):
+    """
+    CLI argument string for testing a command that involves connecting to both
+    the database and the BucketFS.
+    """
+    std_params = dict(database_std_params)
+    std_params.update(bucketfs_std_params)
+    return _cli_params_to_args(database_std_params)
