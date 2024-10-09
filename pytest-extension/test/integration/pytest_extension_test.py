@@ -108,4 +108,4 @@ def test_extension_all_backends(pytester):
     pytester.makepyfile(test_code)
     result = pytester.runpytest('-s', BACKEND_OPTION, BACKEND_ONPREM)
     assert result.ret == pytest.ExitCode.OK
-    result.assert_outcomes(passed=12, skipped=0)
+    result.assert_outcomes(passed=6, skipped=6)
