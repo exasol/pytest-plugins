@@ -72,17 +72,14 @@ def test_extension_all_backends(pytester):
                 assert res
 
         def validate_bucketfs_std_params(**kwargs):
-            try:
-                # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
-                if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
-                    kwargs[StdParams.path_in_bucket.name] = ''
-                bfs_path = create_bucketfs_location(**kwargs)
-                bfs_path = bfs_path / 'test_file.txt'
-                bfs_path.write(TEST_FILE_CONTENT)
-                file_content = b"".join(bfs_path.read())
-                assert file_content == TEST_FILE_CONTENT
-            except Exception as ex:
-                pass
+            # Temporary work around for the bug in PEC (Issue#78 - no default for the path_in_bucket
+            if StdParams.path_in_bucket.name in kwargs and kwargs[StdParams.path_in_bucket.name] is None:
+                kwargs[StdParams.path_in_bucket.name] = ''
+            bfs_path = create_bucketfs_location(**kwargs)
+            bfs_path = bfs_path / 'test_file.txt'
+            bfs_path.write(TEST_FILE_CONTENT)
+            file_content = b"".join(bfs_path.read())
+            assert file_content == TEST_FILE_CONTENT
 
         def validate_cli_args(backend, cli_args, base_tag, callback):
             if backend == BACKEND_ONPREM:
@@ -94,7 +91,7 @@ def test_extension_all_backends(pytester):
             opts = select_std_options(tags)
             cmd = click.Command('whatever', params=opts, callback=callback)
             runner = CliRunner()
-            runner.invoke(cmd, args=cli_args, catch_exceptions=False, standalone_mode=True)
+            runner.invoke(cmd, args=cli_args, catch_exceptions=False, standalone_mode=False)
 
         def test_database_std_params(database_std_params):
             validate_database_std_params(**database_std_params)
