@@ -17,6 +17,6 @@ nox.options.sessions = ["fix"]
 def my_integration_tests(session: Session) -> None:
     path = PROJECT_CONFIG.root / "test" / "integration"
     base_command = ["poetry", "run"]
-    pytest_command = ["pytest", "-v", f"{path}"]
+    pytest_command = ["pytest", "-v", "-s", f"{path}"]
     command = base_command + pytest_command
     session.run(*command)
