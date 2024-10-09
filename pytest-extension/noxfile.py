@@ -15,8 +15,8 @@ nox.options.sessions = ["fix"]
 
 @nox.session(name="my-integration-tests", python=False)
 def my_integration_tests(session: Session) -> None:
-    path = PROJECT_CONFIG.root / "test" / "integration"
+    path = PROJECT_CONFIG.root / "test" / "integration" / "tmp_test.py"
     base_command = ["poetry", "run"]
-    pytest_command = ["pytest", "-v", f"{path}"]
+    pytest_command = ["pytest", "-v", "--backend=onprem", f"{path}"]
     command = base_command + pytest_command
     session.run(*command)
