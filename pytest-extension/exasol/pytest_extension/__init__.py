@@ -159,6 +159,7 @@ def bucketfs_std_params(backend,
 
 def _cli_params_to_args(cli_params) -> str:
     def arg_string(k: str, v: Any):
+        # This should have been implemented as a method of StdParams.
         k = k.replace("_", "-")
         if isinstance(v, bool):
             return f'--{k}' if v else f'--no-{k}'
@@ -191,4 +192,4 @@ def cli_args(database_std_params, bucketfs_std_params):
     """
     std_params = dict(database_std_params)
     std_params.update(bucketfs_std_params)
-    return _cli_params_to_args(database_std_params)
+    return _cli_params_to_args(std_params)
