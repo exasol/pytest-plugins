@@ -1,6 +1,6 @@
 # pytest-exasol-backend Plugin
 
-The `pytest-exasol-backend` plugin is a collection of pytest fixtures commonly used for testing 
+The `pytest-exasol-backend` plugin is a collection of pytest fixtures commonly used for testing
 projects related to Exasol. In particular, it provides unified access to both Exasol On-Prem and
 SaaS backends. This eliminates the need to build different sets of tests for different backends.
 
@@ -41,7 +41,7 @@ import exasol.bucketfs as bfs
 
 def test_my_file_exists(backend_aware_bucketfs_params):
     my_bfs_dir = bfs.path.build_path(**backend_aware_bucketfs_params, path='MY_BFS_PATH')
-    my_bfs_file = my_bfs_dir / 'my_file.dat' 
+    my_bfs_file = my_bfs_dir / 'my_file.dat'
     assert my_bfs_file.exists()
 ```
 
@@ -91,15 +91,15 @@ for instance when running unit tests only.
 Sometimes the default ITDE parameters cannot satisfy the test requirements. The plugin allows setting
 some of the parameters of the [api.spawn_test_environment(...)](https://github.com/exasol/integration-test-docker-environment/blob/92cc67b8f9ab78c52106c1c4ba19fe64811bcb2c/exasol_integration_test_docker_environment/lib/api/spawn_test_environment.py#L35)
 function. The parameter values can be provided in the CLI options. Currently, it is possible to set values of the following parameters:
- - db-mem-size
- - db-disk-size
- - nameserver
- - db-version
+ - `--itde-db-mem-size`
+ - `--itde-db-disk-size`
+ - `--itde-nameserver`
+ - `--itde-db-version`
 
-In the example below the tests are run using an instance of the DockerDB with increased memory. 
+In the example below the tests are run using an instance of the DockerDB with increased memory.
 
 ```shell
-pytest --backend=onprem --db-mem-size "8 GiB" my_test_suite.py
+pytest --backend=onprem --itde-db-mem-size "8 GiB" my_test_suite.py
 ```
 
 These options are ignored if the "onprem" backend is not selected.
