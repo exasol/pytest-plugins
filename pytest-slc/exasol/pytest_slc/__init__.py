@@ -36,8 +36,8 @@ def export_slc_async(slc_builder, use_onprem: bool, use_saas: bool):
     The fixture starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task.
 
-    The operation will be skipped if none of the backends is in use **or the
-    container builder is not defined**.
+    The operation will be skipped if none of the backends is in use or the
+    container builder is not defined.
     """
     if (not (use_onprem or use_saas)) or (slc_builder is None):
         return None
