@@ -2,6 +2,7 @@ import os
 from contextlib import contextmanager
 from tempfile import NamedTemporaryFile
 import json
+import pytest
 
 from exasol.pytest_backend.parallel_task import paralleltask
 
@@ -32,3 +33,15 @@ def test_my_brewery():
         assert brewery_info['logos'] == ['Cambridge Beaver', 'Cam Droplets']
     # Now the flyer should be deleted
     assert not os.path.exists(flyer_file)
+
+
+@paralleltask
+def my_div(num: int, den: int):
+    yield num // den
+
+
+def test_div_by_zero():
+    with pytest.raises(RuntimeError) as ex_info:
+        with my_div(10, 0) as my_div_async:
+            my_div_async.get_output()
+    assert isinstance(ex_info.value.__cause__, ZeroDivisionError)

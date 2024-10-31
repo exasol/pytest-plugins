@@ -17,12 +17,20 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
         self._proc: mp.Process | None = None
 
     def _run(self) -> None:
-        with self._ctx_func(*self._args, **self._kwargs) as output:
-            # Now the task has completed. Make the results available for
-            # caller and indicate the completion.
-            self._queue.put(output)
+        try:
+            with self._ctx_func(*self._args, **self._kwargs) as output:
+                # Now the task has completed. Make the results available for
+                # caller and indicate the completion.
+                # Return None as the error object followed by the function output.
+                self._queue.put(None)
+                self._queue.put(output)
+                self._ready.set()
+                # Wait until the caller is done and proceed with the cleanup.
+                self._done.wait()
+        except Exception as ex:
+            # Pass the exception back to the caller and wait until it's done.
+            self._queue.put(ex)
             self._ready.set()
-            # Wait until the caller is done and proceed with the cleanup.
             self._done.wait()
 
     def __enter__(self) -> "_ParallelGenCtxManager":
@@ -42,6 +50,11 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
         if not self._ready.wait(timeout):
             self._proc.kill()
             raise TimeoutError(f'{self._func_name} failed to complete within {timeout} seconds')
+
+        # Check if an exception is returned and if so re-raise it
+        error = self._queue.get()
+        if error is not None:
+            raise RuntimeError(f'{self._func_name} failed') from error
 
     def get_output(self, timeout: float | None = None) -> Any:
         self.wait(timeout)
