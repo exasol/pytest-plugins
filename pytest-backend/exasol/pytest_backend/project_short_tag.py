@@ -22,7 +22,7 @@ def _find_path_backwards(start_path: str | Path,
     path and so on, until it either reaches the root of the file structure or finds the
     stop file. returns None if the search is unsuccessful.
     """
-    current_path = Path(start_path).parent
+    current_path = Path(start_path)
     root = Path(current_path.root)
     while current_path != root:
         result_path = Path(current_path, target_path)
