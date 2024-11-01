@@ -11,4 +11,4 @@ Relocked the dependencies and fixed the deficiencies of the 0.3.0
 ## Refactorings
 
 * Relock dependencies
-* #73: Added handling the old stype ITDE TaskRuntimeError
+* #73: Added handling the old style ITDE TaskRuntimeError
