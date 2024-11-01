@@ -8,6 +8,7 @@ import exasol.bucketfs as bfs
 from exasol.python_extension_common.deployment.language_container_deployer import (
     LanguageContainerDeployer, LanguageActivationLevel)
 from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
+from exasol_integration_test_docker_environment.lib.api.api_errors import TaskFailures, TaskRuntimeError
 
 BFS_CONTAINER_DIRECTORY = 'container'
 
@@ -60,9 +61,18 @@ def export_slc(slc_builder, export_slc_async) -> Path | None:
         # Perhaps none of the backends is enabled.
         return None
 
-    export_result = export_slc_async.get_output()
-    export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
-    return Path(export_info.cache_file)
+    try:
+        export_result = export_slc_async.get_output()
+        export_info = export_result.export_infos[str(slc_builder.flavor_path)]["release"]
+        return Path(export_info.cache_file)
+    except TaskRuntimeError as ex:
+        if isinstance(ex.__cause__, TaskFailures) or not ex.inner:
+            raise
+        else:
+            # Handle the old way of error reporting
+            failures = '\n'.join(ex.inner)
+            err_message = f'SLC export ended with the following task failures:\n{failures}'
+            raise RuntimeError(err_message) from ex
 
 
 @pytest.fixture(scope='session')
