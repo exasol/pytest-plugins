@@ -1,4 +1,8 @@
 from textwrap import dedent
+import os
+import re
+from inspect import cleandoc
+from unittest import mock
 import pytest
 
 from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
@@ -6,6 +10,11 @@ from exasol.pytest_backend.itde import (
     DEFAULT_ITDE_DB_VERSION, DEFAULT_ITDE_DB_MEM_SIZE, DEFAULT_ITDE_DB_DISK_SIZE)
 
 pytest_plugins = ["pytester"]
+
+
+def _testfile(body):
+    test_name = re.sub(r"^.*def ([^(]+).*", "\\1", body, flags=re.S)
+    return { test_name: cleandoc(body) }
 
 
 def test_pytest_all_backends(pytester):
@@ -76,3 +85,44 @@ def test_default_itde_options(itde_config):
     assert itde_config.db_disk_size == DEFAULT_ITDE_DB_DISK_SIZE
     assert itde_config.nameserver == []
     assert itde_config.db_version == DEFAULT_ITDE_DB_VERSION
+
+
+@pytest.mark.parametrize(
+    "pst_file, pst_env, pst_cli, expected",
+    [
+        ("F", None, None, "F"),
+        ("F", "E",  None, "E"),
+        ("F", "E",  "C",  "C"),
+    ])
+def test_project_short_tag(
+        request,
+        pytester,
+        pst_file,
+        pst_env,
+        pst_cli,
+        expected,
+):
+    """
+    This test sets different values for the project short tag in the file
+    error_code_config.yml, cli option --project-short-tag, and environment
+    variable PROJECT_SHORT_TAG and verifies their precedence.
+    """
+    if pst_file:
+        pytester.makefile(".yml", **{
+            "error_code_config":
+            cleandoc(f"""
+            error-tags:
+              {pst_file}:
+                highest-index: 0
+            """)
+        })
+    pytester.makepyfile(**_testfile(
+        f"""
+        def test_project_short_tag(project_short_tag):
+            assert "{expected}" == project_short_tag
+        """))
+    env = { "PROJECT_SHORT_TAG": pst_env } if pst_env else {}
+    cli_args = ["--project-short-tag", pst_cli] if pst_cli else []
+    with mock.patch.dict(os.environ, env):
+        result = pytester.runpytest(*cli_args)
+    assert result.ret == pytest.ExitCode.OK
