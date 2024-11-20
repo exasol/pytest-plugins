@@ -16,7 +16,7 @@ test +projects=PROJECTS:
 
     for p in "{{projects}}".split():
         run(f"poetry -C {p}/ install")
-        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s coverage")
+        run(f"poetry -C {p}/ run nox -f {p}/noxfile.py -s test:coverage")
     sys.exit(rc)
 
 relock +projects=PROJECTS:
