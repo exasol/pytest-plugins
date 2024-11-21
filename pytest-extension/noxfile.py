@@ -8,4 +8,4 @@ print(sys.path)
 from exasol.toolbox.nox.tasks import *  # pylint: disable=wildcard-import disable=unused-wildcard-import
 
 # default actions to be run if nothing is explicitly specified with the -s option
-nox.options.sessions = ["fix"]
+nox.options.sessions = ["project:fix"]

@@ -6,6 +6,7 @@ names of created database instances to enable identifying the origin of
 potentially long-running database instances in order to avoid unwanted costs.
 """
 
+from __future__ import annotations
 from pathlib import Path
 import yaml
 
