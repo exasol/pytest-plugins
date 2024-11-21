@@ -1,6 +1,6 @@
 pytest-exasol-saas Plugin
 =========================
-This project has been discontinued. For integration tests running on SaaS please use the `pytest-backend` plugin.
+This project has been discontinued. For integration tests running on SaaS please use the [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/) plugin.
 -----------------------------------------------------------------------------------------------------------------
 
 The `pytest-exasol-saas` plugin is a pytest plugin designed to facilitate the integration
