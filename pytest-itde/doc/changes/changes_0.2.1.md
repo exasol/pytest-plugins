@@ -1,4 +1,4 @@
-# 0.2.1 - 2024-11-20
+# 0.2.1 - 2024-11-21
 
 ## Refactoring
 * Adjust dependency constrains
