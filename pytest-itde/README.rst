@@ -1,7 +1,7 @@
 pytest-exasol-itde Plugin
 =========================
 This project has been discontinued. For integration tests running on ITDE please use the `pytest-exasol-backend <https://pypi.org/project/pytest-exasol-backend/>`_ plugin.
------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 The `pytest-exasol-itde` plugin is a pytest plugin designed to facilitate the integration testing of projects using the Exasol Integration Test Docker Environment (ITDE).
 This plugin was originally a part of `ITDE <https://github.com/exasol/integration-test-docker-environment>`_, offering its functionalities directly within the test environment.
