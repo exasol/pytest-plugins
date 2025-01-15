@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.9,<4"
 pytest = ">=7,<9"
 exasol-saas-api = ">=0.6.0,<1.0.0"
 pyyaml = "^6.0.1"
@@ -21,7 +21,7 @@ markers = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "0.9.0"
+exasol-toolbox = ">=0.16.0,<1"
 
 [build-system]
 requires = ["poetry-core"]
