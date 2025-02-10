@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-exasol-backend"
-version = "0.3.2"
+version = "0.3.3"
 description = ""
 authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
 readme = "README.md"
@@ -17,7 +17,7 @@ backend = "exasol.pytest_backend"
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=0.16.0,<1"
-exasol-bucketfs = ">=0.13.0,<1"
+exasol-bucketfs = ">=1.0.0"
 pyexasol = ">=0.26.0"
 
 [build-system]
