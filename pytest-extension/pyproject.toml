@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-exasol-extension"
-version = "0.2.1"
+version = "0.2.2"
 description = ""
 authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
 readme = "README.md"
@@ -18,7 +18,7 @@ ext = "exasol.pytest_extension"
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=0.16.0,<1"
-exasol-bucketfs = ">=0.13.0,<1"
+exasol-bucketfs = ">=1.0.0"
 click = "^8.1.7"
 
 [build-system]

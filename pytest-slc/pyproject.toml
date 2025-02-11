@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-exasol-slc"
-version = "0.3.1"
+version = "0.3.2"
 description = ""
 authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
 readme = "README.md"
@@ -18,7 +18,7 @@ slc = "exasol.pytest_slc"
 
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = ">=0.16.0,<1"
-exasol-bucketfs = ">=0.13.0,<1"
+exasol-bucketfs = ">=1.0.0"
 
 [build-system]
 requires = ["poetry-core"]
