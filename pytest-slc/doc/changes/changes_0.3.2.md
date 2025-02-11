@@ -2,7 +2,7 @@
 
 ## Summary
 
-Dependency update
+Dependency update on top of 0.3.1
 
 ## Internal
 
