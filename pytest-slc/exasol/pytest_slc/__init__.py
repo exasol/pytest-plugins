@@ -10,7 +10,17 @@ from exasol.python_extension_common.deployment.language_container_deployer impor
 from exasol.python_extension_common.deployment.language_container_builder import LanguageContainerBuilder
 from exasol_integration_test_docker_environment.lib.api.api_errors import TaskFailures, TaskRuntimeError
 
+SKIP_SLC_OPTION = "--skip-slc"
 BFS_CONTAINER_DIRECTORY = 'container'
+
+
+def pytest_addoption(parser):
+    parser.addoption(
+        SKIP_SLC_OPTION,
+        action="store_true",
+        default=False,
+        help="Skip SLC deployment"
+    )
 
 
 @pytest.fixture(scope='session')
@@ -32,15 +42,16 @@ def slc_builder() -> LanguageContainerBuilder | None:
 
 
 @pytest.fixture(scope='session', autouse=True)
-def export_slc_async(slc_builder, use_onprem: bool, use_saas: bool):
+def export_slc_async(request, slc_builder, use_onprem: bool, use_saas: bool):
     """
     The fixture starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task.
 
     The operation will be skipped if none of the backends is in use or the
-    container builder is not defined.
+    container builder is not defined or the SLC deployment is skipped.
     """
-    if (not (use_onprem or use_saas)) or (slc_builder is None):
+    skip_slc = request.config.getoption(SKIP_SLC_OPTION)
+    if skip_slc or (not (use_onprem or use_saas)) or (slc_builder is None):
         return None
 
     @paralleltask
@@ -58,7 +69,7 @@ def export_slc(slc_builder, export_slc_async) -> Path | None:
     It returns the path of the exported container.
     """
     if (slc_builder is None) or (export_slc_async is None):
-        # Perhaps none of the backends is enabled.
+        # Perhaps none of the backends is enabled, or we don't need the SLC deployment.
         return None
 
     try:

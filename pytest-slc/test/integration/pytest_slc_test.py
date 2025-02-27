@@ -1,6 +1,7 @@
 from textwrap import dedent
 import pytest
-from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL)
+from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_slc import SKIP_SLC_OPTION
 
 pytest_plugins = ["pytester"]
 
@@ -47,9 +48,30 @@ def test_deploy_slc(deploy_slc, deployed_slc, backend_aware_database_params):
         assert_udf_running(pyexasol.connect(**backend_aware_database_params), lang_alias)
 """)
 
+_test_code_skip = dedent(fr"""
+import pytest
+from exasol.python_extension_common.deployment.language_container_builder import (
+    LanguageContainerBuilder)
+
+@pytest.fixture(scope='session')
+def slc_builder() -> LanguageContainerBuilder:
+    with LanguageContainerBuilder('test_container') as container_builder:
+        yield container_builder
+
+def test_deploy_slc_skipped(export_slc):
+    assert export_slc is None
+""")
+
 
 def test_pytest_slc(pytester):
     pytester.makepyfile(_test_code)
     result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=2, skipped=0)
+
+
+def test_pytest_slc_skip(pytester):
+    pytester.makepyfile(_test_code_skip)
+    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ONPREM, SKIP_SLC_OPTION)
+    assert result.ret == pytest.ExitCode.OK
+    result.assert_outcomes(passed=1, skipped=0)
