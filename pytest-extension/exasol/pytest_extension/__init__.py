@@ -148,8 +148,7 @@ def database_std_params(
         return onprem_database_std_params
     elif backend == BACKEND_SAAS:
         return saas_std_params
-    else:
-        ValueError(f"Unknown backend {backend}")
+    raise ValueError(f"Unknown backend {backend}")
 
 
 @pytest.fixture(scope="session")
@@ -164,8 +163,7 @@ def bucketfs_std_params(
         return onprem_bucketfs_std_params
     elif backend == BACKEND_SAAS:
         return saas_std_params
-    else:
-        ValueError(f"Unknown backend {backend}")
+    raise ValueError(f"Unknown backend {backend}")
 
 
 def _cli_params_to_args(cli_params) -> str:

@@ -65,6 +65,8 @@ module = [
     "test.unit.*",
     "test.integration.*",
     "exasol.toolbox.*",
+    "exasol.pytest_backend.*",
+    "exasol.python_extension_common.*",
     "pyexasol.*",
 ]
 ignore_errors = true

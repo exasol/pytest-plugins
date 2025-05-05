@@ -20,7 +20,6 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
         self._queue = mp.Queue()
         self._ready = mp.Event()
         self._done = mp.Event()
-        self._proc: mp.Process | None = None
 
     def _run(self) -> None:
         try:
@@ -40,7 +39,7 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
             self._done.wait()
 
     def __enter__(self) -> _ParallelGenCtxManager:
-        self._proc = mp.Process(target=self._run)
+        self._proc: mp.Process = mp.Process(target=self._run)
         self._proc.start()
         # Leave the process running
         return self

@@ -3,7 +3,10 @@ from __future__ import annotations
 import os
 import ssl
 from datetime import timedelta
-from typing import Any
+from typing import (
+    Any,
+    Generator,
+)
 from urllib.parse import urlparse
 
 import pytest
@@ -209,7 +212,7 @@ def saas_api_access(
 @pytest.fixture(scope="session", autouse=True)
 def backend_aware_saas_database_id_async(
     request, use_saas, database_name, saas_api_access
-) -> str:
+) -> Generator[str]:
     """
     If the saas is a selected backend, this fixture starts building a temporary SaaS
     database and keeps it running for the duration of the session. It returns before the
@@ -230,14 +233,13 @@ def backend_aware_saas_database_id_async(
             yield db.id
     elif use_saas:
         yield request.config.getoption("--saas-database-id")
-    else:
-        yield ""
+    yield ""
 
 
 @pytest.fixture(scope="session")
 def backend_aware_saas_database_id(
     saas_api_access, backend_aware_saas_database_id_async
-) -> str:
+) -> Generator[str]:
     """
     If the saas is a selected backend, this fixture waits until the temporary SaaS database
     becomes available.
@@ -323,8 +325,7 @@ def backend_aware_database_params(
         return backend_aware_onprem_database_params
     elif backend == BACKEND_SAAS:
         return backend_aware_saas_database_params
-    else:
-        ValueError(f"Unknown backend {backend}")
+    raise ValueError(f"Unknown backend {backend}")
 
 
 @pytest.fixture(scope="session")
@@ -341,5 +342,4 @@ def backend_aware_bucketfs_params(
         return backend_aware_onprem_bucketfs_params
     elif backend == BACKEND_SAAS:
         return backend_aware_saas_bucketfs_params
-    else:
-        ValueError(f"Unknown backend {backend}")
+    raise ValueError(f"Unknown backend {backend}")
