@@ -3,7 +3,7 @@ name: Build Matrix (Python)
 on:
   workflow_call:
     inputs:
-      folder-path:
+      working-directory:
         required: true
         type: string
     outputs:
@@ -17,14 +17,16 @@ jobs:
     runs-on: ubuntu-24.04
     defaults:
       run:
-        working-directory: ${{ inputs.folder-path }}
+        working-directory: ${{ inputs.working-directory }}
 
     steps:
       - name: SCM Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+        uses: ./.github/actions/python-environment
+        with:
+          working-directory: ${{ inputs.working-directory }}
 
       - name: Generate matrix
         run: poetry run -- nox -s matrix:python

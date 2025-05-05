@@ -25,7 +25,7 @@ jobs:
           - pytest-slc
     uses: ./.github/workflows/checks.yml
     with:
-      folder-path: ${{ matrix.folder }}
+      working-directory: ${{ matrix.folder }}
 
   Verify:
     name: Tests
