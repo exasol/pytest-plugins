@@ -110,7 +110,7 @@ def saas_database(
 
 
 @pytest.fixture(scope="session")
-def operational_saas_database_id(api_access, saas_database) -> Generator[str]:
+def operational_saas_database_id(api_access, saas_database) -> Generator:
     db = saas_database
     with api_access.allowed_ip():
         api_access.wait_until_running(db.id)
