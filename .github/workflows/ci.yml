@@ -3,9 +3,6 @@ name: CI
 on:
   workflow_call:
     inputs:
-      working-directory:
-        type: string
-        required: true
       slow-tests:
         type: boolean
         required: false
@@ -19,18 +16,36 @@ jobs:
   fast-checks:
     name: Fast
     uses: ./.github/workflows/checks.yml
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
     with:
-      working-directory: ${{ inputs.working-directory }}
+      working-directory: ${{ matrix.working-directory }}
 
   Verify:
     name: Slow Tests
     runs-on: ubuntu-24.04
     needs: [ fast-checks ]
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
+      max-parallel: 1
     defaults:
       run:
-        working-directory: ${{ inputs.working-directory }}
+        working-directory: ${{ matrix.working-directory }}
 
     steps:
+      - name: Set pytest markers
+        id: pytest-markers
+        if: ${{ ! inputs.slow-tests }}
+        run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
+
       - name: SCM Checkout
         uses: actions/checkout@v4
         with:
@@ -48,3 +63,10 @@ jobs:
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: '${{ steps.pytest-markers.outputs.slow-tests }}'
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: coverage-${{ inputs.working-directory }}-python${{ matrix.python-version }}-slow
+          path: ${{ inputs.working-directory }}/.coverage
+          include-hidden-files: true
