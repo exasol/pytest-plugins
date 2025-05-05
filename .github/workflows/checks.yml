@@ -184,6 +184,7 @@ jobs:
           working-directory: ${{ inputs.working-directory }}
 
       - name: Run Tests and Collect Coverage
+        working-directory: ${{ inputs.working-directory }}
         run: poetry run -- nox -s test:unit -- --coverage
 
       - name: Upload Artifacts
