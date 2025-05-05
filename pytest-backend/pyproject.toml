@@ -24,6 +24,7 @@ backend = "exasol.pytest_backend"
 exasol-toolbox = "^1.0.0"
 exasol-bucketfs = ">=1.0.0"
 pyexasol = ">=0.26.0"
+types-PyYAML = ">=6.0.12"
 
 [build-system]
 requires = ["poetry_core>=2.0.0"]
@@ -65,6 +66,7 @@ module = [
     "test.integration.*",
     "exasol.toolbox.*",
     "pyexasol.*",
+    "exasol.saas.*",
 ]
 ignore_errors = true
 ignore_missing_imports = true

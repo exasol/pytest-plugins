@@ -37,6 +37,7 @@ def _find_path_backwards(
         if stop_path.exists():
             return None
         current_path = current_path.parent
+    return None
 
 
 def read_from_yaml(start_dir: Path) -> str | None:
