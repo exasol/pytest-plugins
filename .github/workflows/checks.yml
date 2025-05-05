@@ -162,3 +162,33 @@ jobs:
 
       - name: Run format check
         run: poetry run -- nox -s project:format
+
+  Tests:
+    name: Unit-Tests (${{ inputs.working-directory }}, Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
+    needs: [ Lint, Type-Check, Security, Format, build-matrix ]
+    runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run Tests and Collect Coverage
+        run: poetry run -- nox -s test:unit -- --coverage
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: coverage-${{ inputs.working-directory }}-python${{ matrix.python-version }}-fast
+          path: .coverage
+          include-hidden-files: true
