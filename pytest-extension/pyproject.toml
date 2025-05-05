@@ -64,7 +64,6 @@ max-module-lines = 800
 module = [
     "test.unit.*",
     "test.integration.*",
-    "exasol.toolbox.*",
     "exasol.pytest_backend.*",
     "exasol.python_extension_common.*",
     "pyexasol.*",
