@@ -32,7 +32,6 @@ runs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        cache: 'poetry'
 
     - name: Setup just (${{ inputs.just-version }})
       uses: extractions/setup-just@v1
