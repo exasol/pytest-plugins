@@ -28,9 +28,14 @@ jobs:
       working-directory: ${{ matrix.folder }}
 
   Verify:
-    name: Tests
+    name: Slow Tests
     runs-on: ubuntu-24.04
-    needs: fast-checks
+    environment: manual-approval
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
 
     steps:
       - name: Set pytest markers
