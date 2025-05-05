@@ -3,7 +3,10 @@ from __future__ import annotations
 import os
 import ssl
 from datetime import timedelta
-from typing import Any, Generator
+from typing import (
+    Any,
+    Generator,
+)
 from urllib.parse import urlparse
 
 import pytest

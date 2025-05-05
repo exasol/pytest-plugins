@@ -13,6 +13,7 @@ import yaml
 YML_FILE = "error_code_config.yml"
 STOP_FILE = "pyproject.toml"
 
+
 def _find_path_backwards(
     start_path: str | Path,
     stop_file: str | Path = STOP_FILE,
@@ -35,6 +36,7 @@ def _find_path_backwards(
             return None
         current_path = current_path.parent
     return None
+
 
 def read_from_yaml(start_dir: Path) -> str | None:
     """
