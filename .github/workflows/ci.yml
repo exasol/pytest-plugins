@@ -13,9 +13,24 @@ on:
 
 jobs:
 
+  fast-checks:
+    name: Fast
+    strategy:
+      matrix:
+        folder:
+          - pytest-backend
+          - pytest-extension
+          - pytest-itde
+          - pytest-saas
+          - pytest-slc
+    uses: ./.github/workflows/checks.yml
+    with:
+      folder-path: ${{ matrix.folder }}
+
   Verify:
     name: Tests
     runs-on: ubuntu-24.04
+    needs: fast-checks
 
     steps:
       - name: Set pytest markers

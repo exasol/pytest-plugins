@@ -1,0 +1,155 @@
+name: Checks
+
+on:
+  workflow_call:
+    inputs:
+      folder-path:
+        required: true
+        type: string
+
+jobs:
+
+  Version-Check:
+    name: Version (${{ inputs.folder-path }})
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+
+      - name: Check Version(s)
+        run: poetry run version-check `poetry run python -c "from noxconfig import PROJECT_CONFIG; print(PROJECT_CONFIG.version_file)"`
+
+  build-matrix:
+    name: Generate Build Matrix (${{ inputs.folder-path }})
+    uses: ./.github/workflows/matrix-python.yml
+    with:
+      folder-path: ${{ inputs.folder-path }}
+
+  Changelog:
+    name: Changelog Update Check (${{ inputs.folder-path }})
+    runs-on: ubuntu-24.04
+    if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+
+      - name: Run changelog update check
+        run: poetry run -- nox -s changelog:updated
+
+  Lint:
+    name: Linting (${{ inputs.folder-path }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run lint
+        run: poetry run -- nox -s lint:code
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: lint-${{ inputs.folder-path }}-python${{ matrix.python-version }}
+          path: |
+            .lint.txt
+            .lint.json
+          include-hidden-files: true
+
+  Type-Check:
+    name: Type Checking (${{ inputs.folder-path }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run type-check
+        run: poetry run -- nox -s lint:typing
+
+  Security:
+    name: Security Checks (${{ inputs.folder-path }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Run security linter
+        run: poetry run -- nox -s lint:security
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: security-${{ inputs.folder-path }}-python${{ matrix.python-version }}
+          path: .security.json
+          include-hidden-files: true
+
+  Format:
+    name: Format Check (${{ inputs.folder-path }})
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ inputs.folder-path }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+
+      - name: Run format check
+        run: poetry run -- nox -s project:format
