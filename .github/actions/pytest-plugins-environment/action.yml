@@ -24,11 +24,15 @@ runs:
   using: "composite"
   steps:
 
-    - name: Setup Python & Poetry Environment
-      uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
+    - name: Setup Poetry (${{ inputs.poetry-version }})
+      run: pipx install poetry==${{ inputs.poetry-version }}
+      shell: bash
+
+    - name: Setup Python (${{ inputs.python-version}})
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ inputs.python-version }}
-        poetry-version: ${{ inputs.poetry-version }}
+        cache: 'poetry'
 
     - name: Setup just (${{ inputs.just-version }})
       uses: extractions/setup-just@v1
