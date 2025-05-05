@@ -233,7 +233,8 @@ def backend_aware_saas_database_id_async(
             yield db.id
     elif use_saas:
         yield request.config.getoption("--saas-database-id")
-    yield ""
+    else:
+        yield ""
 
 
 @pytest.fixture(scope="session")
