@@ -13,14 +13,13 @@ import yaml
 YML_FILE = "error_code_config.yml"
 STOP_FILE = "pyproject.toml"
 
-
 def _find_path_backwards(
     start_path: str | Path,
     stop_file: str | Path = STOP_FILE,
     target_path: str | Path = YML_FILE,
 ) -> Path | None:
     """
-    An utility searching for a specified path backwards. It begins with the given start
+    A utility searching for a specified path backwards. It begins with the given start
     path and checks if the target path is among its siblings. Then it moves to the parent
     path and so on, until it either reaches the root of the file structure or finds the
     stop file. returns None if the search is unsuccessful.
@@ -35,7 +34,7 @@ def _find_path_backwards(
         if stop_path.exists():
             return None
         current_path = current_path.parent
-
+    return None
 
 def read_from_yaml(start_dir: Path) -> str | None:
     """
@@ -52,7 +51,7 @@ def read_from_yaml(start_dir: Path) -> str | None:
         ecc = yaml.safe_load(file)
         try:
             return next(t for t in ecc["error-tags"])
-        except Exception as ex:
+        except Exception:
             raise RuntimeError(
                 f"Could not read project short tag from file {config_file}"
             )
