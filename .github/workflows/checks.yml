@@ -10,7 +10,7 @@ on:
 jobs:
 
   Version-Check:
-    name: Version (${{ inputs.working-directory }})
+    name: Version
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -31,13 +31,13 @@ jobs:
         run: poetry run version-check `poetry run python -c "from noxconfig import PROJECT_CONFIG; print(PROJECT_CONFIG.version_file)"`
 
   build-matrix:
-    name: Generate Build Matrix (${{ inputs.working-directory }})
+    name: Generate Build Matrix
     uses: ./.github/workflows/matrix-python.yml
     with:
       working-directory: ${{ inputs.working-directory }}
 
   Changelog:
-    name: Changelog Update Check (${{ inputs.working-directory }})
+    name: Changelog Update Check
     runs-on: ubuntu-24.04
     if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
     defaults:
@@ -57,7 +57,7 @@ jobs:
         run: poetry run -- nox -s changelog:updated
 
   Lint:
-    name: Linting (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    name: Linting (Python-${{ matrix.python-version }})
     needs: [ Version-Check, build-matrix ]
     runs-on: ubuntu-24.04
     strategy:
@@ -90,7 +90,7 @@ jobs:
           include-hidden-files: true
 
   Type-Check:
-    name: Type Checking (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    name: Type Checking (Python-${{ matrix.python-version }})
     needs: [ Version-Check, build-matrix ]
     runs-on: ubuntu-24.04
     strategy:
@@ -114,7 +114,7 @@ jobs:
         run: poetry run -- nox -s lint:typing
 
   Security:
-    name: Security Checks (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    name: Security Checks (Python-${{ matrix.python-version }})
     needs: [ Version-Check, build-matrix ]
     runs-on: ubuntu-24.04
     strategy:
@@ -145,7 +145,7 @@ jobs:
           include-hidden-files: true
 
   Format:
-    name: Format Check (${{ inputs.working-directory }})
+    name: Format Check
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -164,7 +164,7 @@ jobs:
         run: poetry run -- nox -s project:format
 
   Tests:
-    name: Unit-Tests (${{ inputs.working-directory }}, Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
+    name: Unit-Tests (Python-${{ matrix.python-version }}, Exasol-${{ matrix.exasol-version}})
     needs: [ Lint, Type-Check, Security, Format, build-matrix ]
     runs-on: ubuntu-24.04
     env:
