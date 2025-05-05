@@ -41,7 +41,7 @@ def pytest_addoption(parser):
         The SaaS cluster would normally stop after a certain period of inactivity. 
         The default period is 2 hours. For some tests, this period is too short.
         Use this parameter to set a sufficient idle period in the number of hours.
-        """
+        """,
     )
 
 
@@ -102,8 +102,9 @@ def saas_database(
     if db_id:
         yield api_access.get_database(db_id)
         return
-    with api_access.database(database_name, keep,
-                             idle_time=timedelta(hours=idle_hours)) as db:
+    with api_access.database(
+        database_name, keep, idle_time=timedelta(hours=idle_hours)
+    ) as db:
         yield db
 
 

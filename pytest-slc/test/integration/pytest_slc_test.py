@@ -1,14 +1,21 @@
 from textwrap import dedent
+
 import pytest
-from exasol.pytest_backend import (BACKEND_OPTION, BACKEND_ALL, BACKEND_ONPREM)
+from exasol.pytest_backend import (
+    BACKEND_ALL,
+    BACKEND_ONPREM,
+    BACKEND_OPTION,
+)
+
 from exasol.pytest_slc import SKIP_SLC_OPTION
 
 pytest_plugins = ["pytester"]
 
-MAIN_LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC'
-ALT_LANGUAGE_ALIAS = 'PYTHON3_PYTEST_SLC_ALT'
+MAIN_LANGUAGE_ALIAS = "PYTHON3_PYTEST_SLC"
+ALT_LANGUAGE_ALIAS = "PYTHON3_PYTEST_SLC_ALT"
 
-_test_code = dedent(fr"""
+_test_code = dedent(
+    rf"""
 import pyexasol
 import pytest
 from exasol.python_extension_common.deployment.language_container_validator import temp_schema
@@ -46,9 +53,11 @@ def test_deploy_slc(deploy_slc, deployed_slc, backend_aware_database_params):
     deploy_slc("{ALT_LANGUAGE_ALIAS}")
     for lang_alias in ["{MAIN_LANGUAGE_ALIAS}", "{ALT_LANGUAGE_ALIAS}"]:
         assert_udf_running(pyexasol.connect(**backend_aware_database_params), lang_alias)
-""")
+"""
+)
 
-_test_code_skip = dedent(fr"""
+_test_code_skip = dedent(
+    rf"""
 import pytest
 from exasol.python_extension_common.deployment.language_container_builder import (
     LanguageContainerBuilder)
@@ -60,7 +69,8 @@ def slc_builder() -> LanguageContainerBuilder:
 
 def test_deploy_slc_skipped(export_slc):
     assert export_slc is None
-""")
+"""
+)
 
 
 def test_pytest_slc(pytester):

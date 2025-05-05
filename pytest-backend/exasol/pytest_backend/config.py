@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from collections import ChainMap
 from dataclasses import dataclass
 from typing import (
@@ -15,7 +16,7 @@ class Option(Generic[T]):
     name: str
     prefix: str
     type: T
-    default: Optional[T] = None
+    default: T | None = None
     help_text: str = ""
 
     @property

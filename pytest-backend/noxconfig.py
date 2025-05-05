@@ -1,4 +1,5 @@
 """Configuration for nox based task runner"""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -18,7 +19,9 @@ class Config:
 
     root: Path = Path(__file__).parent
     doc: Path = Path(__file__).parent / "doc"
-    version_file: Path = Path(__file__).parent / "exasol" / "pytest_backend" / "version.py"
+    version_file: Path = (
+        Path(__file__).parent / "exasol" / "pytest_backend" / "version.py"
+    )
     path_filters: Iterable[str] = ("dist", ".eggs", "venv", "metrics-schema")
 
     @staticmethod

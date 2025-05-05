@@ -7,15 +7,18 @@ potentially long-running database instances in order to avoid unwanted costs.
 """
 
 from pathlib import Path
+
 import yaml
 
-YML_FILE = 'error_code_config.yml'
-STOP_FILE = 'pyproject.toml'
+YML_FILE = "error_code_config.yml"
+STOP_FILE = "pyproject.toml"
 
 
-def _find_path_backwards(start_path: str | Path,
-                         stop_file: str | Path = STOP_FILE,
-                         target_path: str | Path = YML_FILE) -> Path | None:
+def _find_path_backwards(
+    start_path: str | Path,
+    stop_file: str | Path = STOP_FILE,
+    target_path: str | Path = YML_FILE,
+) -> Path | None:
     """
     An utility searching for a specified path backwards. It begins with the given start
     path and checks if the target path is among its siblings. Then it moves to the parent
@@ -45,9 +48,11 @@ def read_from_yaml(start_dir: Path) -> str | None:
     config_file = _find_path_backwards(start_dir)
     if config_file is None:
         return None
-    with config_file.open('r') as file:
+    with config_file.open("r") as file:
         ecc = yaml.safe_load(file)
         try:
             return next(t for t in ecc["error-tags"])
         except Exception as ex:
-            raise RuntimeError(f"Could not read project short tag from file {config_file}")
+            raise RuntimeError(
+                f"Could not read project short tag from file {config_file}"
+            )

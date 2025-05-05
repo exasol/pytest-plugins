@@ -8,3 +8,4 @@ MAJOR = 0
 MINOR = 3
 PATCH = 3
 VERSION = f"{MAJOR}.{MINOR}.{PATCH}"
+__version__ = VERSION

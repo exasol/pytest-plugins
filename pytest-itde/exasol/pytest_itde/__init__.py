@@ -1,5 +1,9 @@
 import os
-from typing import Tuple, Generator, Any
+from typing import (
+    Any,
+    Generator,
+    Tuple,
+)
 
 import pyexasol
 import pytest
@@ -195,10 +199,8 @@ def _bootstrap_db(itde_config, exasol_config, bucketfs_config, ssh_config):
     db_name = "pytest_exasol_db"
     bootstrap_db = itde_config.db_version != "external"
 
-    start = (
-        lambda: start_db(
-            db_name, itde_config, exasol_config, bucketfs_config, ssh_config
-        )
+    start = lambda: (
+        start_db(db_name, itde_config, exasol_config, bucketfs_config, ssh_config)
         if bootstrap_db
         else lambda: nop
     )

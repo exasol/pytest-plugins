@@ -21,7 +21,7 @@ def _ids(params):
 
 
 default_version = "8.18.1"
-default_version_only=pytest.mark.skipif(
+default_version_only = pytest.mark.skipif(
     "EXASOL_VERSION" in os.environ and os.environ["EXASOL_VERSION"] != default_version,
     reason="""This test always uses default version of Exasol database.  If
     the current run of a matrix build uses a different version then executing
@@ -44,7 +44,9 @@ default_version_only=pytest.mark.skipif(
                     assert True
                 """
             )
-        }], ids=_ids
+        }
+    ],
+    ids=_ids,
 )
 def test_itde_smoke_test(make_test_files, pytester, files):
     make_test_files(pytester, files)
@@ -99,52 +101,52 @@ def test_default_settings_for_options(pytester, make_test_files, files):
     "files,cli_args",
     [
         (
-                {
-                    "test_exasol_settings": cleandoc(
-                        """
+            {
+                "test_exasol_settings": cleandoc(
+                    """
         def test_default_settings_of_exasol(exasol_config):
             assert exasol_config.host == '127.0.0.1'
             assert exasol_config.port == 7777
             assert exasol_config.username == 'foo'
             assert exasol_config.password == 'bar'
         """
-                    )
-                },
-                {
-                    "--exasol-port": 7777,
-                    "--exasol-host": "127.0.0.1",
-                    "--exasol-username": "foo",
-                    "--exasol-password": "bar",
-                },
+                )
+            },
+            {
+                "--exasol-port": 7777,
+                "--exasol-host": "127.0.0.1",
+                "--exasol-username": "foo",
+                "--exasol-password": "bar",
+            },
         ),
         (
-                {
-                    "test_bucketfs_settings": cleandoc(
-                        """
+            {
+                "test_bucketfs_settings": cleandoc(
+                    """
         def test_default_settings_of_bucketfs(bucketfs_config):
             assert bucketfs_config.url == 'https://127.0.0.1:7777'
             assert bucketfs_config.username == 'user'
             assert bucketfs_config.password == 'pw'
         """
-                    )
-                },
-                {
-                    "--bucketfs-url": "https://127.0.0.1:7777",
-                    "--bucketfs-username": "user",
-                    "--bucketfs-password": "pw",
-                },
+                )
+            },
+            {
+                "--bucketfs-url": "https://127.0.0.1:7777",
+                "--bucketfs-username": "user",
+                "--bucketfs-password": "pw",
+            },
         ),
         (
-                {
-                    "test_itde_settings": cleandoc(
-                        """
+            {
+                "test_itde_settings": cleandoc(
+                    """
     def test_default_settings_of_itde(itde_config):
         assert itde_config.db_version == '7.1.0'
         assert set(itde_config.schemas) == set(('TEST_FOO', 'TEST_BAR'))
     """
-                    )
-                },
-                {"--itde-db-version": "7.1.0", "--itde-schemas": "TEST_FOO, TEST_BAR"},
+                )
+            },
+            {"--itde-db-version": "7.1.0", "--itde-schemas": "TEST_FOO, TEST_BAR"},
         ),
     ],
     ids=_ids,
