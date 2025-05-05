@@ -21,7 +21,7 @@ markers = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=0.16.0,<1"
+exasol-toolbox = "^1.0.0"
 
 [build-system]
 requires = ["poetry-core"]

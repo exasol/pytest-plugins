@@ -16,7 +16,7 @@ exasol-saas-api = ">=0.6.0,<1.0.0"
 backend = "exasol.pytest_backend"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=0.16.0,<1"
+exasol-toolbox = "^1.0.0"
 exasol-bucketfs = ">=1.0.0"
 pyexasol = ">=0.26.0"
 

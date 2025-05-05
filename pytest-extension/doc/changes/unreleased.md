@@ -1,5 +1,5 @@
 # Unreleased
 
-## Refactorings
+## Internal
 
-* #90 Relock dependencies
+* #90 Relocked dependencies, updated exasol-toolbox to ^1.0.0

@@ -12,7 +12,7 @@ inputs:
   poetry-version:
     description: 'Poetry version to use'
     required: true
-    default: 1.7.1
+    default: 1.8.5
 
   just-version:
     description: 'Just version to use'
@@ -24,14 +24,10 @@ runs:
   using: "composite"
   steps:
 
-    - name: Setup Python (${{ inputs.python-version}})
-      uses: actions/setup-python@v5
+    - name: Setup Python & Poetry Environment
+      uses: exasol/python-toolbox/.github/actions/python-environment@1.0.1
       with:
         python-version: ${{ inputs.python-version }}
-
-    - name: Setup Poetry (${{ inputs.poetry-version }})
-      uses: abatilo/actions-poetry@v2
-      with:
         poetry-version: ${{ inputs.poetry-version }}
 
     - name: Setup just (${{ inputs.just-version }})
