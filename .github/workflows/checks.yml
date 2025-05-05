@@ -85,8 +85,8 @@ jobs:
         with:
           name: lint-${{ inputs.working-directory }}-python${{ matrix.python-version }}
           path: |
-            .lint.txt
-            .lint.json
+            ${{ inputs.working-directory }}/.lint.txt
+            ${{ inputs.working-directory }}/.lint.json
           include-hidden-files: true
 
   Type-Check:
@@ -141,7 +141,7 @@ jobs:
         uses: actions/upload-artifact@v4.6.0
         with:
           name: security-${{ inputs.working-directory }}-python${{ matrix.python-version }}
-          path: .security.json
+          path: ${{ inputs.working-directory }}/.security.json
           include-hidden-files: true
 
   Format:
