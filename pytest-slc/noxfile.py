@@ -1,4 +1,5 @@
 """defines nox tasks/targets for this project"""
+
 import sys
 
 import nox

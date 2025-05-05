@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 import os
 from dataclasses import dataclass
-import pytest
 
+import pytest
 from exasol_integration_test_docker_environment.lib.test_environment.ports import Ports
+
 import exasol.pytest_backend.config as config
 
 
@@ -126,29 +128,40 @@ _ITDE_OPTIONS = config.OptionGroup(
             "name": "db_mem_size",
             "type": str,
             "default": DEFAULT_ITDE_DB_MEM_SIZE,
-            "help_text": ("The main memory used by the database. Format <number> <unit>, e.g. 1 GiB. "
-                          "The minimum size is 1 GB, below that the database will not start."),
+            "help_text": (
+                "The main memory used by the database. Format <number> <unit>, e.g. 1 GiB. "
+                "The minimum size is 1 GB, below that the database will not start."
+            ),
         },
         {
             "name": "db_disk_size",
             "type": str,
             "default": DEFAULT_ITDE_DB_DISK_SIZE,
-            "help_text": ("The disk size available for the database. Format <number> <unit>, e.g. 1 GiB. "
-                          "The minimum size is 100 MiB. However, the setup creates volume files with "
-                          "at least 2 GB larger size, because the database needs at least so much more disk."),
+            "help_text": (
+                "The disk size available for the database. Format <number> <unit>, e.g. 1 GiB. "
+                "The minimum size is 100 MiB. However, the setup creates volume files with "
+                "at least 2 GB larger size, because the database needs at least so much more disk."
+            ),
         },
         {
             "name": "nameserver",
             "type": str,
             "default": [],
-            "help_text": ("A nameserver to be added to the list of DNS nameservers which the docker-db "
-                          "should use for resolving domain names. This option can be repeated "
-                          "multiple times.")
-        }
+            "help_text": (
+                "A nameserver to be added to the list of DNS nameservers which the docker-db "
+                "should use for resolving domain names. This option can be repeated "
+                "multiple times."
+            ),
+        },
     ),
 )
 
-_ITDE_OPTION_GROUPS = (_ONPREM_DB_OPTIONS, _ONPREM_BFS_OPTIONS, _ITDE_OPTIONS, _SSH_OPTIONS)
+_ITDE_OPTION_GROUPS = (
+    _ONPREM_DB_OPTIONS,
+    _ONPREM_BFS_OPTIONS,
+    _ITDE_OPTIONS,
+    _SSH_OPTIONS,
+)
 
 
 def _add_option_group(parser, group):
@@ -159,7 +172,7 @@ def _add_option_group(parser, group):
             default=option.default,
             type=option.type,
             help=option.help,
-            action='append' if isinstance(option.default, list) else 'store'
+            action="append" if isinstance(option.default, list) else "store",
         )
 
 
