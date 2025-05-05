@@ -1,9 +1,14 @@
-[tool.poetry]
+[project]
 name = "pytest-exasol-itde"
 version = "0.2.1"
 description = ""
-authors = ["Nicola Coretti <nicola.coretti@exasol.com>"]
+authors = [
+    {name="Nicola Coretti", email="nicola.coretti@exasol.com"}
+]
 readme = "README.rst"
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
@@ -24,7 +29,7 @@ markers = [
 exasol-toolbox = "^1.0.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]

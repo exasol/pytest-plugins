@@ -1,9 +1,14 @@
-[tool.poetry]
+[project]
 name = "pytest-exasol-saas"
 version = "0.2.3"
 description = ""
-authors = ["Christoph Kuhnke <christoph.kuhnke@exasol.com>"]
+authors = [
+    {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"}
+]
 readme = "README.md"
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
@@ -24,7 +29,7 @@ markers = [
 exasol-toolbox = "^1.0.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]

@@ -12,7 +12,7 @@ inputs:
   poetry-version:
     description: 'Poetry version to use'
     required: true
-    default: 1.8.5
+    default: 2.1.2
 
   just-version:
     description: 'Just version to use'

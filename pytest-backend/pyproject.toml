@@ -1,9 +1,14 @@
-[tool.poetry]
+[project]
 name = "pytest-exasol-backend"
 version = "0.3.3"
 description = ""
-authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
+authors = [
+    {name="Mikhail Beck", email="mikhail.beck@exasol.com"}
+]
 readme = "README.md"
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
@@ -21,7 +26,7 @@ exasol-bucketfs = ">=1.0.0"
 pyexasol = ">=0.26.0"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]
