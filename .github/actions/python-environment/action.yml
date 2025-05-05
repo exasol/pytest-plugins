@@ -1,6 +1,5 @@
-name: "pytest-plugin-environment"
-description: "This action sets up an environment for testing and building pytest plugins"
-
+name: 'SPPE'
+description: 'Setup python and poetry environment'
 
 inputs:
 
@@ -12,12 +11,12 @@ inputs:
   poetry-version:
     description: 'Poetry version to use'
     required: true
-    default: 2.1.2
+    default: "2.1.2"
 
-  just-version:
-    description: 'Just version to use'
+  working-directory:
+    description: 'Working directory to use'
     required: true
-    default: 1.16.0
+    default: "."
 
 runs:
 
@@ -33,8 +32,7 @@ runs:
       with:
         python-version: ${{ inputs.python-version }}
 
-    - name: Setup just (${{ inputs.just-version }})
-      uses: extractions/setup-just@v1
-      with:
-        just-version: ${{ inputs.just-version }} 
-
+    - name: Poetry install
+      working-directory: ${{ inputs.working-directory }}
+      run: poetry install
+      shell: bash

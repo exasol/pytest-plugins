@@ -1,0 +1,195 @@
+name: Checks
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+
+jobs:
+
+  Version-Check:
+    name: Version (${{ inputs.working-directory }})
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Check Version(s)
+        run: poetry run version-check `poetry run python -c "from noxconfig import PROJECT_CONFIG; print(PROJECT_CONFIG.version_file)"`
+
+  build-matrix:
+    name: Generate Build Matrix (${{ inputs.working-directory }})
+    uses: ./.github/workflows/matrix-python.yml
+    with:
+      working-directory: ${{ inputs.working-directory }}
+
+  Changelog:
+    name: Changelog Update Check (${{ inputs.working-directory }})
+    runs-on: ubuntu-24.04
+    if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run changelog update check
+        run: poetry run -- nox -s changelog:updated
+
+  Lint:
+    name: Linting (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run lint
+        run: poetry run -- nox -s lint:code
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: lint-${{ inputs.working-directory }}-python${{ matrix.python-version }}
+          path: |
+            ${{ inputs.working-directory }}/.lint.txt
+            ${{ inputs.working-directory }}/.lint.json
+          include-hidden-files: true
+
+  Type-Check:
+    name: Type Checking (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run type-check
+        run: poetry run -- nox -s lint:typing
+
+  Security:
+    name: Security Checks (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    needs: [ Version-Check, build-matrix ]
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run security linter
+        run: poetry run -- nox -s lint:security
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: security-${{ inputs.working-directory }}-python${{ matrix.python-version }}
+          path: ${{ inputs.working-directory }}/.security.json
+          include-hidden-files: true
+
+  Format:
+    name: Format Check (${{ inputs.working-directory }})
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run format check
+        run: poetry run -- nox -s project:format
+
+  Tests:
+    name: Unit-Tests (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
+    needs: [ Lint, Type-Check, Security, Format, build-matrix ]
+    runs-on: ubuntu-24.04
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          python-version: ${{ matrix.python-version }}
+          working-directory: ${{ inputs.working-directory }}
+
+      - name: Run Tests and Collect Coverage
+        working-directory: ${{ inputs.working-directory }}
+        run: poetry run -- nox -s test:unit -- --coverage
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: coverage-${{ inputs.working-directory }}-python${{ matrix.python-version }}-fast
+          path: ${{ inputs.working-directory }}/.coverage
+          include-hidden-files: true

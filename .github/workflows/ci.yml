@@ -13,9 +13,32 @@ on:
 
 jobs:
 
+  fast-checks:
+    name: Fast
+    uses: ./.github/workflows/checks.yml
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
+    with:
+      working-directory: ${{ matrix.working-directory }}
+
   Verify:
-    name: Tests
+    name: Slow Tests (${{ matrix.working-directory }})
     runs-on: ubuntu-24.04
+    needs: [ fast-checks ]
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
+      max-parallel: 1
+    defaults:
+      run:
+        working-directory: ${{ matrix.working-directory }}
 
     steps:
       - name: Set pytest markers
@@ -28,15 +51,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Development Environment
-        uses: ./.github/actions/pytest-plugins-environment
+      - name: Setup Python & Poetry Environment
+        uses: ./.github/actions/python-environment
+        with:
+          working-directory: ${{ matrix.working-directory }}
 
-      - name: Run Tests of All Plugins
-        run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          just test
+      - name: Run slow tests
+        run: poetry run -- nox -s test:integration -- --coverage
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: '${{ steps.pytest-markers.outputs.slow-tests }}'
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.0
+        with:
+          name: coverage-${{ matrix.working-directory }}-python${{ matrix.python-version }}-slow
+          path: ${{ matrix.working-directory }}/.coverage
+          include-hidden-files: true
