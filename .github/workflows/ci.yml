@@ -25,10 +25,20 @@ jobs:
     with:
       working-directory: ${{ matrix.working-directory }}
 
+  slow-test-detection:
+    name: Run Slow or Expensive Tests?
+    runs-on: ubuntu-24.04
+    needs: [ fast-checks ]
+    steps:
+      - name: Detect Slow Tests
+        run: true
+    environment:
+      manual-environment
+
   Verify:
     name: Slow Tests (${{ matrix.working-directory }})
     runs-on: ubuntu-24.04
-    needs: [ fast-checks ]
+    needs: [ slow-test-detection ]
     strategy:
       matrix:
         working-directory:
