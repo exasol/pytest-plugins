@@ -1,6 +1,7 @@
 [project]
 name = "pytest-exasol-itde"
 version = "0.2.1"
+requires-python = ">=3.9.2,<4.0"
 description = ""
 authors = [
     {name="Nicola Coretti", email="nicola.coretti@exasol.com"}
@@ -12,7 +13,6 @@ requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9.2,<4"
 pytest = ">=7,<9"
 exasol-integration-test-docker-environment = "^3.1.0"
 pyexasol = ">=0.25,<1"
@@ -26,7 +26,7 @@ markers = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^1.0.0"
+exasol-toolbox = "^1.1.0"
 
 [build-system]
 requires = ["poetry_core>=2.0.0"]

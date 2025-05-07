@@ -61,9 +61,10 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: ./.github/actions/python-environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.1.0
         with:
           working-directory: ${{ matrix.working-directory }}
+          poetry-version: '2.1.2'
 
       - name: Run slow tests
         run: poetry run -- nox -s test:integration -- --coverage
@@ -74,7 +75,7 @@ jobs:
           PYTEST_ADDOPTS: '${{ steps.pytest-markers.outputs.slow-tests }}'
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.6.0
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: coverage-${{ matrix.working-directory }}-python${{ matrix.python-version }}-slow
           path: ${{ matrix.working-directory }}/.coverage

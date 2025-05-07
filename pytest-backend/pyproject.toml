@@ -1,6 +1,7 @@
 [project]
 name = "pytest-exasol-backend"
 version = "0.3.3"
+requires-python = ">=3.9.2,<4.0"
 description = ""
 authors = [
     {name="Mikhail Beck", email="mikhail.beck@exasol.com"}
@@ -12,7 +13,6 @@ requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9.2,<4"
 pytest = ">=7,<9"
 exasol-integration-test-docker-environment = "^3.1.0"
 exasol-saas-api = ">=0.6.0,<1.0.0"
@@ -21,7 +21,7 @@ exasol-saas-api = ">=0.6.0,<1.0.0"
 backend = "exasol.pytest_backend"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^1.0.0"
+exasol-toolbox = "^1.1.0"
 exasol-bucketfs = ">=1.0.0"
 pyexasol = ">=0.26.0"
 types-PyYAML = ">=6.0.12"
