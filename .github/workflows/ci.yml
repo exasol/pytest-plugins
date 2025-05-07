@@ -13,9 +13,41 @@ on:
 
 jobs:
 
+  fast-checks:
+    name: Fast
+    uses: ./.github/workflows/checks.yml
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
+    with:
+      working-directory: ${{ matrix.working-directory }}
+
+  slow-test-detection:
+    name: Run Slow or Expensive Tests?
+    runs-on: ubuntu-24.04
+    needs: [ fast-checks ]
+    steps:
+      - name: Detect Slow Tests
+        run: true
+    environment:
+      manual-environment
+
   Verify:
-    name: Tests
-    runs-on: ubuntu-20.04
+    name: Slow Tests (${{ matrix.working-directory }})
+    runs-on: ubuntu-24.04
+    needs: [ slow-test-detection ]
+    strategy:
+      matrix:
+        working-directory:
+          - pytest-backend
+          - pytest-extension
+          - pytest-slc
+    defaults:
+      run:
+        working-directory: ${{ matrix.working-directory }}
 
     steps:
       - name: Set pytest markers
@@ -28,15 +60,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Development Environment
-        uses: ./.github/actions/pytest-plugins-environment
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.1.0
+        with:
+          working-directory: ${{ matrix.working-directory }}
+          poetry-version: '2.1.2'
 
-      - name: Run Tests of All Plugins
-        run: |
-          echo "PYTEST_ADDOPTS = $PYTEST_ADDOPTS"
-          just test
+      - name: Run slow tests
+        run: poetry run -- nox -s test:integration -- --coverage
         env:
           SAAS_HOST: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_HOST }}
           SAAS_ACCOUNT_ID: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_ACCOUNT_ID }}
           SAAS_PAT: ${{ secrets.INTEGRATION_TEAM_SAAS_STAGING_PAT }}
           PYTEST_ADDOPTS: '${{ steps.pytest-markers.outputs.slow-tests }}'
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: coverage-${{ matrix.working-directory }}-python${{ matrix.python-version }}-slow
+          path: ${{ matrix.working-directory }}/.coverage
+          include-hidden-files: true

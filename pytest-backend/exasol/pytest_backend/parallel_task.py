@@ -1,8 +1,13 @@
 from __future__ import annotations
-from typing import Any
+
 import multiprocessing as mp
+from contextlib import (
+    AbstractContextManager,
+    ContextDecorator,
+    contextmanager,
+)
 from functools import wraps
-from contextlib import AbstractContextManager, ContextDecorator, contextmanager
+from typing import Any
 
 
 class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
@@ -15,7 +20,6 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
         self._queue = mp.Queue()
         self._ready = mp.Event()
         self._done = mp.Event()
-        self._proc: mp.Process | None = None
 
     def _run(self) -> None:
         try:
@@ -34,8 +38,8 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
             self._ready.set()
             self._done.wait()
 
-    def __enter__(self) -> "_ParallelGenCtxManager":
-        self._proc = mp.Process(target=self._run)
+    def __enter__(self) -> _ParallelGenCtxManager:
+        self._proc: mp.Process = mp.Process(target=self._run)
         self._proc.start()
         # Leave the process running
         return self
@@ -50,12 +54,14 @@ class _ParallelGenCtxManager(AbstractContextManager, ContextDecorator):
     def wait(self, timeout: float | None = None) -> None:
         if not self._ready.wait(timeout):
             self._proc.kill()
-            raise TimeoutError(f'{self._func_name} failed to complete within {timeout} seconds')
+            raise TimeoutError(
+                f"{self._func_name} failed to complete within {timeout} seconds"
+            )
 
         # Check if an exception is returned and if so re-raise it
         error = self._queue.get()
         if error is not None:
-            raise RuntimeError(f'{self._func_name} failed') from error
+            raise RuntimeError(f"{self._func_name} failed") from error
 
     def get_output(self, timeout: float | None = None) -> Any:
         self.wait(timeout)
@@ -117,7 +123,9 @@ def paralleltask(func):
     All fixtures of the first type should run before any of the fixtures of the second type,
     which is facilitated by the "autouse" parameter.
     """
+
     @wraps(func)
     def helper(*args, **kwargs):
         return _ParallelGenCtxManager(func, args, kwargs)
+
     return helper

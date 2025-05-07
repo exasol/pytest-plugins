@@ -1,5 +1,6 @@
 import os
 from datetime import timedelta
+from typing import Generator
 
 import pytest
 from exasol.saas import client as saas_client
@@ -41,7 +42,7 @@ def pytest_addoption(parser):
         The SaaS cluster would normally stop after a certain period of inactivity. 
         The default period is 2 hours. For some tests, this period is too short.
         Use this parameter to set a sufficient idle period in the number of hours.
-        """
+        """,
     )
 
 
@@ -102,13 +103,14 @@ def saas_database(
     if db_id:
         yield api_access.get_database(db_id)
         return
-    with api_access.database(database_name, keep,
-                             idle_time=timedelta(hours=idle_hours)) as db:
+    with api_access.database(
+        database_name, keep, idle_time=timedelta(hours=idle_hours)
+    ) as db:
         yield db
 
 
 @pytest.fixture(scope="session")
-def operational_saas_database_id(api_access, saas_database) -> str:
+def operational_saas_database_id(api_access, saas_database) -> Generator:
     db = saas_database
     with api_access.allowed_ip():
         api_access.wait_until_running(db.id)

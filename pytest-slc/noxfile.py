@@ -1,9 +1,7 @@
 """defines nox tasks/targets for this project"""
-import sys
 
 import nox
 
-print(sys.path)
 # imports all nox task provided by the toolbox
 from exasol.toolbox.nox.tasks import *  # pylint: disable=wildcard-import disable=unused-wildcard-import
 

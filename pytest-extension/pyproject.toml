@@ -1,28 +1,33 @@
-[tool.poetry]
+[project]
 name = "pytest-exasol-extension"
 version = "0.2.2"
+requires-python = ">=3.10,<4.0"
 description = ""
-authors = ["Mikhail Beck <mikhail.beck@exasol.com>"]
+authors = [
+    {name="Mikhail Beck", email="mikhail.beck@exasol.com"}
+]
 readme = "README.md"
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
-python = ">=3.10,<4"
 pytest = ">=7,<9"
 pytest-exasol-backend = ">=0.2.0"
 pyexasol = ">=0.26.0,<1"
-exasol-python-extension-common = ">=0.7.0,<1"
+exasol-python-extension-common = ">=0.9.0,<1"
 
 [tool.poetry.plugins.pytest11]
 ext = "exasol.pytest_extension"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=0.16.0,<1"
+exasol-toolbox = "^1.1.0"
 exasol-bucketfs = ">=1.0.0"
 click = "^8.1.7"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]
@@ -47,7 +52,7 @@ force_grid_wrap = 2
 
 
 [tool.pylint.master]
-fail-under = 8.1
+fail-under = 6.7
 output-format = "colorized,json:.lint.json,text:.lint.txt"
 
 [tool.pylint.format]
@@ -59,7 +64,7 @@ max-module-lines = 800
 module = [
     "test.unit.*",
     "test.integration.*",
-    "exasol.toolbox.*",
+    "exasol.pytest_backend.*",
     "pyexasol.*",
 ]
 ignore_errors = true

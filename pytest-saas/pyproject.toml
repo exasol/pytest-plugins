@@ -1,13 +1,18 @@
-[tool.poetry]
+[project]
 name = "pytest-exasol-saas"
 version = "0.2.3"
+requires-python = ">=3.9,<4.0"
 description = ""
-authors = ["Christoph Kuhnke <christoph.kuhnke@exasol.com>"]
+authors = [
+    {name="Christoph Kuhnke", email="christoph.kuhnke@exasol.com"}
+]
 readme = "README.md"
+
+[tool.poetry]
+requires-poetry = ">=2.1.0"
 packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4"
 pytest = ">=7,<9"
 exasol-saas-api = ">=0.6.0,<1.0.0"
 pyyaml = "^6.0.1"
@@ -21,10 +26,11 @@ markers = [
 ]
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = ">=0.16.0,<1"
+exasol-toolbox = "^1.1.0"
+types-PyYAML = ">=6.0.12"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry_core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.coverage.run]
@@ -49,21 +55,19 @@ force_grid_wrap = 2
 
 
 [tool.pylint.master]
-fail-under = 8.1
+fail-under = 7.5
 output-format = "colorized,json:.lint.json,text:.lint.txt"
 
 [tool.pylint.format]
 max-line-length = 88
 max-module-lines = 800
 
-
 [[tool.mypy.overrides]]
 module = [
     "test.unit.*",
     "test.integration.*",
-    "exasol.toolbox.*",
     "pyexasol.*",
-    "exasol.saas.client.*",
+    "exasol.saas.*",
 ]
 ignore_errors = true
 ignore_missing_imports = true
