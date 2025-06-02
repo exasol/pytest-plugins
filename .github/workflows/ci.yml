@@ -22,6 +22,8 @@ jobs:
           - pytest-backend
           - pytest-extension
           - pytest-slc
+    permissions:
+      contents: read
     with:
       working-directory: ${{ matrix.working-directory }}
 
@@ -29,6 +31,8 @@ jobs:
     name: Run Slow or Expensive Tests?
     runs-on: ubuntu-24.04
     needs: [ fast-checks ]
+    permissions:
+      contents: read
     steps:
       - name: Detect Slow Tests
         run: true
@@ -45,6 +49,8 @@ jobs:
           - pytest-backend
           - pytest-extension
           - pytest-slc
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: ${{ matrix.working-directory }}
@@ -61,7 +67,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@1.1.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.3.0
         with:
           working-directory: ${{ matrix.working-directory }}
           poetry-version: '2.1.2'

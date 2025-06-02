@@ -22,7 +22,7 @@ exasol-python-extension-common = ">=0.9.0,<1"
 ext = "exasol.pytest_extension"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^1.1.0"
+exasol-toolbox = "^1.3.0"
 exasol-bucketfs = ">=1.0.0"
 click = "^8.1.7"
 
