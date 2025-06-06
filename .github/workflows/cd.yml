@@ -17,7 +17,7 @@ on:
       version:
         description: 'Version number for the release'
         required: true
-        type: number
+        type: string
 jobs:
   Release:
     name: Release ${{ inputs.project }}
@@ -62,9 +62,9 @@ jobs:
           POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
           POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
         run: >
-          gh release create ${TAG} \
-          --title ${TAG} \
+          gh release create ${TAG}
+          --title ${TAG}
           --notes-file ./doc/changes/changes_${VERSION}.md
-          --latest \
-          --target main \
+          --latest
+          --target main
           dist/*
