@@ -1,1 +1,6 @@
 */poetry.lock  linguist-generated
+/pytest-itde/exasol/pytest_itde/version.py           linguist-generated
+/pytest-saas/exasol/pytest_saas/version.py           linguist-generated
+/pytest-backend/exasol/pytest_backend/version.py     linguist-generated
+/pytest-slc/exasol/pytest_slc/version.py             linguist-generated
+/pytest-extension/exasol/pytest_extension/version.py linguist-generated
