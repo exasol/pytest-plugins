@@ -1,4 +1,5 @@
-*/poetry.lock                                        linguist-generated
+/*/poetry.lock                                       linguist-generated
+/*/doc/changes/changelod.md                          linguist-generated
 /pytest-itde/exasol/pytest_itde/version.py           linguist-generated
 /pytest-saas/exasol/pytest_saas/version.py           linguist-generated
 /pytest-backend/exasol/pytest_backend/version.py     linguist-generated
