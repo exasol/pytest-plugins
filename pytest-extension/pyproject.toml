@@ -1,6 +1,6 @@
 [project]
 name = "pytest-exasol-extension"
-version = "0.2.2"
+version = "0.2.3"
 requires-python = ">=3.10,<4.0"
 description = ""
 authors = [
@@ -14,9 +14,9 @@ packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
 pytest = ">=7,<9"
-pytest-exasol-backend = ">=0.2.0"
+pytest-exasol-backend = ">=0.4.0"
 pyexasol = ">=0.26.0,<1"
-exasol-python-extension-common = ">=0.9.0,<1"
+exasol-python-extension-common = ">=0.10.0,<1"
 
 [tool.poetry.plugins.pytest11]
 ext = "exasol.pytest_extension"
