@@ -34,7 +34,7 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4.2.1
         with:
-          path: ./artifacts
+          path: ./${{ inputs.working-directory }}/artifacts
           pattern: "*${{ inputs.working-directory }}*"
 
       - name: Copy Artifacts into Root Folder
