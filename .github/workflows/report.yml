@@ -36,18 +36,14 @@ jobs:
 
       - name: List and Rename Artifacts
         run : |
-          ls -R
+          cd artifacts
+          ls -lha
           
-          find artifacts/ -name '*${{ inputs.working-directory }}*' -exec bash -c '
-          for file in "$@"; do
-              dir=$(dirname "$file")
-              base=$(basename "$file")
-              new_name="${base/-${{ inputs.working-directory }}/}"
-              mv -i "$file" "$dir/$new_name"
+          for f in *${{ inputs.working-directory }}*; do
+            mv "$f" "${f/-${{ inputs.working-directory }}/}"
           done
-          ' bash {} +
           
-          ls -R
+          ls -lha
 
       - name: Copy Artifacts into Root Folder
         run: poetry run -- nox -s artifacts:copy -- ../artifacts
