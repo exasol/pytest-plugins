@@ -66,7 +66,7 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: metrics.json
+          name: ${{ inputs.working-directory }}-metrics.json
           path: ${{ inputs.working-directory }}/metrics.json
 
       - name: Generate GitHub Summary
