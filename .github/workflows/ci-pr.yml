@@ -2,6 +2,7 @@ name: Continuous Integration (PR)
 
 on:
   pull_request:
+    types: [ opened, synchronize, reopened ]
 
 jobs:
 

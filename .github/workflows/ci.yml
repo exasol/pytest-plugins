@@ -12,16 +12,24 @@ on:
         required: false
 
 jobs:
+  set-project-matrix:
+    name: Set Project Matrix
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - id: set-project-matrix
+        run: |
+          echo "matrix={"working-directory": ["pytest-backend", "pytest-extension", "pytest-slc"]}" >> $GITHUB_OUTPUT
+    outputs:
+      matrix: ${{ steps.set-project-matrix.outputs.matrix }}
 
   fast-checks:
     name: Fast
     uses: ./.github/workflows/checks.yml
+    needs: [ set-project-matrix ]
     strategy:
-      matrix:
-        working-directory:
-          - pytest-backend
-          - pytest-extension
-          - pytest-slc
+      matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
     permissions:
       contents: read
     with:
@@ -39,16 +47,12 @@ jobs:
     environment:
       manual-environment
 
-  Verify:
+  slow-tests:
     name: Slow Tests (${{ matrix.working-directory }})
     runs-on: ubuntu-24.04
-    needs: [ slow-test-detection ]
+    needs: [ set-project-matrix, slow-test-detection ]
     strategy:
-      matrix:
-        working-directory:
-          - pytest-backend
-          - pytest-extension
-          - pytest-slc
+      matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
     permissions:
       contents: read
     defaults:
@@ -67,7 +71,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@1.4.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.6.0
         with:
           working-directory: ${{ matrix.working-directory }}
           poetry-version: '2.1.2'
@@ -86,3 +90,14 @@ jobs:
           name: coverage-${{ matrix.working-directory }}-python${{ matrix.python-version }}-slow
           path: ${{ matrix.working-directory }}/.coverage
           include-hidden-files: true
+
+  metrics:
+    needs: [ set-project-matrix, fast-checks, slow-tests ]
+    strategy:
+      matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
+    uses: ./.github/workflows/report.yml
+    secrets: inherit
+    permissions:
+      contents: read
+    with:
+      working-directory: ${{ matrix.working-directory }}
