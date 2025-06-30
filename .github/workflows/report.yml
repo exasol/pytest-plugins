@@ -31,10 +31,11 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4.2.1
         with:
-          path: ./artifacts
+          path: ./${{ inputs.working-directory }}/artifacts
           pattern: "*${{ inputs.working-directory }}*"
 
       - name: List and Rename Artifacts
+        working-directory: ${{ inputs.working-directory }}
         run : |
           cd artifacts
           
@@ -45,9 +46,11 @@ jobs:
           ls -lhaR
 
       - name: Copy Artifacts into Root Folder
-        run: poetry run -- nox -s artifacts:copy -- ../artifacts
+        run: poetry run -- nox -s artifacts:copy -- artifacts
         working-directory: ${{ inputs.working-directory }}
 
+      - name: List Artifacts
+        run: ls -lhaR
 
       - name: Validate Artifacts
         run: poetry run -- nox -s artifacts:validate
