@@ -70,3 +70,7 @@ module = [
 ignore_errors = true
 ignore_missing_imports = true
 
+[tool.sonar]
+projectKey = "com.exasol:pytest-backend"
+hostUrl = "https://sonarcloud.io"
+organization = "exasol"
