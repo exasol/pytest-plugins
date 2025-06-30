@@ -18,11 +18,11 @@ jobs:
     permissions:
       contents: read
     steps:
-      - id: set-project-matrix
+      - id: set-matrix
         run: |
-          echo "matrix={"working-directory": ["pytest-backend", "pytest-extension", "pytest-slc"]}" >> $GITHUB_OUTPUT
+          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-extension\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT" 
     outputs:
-      matrix: ${{ steps.set-project-matrix.outputs.matrix }}
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
 
   fast-checks:
     name: Fast
