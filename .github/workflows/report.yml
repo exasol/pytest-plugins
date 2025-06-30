@@ -49,9 +49,6 @@ jobs:
         run: poetry run -- nox -s artifacts:copy -- artifacts
         working-directory: ${{ inputs.working-directory }}
 
-      - name: List Artifacts
-        run: ls -lhaR
-
       - name: Validate Artifacts
         run: poetry run -- nox -s artifacts:validate
         working-directory: ${{ inputs.working-directory }}
@@ -69,10 +66,11 @@ jobs:
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: metrics.json
+          name: ${{ inputs.working-directory }}/metrics.json
           path: metrics.json
 
       - name: Generate GitHub Summary
+        working-directory: ${{ inputs.working-directory }}
         run: |
           echo -e "# Summary for ${{ inputs.working-directory }}\n" >> $GITHUB_STEP_SUMMARY
           poetry run -- nox -s project:report -- --format markdown >> $GITHUB_STEP_SUMMARY
