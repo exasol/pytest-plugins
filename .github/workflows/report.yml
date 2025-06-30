@@ -53,11 +53,11 @@ jobs:
         run: poetry run -- nox -s artifacts:validate
         working-directory: ${{ inputs.working-directory }}
 
-#      - name: Upload to sonar
-#        env:
-#          SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
-#        run: poetry run -- nox -s sonar:check
-#        working-directory: ${{ inputs.working-directory }}
+      - name: Upload to sonar
+        env:
+          SONAR_TOKEN: "${{ secrets.SONAR_TOKEN }}"
+        run: poetry run -- nox -s sonar:check
+        working-directory: ${{ inputs.working-directory }}
 
       - name: Generate Report
         run: poetry run -- nox -s project:report -- --format json | tee metrics.json

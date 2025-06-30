@@ -92,7 +92,7 @@ jobs:
           include-hidden-files: true
 
   metrics:
-    needs: [ set-project-matrix, fast-checks]
+    needs: [ set-project-matrix, fast-checks, slow-tests ]
     strategy:
       matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
     uses: ./.github/workflows/report.yml
