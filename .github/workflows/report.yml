@@ -34,6 +34,21 @@ jobs:
           path: ./artifacts
           pattern: "*${{ inputs.working-directory }}*"
 
+      - name: List and Rename Artifacts
+        run : |
+          ls -R
+          
+          find artifacts/ -name '*${{ inputs.working-directory }}*' -exec bash -c '
+          for file in "$@"; do
+              dir=$(dirname "$file")
+              base=$(basename "$file")
+              new_name="${base/-${{ inputs.working-directory }}/}"
+              mv -i "$file" "$dir/$new_name"
+          done
+          ' bash {} +
+          
+          ls -R
+
       - name: Copy Artifacts into Root Folder
         run: poetry run -- nox -s artifacts:copy -- ../artifacts
         working-directory: ${{ inputs.working-directory }}
