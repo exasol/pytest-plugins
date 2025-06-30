@@ -37,13 +37,12 @@ jobs:
       - name: List and Rename Artifacts
         run : |
           cd artifacts
-          ls -lha
           
           for f in *${{ inputs.working-directory }}*; do
             mv "$f" "${f/-${{ inputs.working-directory }}/}"
           done
           
-          ls -lha
+          ls -lhaR
 
       - name: Copy Artifacts into Root Folder
         run: poetry run -- nox -s artifacts:copy -- ../artifacts
