@@ -15,7 +15,7 @@ packages = [{include = "exasol"}]
 [tool.poetry.dependencies]
 pytest = ">=7,<9"
 exasol-integration-test-docker-environment = "^3.1.0"
-exasol-saas-api = ">=1.1.0,<2"
+exasol-saas-api = ">=2.0.0,<3"
 
 [tool.poetry.plugins.pytest11]
 backend = "exasol.pytest_backend"
@@ -65,7 +65,6 @@ module = [
     "test.unit.*",
     "test.integration.*",
     "pyexasol.*",
-    "exasol.saas.*",
 ]
 ignore_errors = true
 ignore_missing_imports = true
