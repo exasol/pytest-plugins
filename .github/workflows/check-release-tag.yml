@@ -28,5 +28,6 @@ jobs:
           poetry-version: '2.1.2'
 
       - name: Check Tag Version
+        working-directory: ${{ inputs.working-directory }}
         # make sure the pushed/created tag matched the project version
         run: "[[ `poetry version --short` == ${{ inputs.version }} ]]"
