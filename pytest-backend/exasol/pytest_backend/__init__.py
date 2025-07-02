@@ -199,7 +199,7 @@ def database_name(project_short_tag):
 @pytest.fixture(scope="session")
 def saas_api_access(
     request, use_saas, saas_host, saas_pat, saas_account_id
-) -> OpenApiAccess | None:
+) -> Generator[OpenApiAccess | None]:
     if use_saas and (not request.config.getoption("--saas-database-id")):
         client = create_saas_client(host=saas_host, pat=saas_pat)
         api_access = OpenApiAccess(client=client, account_id=saas_account_id)

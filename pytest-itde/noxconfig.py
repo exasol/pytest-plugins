@@ -21,6 +21,7 @@ class Config:
     doc: Path = Path(__file__).parent / "doc"
     version_file: Path = Path(__file__).parent / "exasol" / "pytest_itde" / "version.py"
     path_filters: Iterable[str] = ("dist", ".eggs", "venv", "metrics-schema")
+    source: Path = Path("exasol/pytest_itde")
     python_versions = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     @staticmethod

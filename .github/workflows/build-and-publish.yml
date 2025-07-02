@@ -1,0 +1,60 @@
+name: Build & Publish
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+    secrets:
+      PYPI_TOKEN:
+          required: true
+
+jobs:
+
+  cd-job:
+    name: Continuous Delivery
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: ${{ inputs.working-directory }}
+    steps:
+      - name: SCM Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python & Poetry Environment
+        uses: exasol/python-toolbox/.github/actions/python-environment@1.6.0
+        with:
+          working-directory: ${{ inputs.working-directory }}
+          poetry-version: '2.1.2'
+
+      - name: Build Artifacts
+        run: poetry build
+
+      - name: PyPi Release
+        env:
+          POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
+          POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
+        run: poetry publish
+
+      - name: GitHub Release
+        env:
+          TAG: "${{ inputs.working-directory }}-${{ inputs.version }}"
+          PROJECT: "${{ inputs.working-directory }}"
+          VERSION: "${{ inputs.version }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          POETRY_HTTP_BASIC_PYPI_USERNAME: "__token__"
+          POETRY_HTTP_BASIC_PYPI_PASSWORD: "${{ secrets.PYPI_TOKEN }}"
+        run: >
+          gh release create ${TAG}
+          --title ${TAG}
+          --notes-file ./doc/changes/changes_${VERSION}.md
+          --latest
+          --target main
+          dist/*
+

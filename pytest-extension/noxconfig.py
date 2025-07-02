@@ -23,6 +23,7 @@ class Config:
         Path(__file__).parent / "exasol" / "pytest_extension" / "version.py"
     )
     path_filters: Iterable[str] = ("dist", ".eggs", "venv", "metrics-schema")
+    source: Path = Path("exasol/pytest_extension")
     python_versions = ["3.10", "3.11", "3.12", "3.13"]
 
     @staticmethod
