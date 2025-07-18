@@ -64,7 +64,7 @@ max-module-lines = 800
 module = [
     "test.unit.*",
     "test.integration.*",
-    "pyexasol.*"
+    "pyexasol.*",
 ]
 ignore_errors = true
 ignore_missing_imports = true
