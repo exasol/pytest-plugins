@@ -15,7 +15,7 @@ packages = [{include = "exasol"}]
 [tool.poetry.dependencies]
 pytest = ">=7,<9"
 exasol-integration-test-docker-environment = "^4.1.0"
-exasol-saas-api = ">=1.1.0,<3"
+exasol-saas-api = ">=1.1.0,<2"
 
 [tool.poetry.plugins.pytest11]
 backend = "exasol.pytest_backend"
