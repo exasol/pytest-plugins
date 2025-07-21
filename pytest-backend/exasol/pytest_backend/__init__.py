@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import os
 import ssl
+from collections.abc import Generator
 from datetime import timedelta
 from typing import (
     Any,
-    Generator,
 )
 from urllib.parse import urlparse
 
@@ -18,7 +18,7 @@ from exasol.saas.client.api_access import (
     timestamp_name,
 )
 from exasol_integration_test_docker_environment.lib import api
-from exasol_integration_test_docker_environment.lib.data.environment_info import (
+from exasol_integration_test_docker_environment.lib.models.data.environment_info import (
     EnvironmentInfo,
 )
 
