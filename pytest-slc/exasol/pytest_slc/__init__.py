@@ -13,6 +13,9 @@ from exasol.python_extension_common.deployment.language_container_deployer impor
     LanguageActivationLevel,
     LanguageContainerDeployer,
 )
+from exasol.slc.models.export_container_result import (
+    ExportContainerResult,  # type: ignore
+)
 from exasol_integration_test_docker_environment.lib.api.api_errors import (
     TaskFailures,
     TaskRuntimeError,
@@ -47,7 +50,12 @@ def slc_builder() -> LanguageContainerBuilder | None:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def export_slc_async(request, slc_builder, use_onprem: bool, use_saas: bool):
+def export_slc_async(
+    request,
+    slc_builder: LanguageContainerBuilder,
+    use_onprem: bool,
+    use_saas: bool,
+):
     """
     The fixture starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task.
@@ -57,14 +65,20 @@ def export_slc_async(request, slc_builder, use_onprem: bool, use_saas: bool):
     """
     skip_slc = request.config.getoption(SKIP_SLC_OPTION)
     if skip_slc or (not (use_onprem or use_saas)) or (slc_builder is None):
-        return None
+        yield None
+        return
 
     @paralleltask
     def export_runner():
         yield slc_builder.export()
 
     with export_runner() as export_task:
-        return export_task
+        # a "return" statement waits for export_runner().__exit__() while
+        # "yield" does not not.
+        #
+        # In this case the SLC building takes quite long and this fixture
+        # should not wait until the SLC building is completed.
+        yield export_task
 
 
 @pytest.fixture(scope="session")
