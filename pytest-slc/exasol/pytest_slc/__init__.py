@@ -56,7 +56,7 @@ def export_slc_async(
     slc_builder: LanguageContainerBuilder,
     use_onprem: bool,
     use_saas: bool,
-) -> Iterator[ExportContainerResult]:
+): # -> Iterator[ExportContainerResult]:
     """
     The fixture starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task.
@@ -78,7 +78,7 @@ def export_slc_async(
         #
         # In this case the SLC building takes quite long and this fixture
         # should not wait until the SLC building is completed.
-        yield export_task
+        return export_task
 
 
 @pytest.fixture(scope="session")
