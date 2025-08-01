@@ -1,15 +1,11 @@
 from __future__ import annotations
 
 import getpass
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
-import pytest
-from exasol_integration_test_docker_environment.lib.api.api_errors import (
-    TaskFailures,
-    TaskRuntimeError,
-)
 import exasol.bucketfs as bfs
+import pytest
 from exasol.pytest_backend import paralleltask
 from exasol.python_extension_common.deployment.language_container_builder import (
     LanguageContainerBuilder,
@@ -20,6 +16,10 @@ from exasol.python_extension_common.deployment.language_container_deployer impor
 )
 from exasol.slc.models.export_container_result import (
     ExportContainerResult,  # type: ignore
+)
+from exasol_integration_test_docker_environment.lib.api.api_errors import (
+    TaskFailures,
+    TaskRuntimeError,
 )
 
 SKIP_SLC_OPTION = "--skip-slc"
