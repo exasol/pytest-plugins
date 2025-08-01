@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import getpass
-from collections.abc import Iterator
 from pathlib import Path
 
 import exasol.bucketfs as bfs
@@ -56,7 +55,7 @@ def export_slc_async(
     slc_builder: LanguageContainerBuilder,
     use_onprem: bool,
     use_saas: bool,
-) -> Iterator[ExportContainerResult]:
+):
     """
     The fixture starts the export() function of the provided
     LanguageContainerBuilder object as an asynchronous task.
