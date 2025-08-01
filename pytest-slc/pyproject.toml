@@ -1,6 +1,6 @@
 [project]
 name = "pytest-exasol-slc"
-version = "0.4.0"
+version = "0.4.1"
 requires-python = ">=3.10,<4.0"
 description = ""
 authors = [
