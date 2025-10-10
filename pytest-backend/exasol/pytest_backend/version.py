@@ -7,8 +7,8 @@ If you need to change the version, do so in the pyproject.toml, e.g. by using
 `poetry version X.Y.Z`.
 """
 
-MAJOR = 0
-MINOR = 4
-PATCH = 1
+MAJOR = 1
+MINOR = 1
+PATCH = 0
 VERSION = f"{MAJOR}.{MINOR}.{PATCH}"
 __version__ = VERSION
