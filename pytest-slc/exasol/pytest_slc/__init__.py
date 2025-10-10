@@ -16,7 +16,7 @@ from exasol.python_extension_common.deployment.language_container_deployer impor
 from exasol.slc.models.export_container_result import (
     ExportContainerResult,  # type: ignore
 )
-from exasol_integration_test_docker_environment.lib.api.api_errors import (
+from exasol_integration_test_docker_environment.lib.models.api_errors import (
     TaskFailures,
     TaskRuntimeError,
 )

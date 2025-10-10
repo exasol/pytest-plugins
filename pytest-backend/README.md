@@ -94,6 +94,7 @@ function. The parameter values can be provided in the CLI options. Currently, it
  - `--itde-db-mem-size`
  - `--itde-db-disk-size`
  - `--itde-nameserver`
+ - `--itde-additional-db-parameter`
  - `--itde-db-version`
 
 In the example below the tests are run using an instance of the DockerDB with increased memory.

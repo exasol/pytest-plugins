@@ -73,6 +73,8 @@ def test_itde_options(pytester):
     db_disk_size = "100 TB"
     nameserver1 = "my_nameserver1"
     nameserver2 = "my_nameserver2"
+    db_parameter1 = "my_parameter1"
+    db_parameter2 = "my_parameter2"
     db_version = "1000.100.10.1"
 
     test_code = dedent(
@@ -81,6 +83,7 @@ def test_itde_options(pytester):
             assert itde_config.db_mem_size == '{db_mem_size}'
             assert itde_config.db_disk_size == '{db_disk_size}'
             assert itde_config.nameserver == ['{nameserver1}', '{nameserver2}']
+            assert itde_config.additional_db_parameter == ['{db_parameter1}', '{db_parameter2}']
             assert itde_config.db_version == '{db_version}'
     """
     )
@@ -94,6 +97,10 @@ def test_itde_options(pytester):
         f"{nameserver1}",
         "--itde-nameserver",
         f"{nameserver2}",
+        "--itde-additional-db-parameter",
+        f"{db_parameter1}",
+        "--itde-additional-db-parameter",
+        f"{db_parameter2}",
         "--itde-db-version",
         f"{db_version}",
     )
@@ -105,6 +112,7 @@ def test_default_itde_options(itde_config):
     assert itde_config.db_mem_size == DEFAULT_ITDE_DB_MEM_SIZE
     assert itde_config.db_disk_size == DEFAULT_ITDE_DB_DISK_SIZE
     assert itde_config.nameserver == []
+    assert itde_config.additional_db_parameter == []
     assert itde_config.db_version == DEFAULT_ITDE_DB_VERSION
 
 
