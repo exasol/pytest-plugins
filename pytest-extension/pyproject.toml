@@ -14,9 +14,10 @@ packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
 pytest = ">=7,<9"
-pytest-exasol-backend = ">=0.4.0"
+pytest-exasol-backend = ">=1.1, <2"
 pyexasol = ">=0.26.0,<1"
 exasol-python-extension-common = ">=0.10.0,<1"
+exasol-saas-api = ">=2.3,<3"
 
 [tool.poetry.plugins.pytest11]
 ext = "exasol.pytest_extension"
