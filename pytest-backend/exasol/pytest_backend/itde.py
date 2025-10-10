@@ -42,7 +42,8 @@ class ItdeConfig:
     db_version: str
     db_mem_size: str
     db_disk_size: str
-    nameserver: list
+    nameserver: list[str]
+    additional_db_parameter: list[str]
 
 
 _ONPREM_DB_OPTIONS = config.OptionGroup(
@@ -111,7 +112,7 @@ _SSH_OPTIONS = config.OptionGroup(
     ),
 )
 
-DEFAULT_ITDE_DB_VERSION = "8.18.1"
+DEFAULT_ITDE_DB_VERSION = "2025.1.0"
 DEFAULT_ITDE_DB_MEM_SIZE = "2 GiB"
 DEFAULT_ITDE_DB_DISK_SIZE = "2 GiB"
 
@@ -151,6 +152,15 @@ _ITDE_OPTIONS = config.OptionGroup(
                 "A nameserver to be added to the list of DNS nameservers which the docker-db "
                 "should use for resolving domain names. This option can be repeated "
                 "multiple times."
+            ),
+        },
+        {
+            "name": "additional_db_parameter",
+            "type": str,
+            "default": [],
+            "help_text": (
+                "Additional database parameter to be injected to EXAConf. "
+                "The format '-param=value'. Multiple parameters can be provided."
             ),
         },
     ),
