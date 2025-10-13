@@ -1,4 +1,4 @@
-# 1.2.0 - 2025-10-13
+# 1.2.1 - 2025-10-13
 
 Extended support for ITDE options.
 
