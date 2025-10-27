@@ -23,7 +23,7 @@ backend = "exasol.pytest_backend"
 [tool.poetry.group.dev.dependencies]
 exasol-toolbox = "^1.6.0"
 exasol-bucketfs = ">=1.0.0"
-pyexasol = ">=0.26.0, <2"
+pyexasol = ">=1, <2"
 types-PyYAML = ">=6.0.12"
 
 [build-system]
