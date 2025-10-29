@@ -1,5 +1,5 @@
 # Unreleased
 
-## Refactorings
+## Summary
 
-* #113: Updated `pyexasol` dependency declaration
+<tbd>
