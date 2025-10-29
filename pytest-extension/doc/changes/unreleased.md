@@ -1,5 +1,6 @@
 # Unreleased
 
-## Internal
+## Summary
 
-* 103: Relocked dependencies, updated exasol-toolbox to ^1.6.0
+<tbd>
+
