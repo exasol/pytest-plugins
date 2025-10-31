@@ -18,18 +18,17 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@1.6.0
+        uses: exasol/python-toolbox/.github/actions/python-environment@v1
         with:
           working-directory: ${{ inputs.working-directory }}
-          poetry-version: '2.1.2'
 
       - name: Download Artifacts
-        uses: actions/download-artifact@v4.2.1
+        uses: actions/download-artifact@v6
         with:
           path: ./${{ inputs.working-directory }}/artifacts
           pattern: "*${{ inputs.working-directory }}*"
@@ -64,7 +63,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.6.2
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ inputs.working-directory }}-metrics.json
           path: ${{ inputs.working-directory }}/metrics.json
