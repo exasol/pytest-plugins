@@ -188,6 +188,8 @@ jobs:
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v1
+        with:
+          working-directory: ${{ inputs.working-directory }}
 
       - name: Run Distribution Check
         run: poetry run -- nox -s package:check
