@@ -43,6 +43,7 @@ jobs:
       version: ${{ inputs.version }}
 
   cd-job:
+    needs: [ check-release-branch, check-tag-version-job ]
     name: Continuous Delivery
     uses: ./.github/workflows/build-and-publish.yml
     permissions:

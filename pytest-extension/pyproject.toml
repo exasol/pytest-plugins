@@ -23,7 +23,7 @@ exasol-saas-api = ">=2.3,<3"
 ext = "exasol.pytest_extension"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^1.6.0"
+exasol-toolbox = "^1.13.0"
 exasol-bucketfs = ">=1.0.0"
 click = "^8.1.7"
 
