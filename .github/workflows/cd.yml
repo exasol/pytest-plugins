@@ -9,11 +9,9 @@ on:
         default: 'pytest-backend'
         type: choice
         options:
+        - "pytest-backend"
         - "pytest-extension"
         - "pytest-slc"
-        - "pytest-backend"
-        - "pytest-saas"
-        - "pytest-itde"
       version:
         description: 'Version number for the release'
         required: true
