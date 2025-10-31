@@ -43,3 +43,8 @@ Replace x.y.z with the desired version number.
 ## Development
 
 See [Developer Guide](doc/developer-guide.md).
+
+## Archived plugins
+
+* `pytest-itde`
+* `pytest-saas`
