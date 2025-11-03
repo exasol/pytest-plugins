@@ -6,17 +6,16 @@ from collections.abc import (
     Iterable,
     MutableMapping,
 )
-from dataclasses import dataclass
 from pathlib import Path
 from typing import (
     Any,
 )
 
+from exasol.toolbox.config import BaseConfig
 from nox import Session
 
 
-@dataclass(frozen=True)
-class Config:
+class Config(BaseConfig):
     """Project specific configuration used by nox infrastructure"""
 
     root: Path = Path(__file__).parent
@@ -26,7 +25,6 @@ class Config:
     )
     path_filters: Iterable[str] = ("dist", ".eggs", "venv", "metrics-schema")
     source: Path = Path("exasol/pytest_backend")
-    python_versions = ["3.9", "3.10", "3.11", "3.12", "3.13"]
 
     @staticmethod
     def pre_integration_tests_hook(
@@ -43,4 +41,9 @@ class Config:
         return True
 
 
-PROJECT_CONFIG = Config()
+PROJECT_CONFIG = Config(
+    # PTB 1.13.0 still supports Python 3.9, so we override the python_versions
+    python_versions=("3.10", "3.11", "3.12", "3.13"),
+    # Uses SAAS; not ITDE DB versions
+    exasol_versions=(),
+)
