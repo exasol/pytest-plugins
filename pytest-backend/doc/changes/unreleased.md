@@ -10,4 +10,4 @@
 
 ## Features
 
-* Made datatabase_name fixtures different for ITDED and SaaS.
+* Made datatabase_name fixtures different for ITDE and SaaS.
