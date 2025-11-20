@@ -130,7 +130,12 @@ def start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database
 
 @pytest.fixture(scope="session", autouse=True)
 def backend_aware_onprem_database_async(
-    use_onprem, itde_config, exasol_config, bucketfs_config, ssh_config, database_name
+    use_onprem,
+    itde_config,
+    exasol_config,
+    bucketfs_config,
+    ssh_config,
+    itde_database_name,
 ):
     """
     If the onprem is a selected backend, this fixture starts brining up the ITDE and keeps
@@ -142,7 +147,7 @@ def backend_aware_onprem_database_async(
     """
     if use_onprem and (itde_config.db_version != "external"):
         with start_itde(
-            itde_config, exasol_config, bucketfs_config, ssh_config, database_name
+            itde_config, exasol_config, bucketfs_config, ssh_config, itde_database_name
         ) as itde_task:
             yield itde_task
     else:
@@ -198,6 +203,16 @@ def database_name(project_short_tag):
 
 
 @pytest.fixture(scope="session")
+def itde_database_name(database_name):
+    return database_name
+
+
+@pytest.fixture(scope="session")
+def saas_database_name(database_name):
+    return database_name
+
+
+@pytest.fixture(scope="session")
 def saas_api_access(
     request, use_saas, saas_host, saas_pat, saas_account_id
 ) -> Generator[OpenApiAccess | None]:
@@ -212,7 +227,7 @@ def saas_api_access(
 
 @pytest.fixture(scope="session", autouse=True)
 def backend_aware_saas_database_id_async(
-    request, use_saas, database_name, saas_api_access
+    request, use_saas, saas_database_name, saas_api_access
 ) -> Generator[str]:
     """
     If the saas is a selected backend, this fixture starts building a temporary SaaS
@@ -229,7 +244,7 @@ def backend_aware_saas_database_id_async(
 
         # Create a temporary database
         with saas_api_access.database(
-            name=database_name, keep=keep, idle_time=timedelta(hours=idle_hours)
+            name=saas_database_name, keep=keep, idle_time=timedelta(hours=idle_hours)
         ) as db:
             yield db.id
     elif use_saas:
