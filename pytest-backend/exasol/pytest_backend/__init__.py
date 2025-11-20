@@ -130,7 +130,12 @@ def start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database
 
 @pytest.fixture(scope="session", autouse=True)
 def backend_aware_onprem_database_async(
-    use_onprem, itde_config, exasol_config, bucketfs_config, ssh_config, itde_database_name
+    use_onprem,
+    itde_config,
+    exasol_config,
+    bucketfs_config,
+    ssh_config,
+    itde_database_name,
 ):
     """
     If the onprem is a selected backend, this fixture starts brining up the ITDE and keeps
