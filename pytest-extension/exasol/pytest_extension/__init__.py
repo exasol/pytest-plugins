@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import random
 import string
+from collections.abc import Callable
 from typing import (
     Any,
-    Callable,
 )
 from urllib.parse import urlparse
 

@@ -23,7 +23,7 @@ exasol-saas-api = ">=2.3,<3"
 slc = "exasol.pytest_slc"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^1.13.0"
+exasol-toolbox = "^3.0.0"
 exasol-bucketfs = ">=1.0.0"
 
 [build-system]
@@ -62,6 +62,15 @@ output-format = "colorized,json:.lint.json,text:.lint.txt"
 max-line-length = 88
 max-module-lines = 800
 
+[tool.ruff.lint]
+extend-ignore = [
+    "E",      # Syntax errors
+    "F",      # Pyflakes rules (excluding F401)
+    "UP",     # pyupgrade rules
+    "D",      # Docstring rules
+]
+extend-select = ["F401"]
+unfixable = []
 
 [[tool.mypy.overrides]]
 module = [
