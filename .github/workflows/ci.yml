@@ -91,7 +91,9 @@ jobs:
           include-hidden-files: true
 
   metrics:
-    needs: [ set-project-matrix, fast-checks, slow-tests ]
+    # SaaS tests are having issues at the moment. This should be resolved soon
+    # and https://github.com/exasol/pytest-plugins/issues/134 can be handled.
+    needs: [ set-project-matrix, fast-checks ] #, slow-tests ]
     strategy:
       matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
     uses: ./.github/workflows/report.yml
