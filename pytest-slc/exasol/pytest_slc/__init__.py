@@ -13,8 +13,8 @@ from exasol.python_extension_common.deployment.language_container_deployer impor
     LanguageActivationLevel,
     LanguageContainerDeployer,
 )
-from exasol.slc.models.export_container_result import (
-    ExportContainerResult,  # type: ignore
+from exasol.slc.models.export_container_result import (  # noqa: F401
+    ExportContainerResult,
 )
 from exasol_integration_test_docker_environment.lib.models.api_errors import (
     TaskFailures,
