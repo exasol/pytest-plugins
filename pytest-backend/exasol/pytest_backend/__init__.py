@@ -24,12 +24,12 @@ from exasol_integration_test_docker_environment.lib.models.data.environment_info
 
 import exasol.pytest_backend.project_short_tag as pst
 
+from .itde import bucketfs_config  # noqa: F401
+from .itde import exasol_config  # noqa: F401
+from .itde import itde_config  # noqa: F401
+from .itde import ssh_config  # noqa: F401
 from .itde import (
-    bucketfs_config,
-    exasol_config,
-    itde_config,
     itde_pytest_addoption,
-    ssh_config,
 )
 from .parallel_task import paralleltask
 

@@ -32,18 +32,18 @@ Releasing a single plugin includes
 
 This requires a dedicated Git-tag for each release of each plugin.  The convention is to use the name of the plugin as a prefix followed by a dash character and the version of the plugin, e.g. `pytest-slc-0.1.0`.
 
-In order to create a release for one of the plugins
+To create a release for one of the plugins
 1. Open the GitHub repository in your browser
-2. On top select the tab "Actions"
-3. On the left hand side select action "Continuous Delivery (Release)"
-4. On the right hand click button "Run workflow"
+2. On top, select the tab "Actions"
+3. On the left side, select action "Continuous Delivery (Release)"
+4. On the right side, click button "Run workflow"
 5. Select branch "main"
 6. Select the project, e.g. "pytest-slc"
 7. Enter the version number, e.g. `0.2.0`
 8. Click the button "Run workflow"
 
 The workflow will then
-* Checkout the project
+* Check out the project
 * Build the selected plugin
 * Publish it to pypi
 * Create a Git-tag and a GitHub release using the naming convention described above
