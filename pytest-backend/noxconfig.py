@@ -42,6 +42,10 @@ class Config(BaseConfig):
 
 
 PROJECT_CONFIG = Config(
+    # Restrict Python versions as difficulty with some unit tests for Python 3.14
+    # This will be resolved in:
+    #    https://github.com/exasol/pytest-plugins/issues/133
+    python_versions=("3.10", "3.11", "3.12", "3.13"),
     # Uses SaaS; not ITDE DB versions
     exasol_versions=(),
 )
