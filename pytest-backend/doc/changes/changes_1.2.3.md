@@ -2,7 +2,7 @@
 
 ## Summary
 
-<tbd>
+This release updates the dependency declaration to `ITDE` allowing versions `>=4.3,<6`.
 
 ## Internal
 
