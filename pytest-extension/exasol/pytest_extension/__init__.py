@@ -2,26 +2,29 @@ from __future__ import annotations
 
 import random
 import string
-from collections.abc import Callable
-from typing import (
-    Any,
+from collections.abc import (
+    Callable,
     Iterable,
 )
+from typing import (
+    Any,
+)
 from urllib.parse import urlparse
-from tenacity import retry
-from tenacity.stop import stop_after_attempt
-from tenacity.wait import wait_exponential
 
 import pyexasol
 import pytest
-from exasol.pytest_backend import (
-    BACKEND_ONPREM,
-    BACKEND_SAAS,
-)
 from exasol.python_extension_common.cli.std_options import StdParams
 from exasol.python_extension_common.connections.bucketfs_location import (
     create_bucketfs_conn_object_onprem,
     create_bucketfs_conn_object_saas,
+)
+from tenacity import retry
+from tenacity.stop import stop_after_attempt
+from tenacity.wait import wait_exponential
+
+from exasol.pytest_backend import (
+    BACKEND_ONPREM,
+    BACKEND_SAAS,
 )
 
 
@@ -39,9 +42,11 @@ def db_schema_name() -> str:
 @retry(
     reraise=True,
     wait=wait_exponential(multiplier=1, min=5, max=15),
-    stop=stop_after_attempt(5)
+    stop=stop_after_attempt(5),
 )
-def _open_pyexasol_connection(database_params: dict[str, Any]) -> pyexasol.ExaConnection:
+def _open_pyexasol_connection(
+    database_params: dict[str, Any],
+) -> pyexasol.ExaConnection:
     return pyexasol.connect(**database_params, compression=True)
 
 
