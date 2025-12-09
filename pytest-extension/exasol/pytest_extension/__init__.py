@@ -13,6 +13,10 @@ from urllib.parse import urlparse
 
 import pyexasol
 import pytest
+from exasol.pytest_backend import (
+    BACKEND_ONPREM,
+    BACKEND_SAAS,
+)
 from exasol.python_extension_common.cli.std_options import StdParams
 from exasol.python_extension_common.connections.bucketfs_location import (
     create_bucketfs_conn_object_onprem,
@@ -21,11 +25,6 @@ from exasol.python_extension_common.connections.bucketfs_location import (
 from tenacity import retry
 from tenacity.stop import stop_after_attempt
 from tenacity.wait import wait_exponential
-
-from exasol.pytest_backend import (
-    BACKEND_ONPREM,
-    BACKEND_SAAS,
-)
 
 
 @pytest.fixture(scope="session")
