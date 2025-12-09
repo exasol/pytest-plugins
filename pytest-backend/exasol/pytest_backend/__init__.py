@@ -121,7 +121,7 @@ def start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database
         db_mem_size=itde_config.db_mem_size,
         db_disk_size=itde_config.db_disk_size,
         nameserver=tuple(itde_config.nameserver),
-        additional_db_parameter=tuple(itde_config.additional_db_parameter)
+        additional_db_parameter=tuple(itde_config.additional_db_parameter),
     )
     yield env_info
     cleanup_func()
