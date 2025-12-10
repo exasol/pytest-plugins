@@ -3305,14 +3305,14 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "requests
 
 [[package]]
 name = "pytest-exasol-backend"
-version = "1.2.3"
+version = "1.2.4"
 description = ""
 optional = false
 python-versions = "<3.14,>=3.10"
 groups = ["main"]
 files = [
-    {file = "pytest_exasol_backend-1.2.3-py3-none-any.whl", hash = "sha256:852be5796310772d7d710717002e81bbd0458b5658669da6bb3ddf14e6a5b2ad"},
-    {file = "pytest_exasol_backend-1.2.3.tar.gz", hash = "sha256:6eebe25752499efafa1a0de7c4320713f93aeb13f8401a7d30baf779eb778946"},
+    {file = "pytest_exasol_backend-1.2.4-py3-none-any.whl", hash = "sha256:f7fde35be9cea11369a2c249a431f697ecae64276e3ad4764f4140fe5bb2e6e4"},
+    {file = "pytest_exasol_backend-1.2.4.tar.gz", hash = "sha256:ea8680a0fe7cc45626159a451da386ef7c6b90b19ad8c707e86cb7102b08de23"},
 ]
 
 [package.dependencies]

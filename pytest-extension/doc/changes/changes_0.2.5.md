@@ -1,8 +1,8 @@
-# Unreleased
+# 0.2.5 - 2025-12-11
 
 ## Summary
 
-<tbd>
+Made SaaS connection more reliable.
 
 ## Internal
 

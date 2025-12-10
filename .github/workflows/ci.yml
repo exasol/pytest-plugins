@@ -20,9 +20,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          # echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-extension\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
-          # Need to release pytest-backend. Other project tests will fail until it's done. 
-          echo "matrix={\"working-directory\": [\"pytest-backend\"]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-extension\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -93,9 +91,7 @@ jobs:
           include-hidden-files: true
 
   metrics:
-    # SaaS tests are having issues at the moment. This should be resolved soon
-    # and https://github.com/exasol/pytest-plugins/issues/134 can be handled.
-    needs: [ set-project-matrix, fast-checks ] #, slow-tests ]
+    needs: [ set-project-matrix, fast-checks, slow-tests ]
     strategy:
       matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
     uses: ./.github/workflows/report.yml
