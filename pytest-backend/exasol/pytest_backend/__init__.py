@@ -346,7 +346,10 @@ def backend_aware_database_params(
         yield backend_aware_onprem_database_params
     elif backend == BACKEND_SAAS:
         yield backend_aware_saas_database_params
-    raise ValueError(f"Unknown backend {backend}")
+    raise ValueError(
+        f"Unknown backend {backend}, type: {type(backend)}. "
+        f"Acceptable values are {[BACKEND_ONPREM, BACKEND_SAAS]}"
+    )
 
 
 @pytest.fixture(scope="session")
@@ -363,4 +366,7 @@ def backend_aware_bucketfs_params(
         yield backend_aware_onprem_bucketfs_params
     elif backend == BACKEND_SAAS:
         yield backend_aware_saas_bucketfs_params
-    raise ValueError(f"Unknown backend {backend}")
+    raise ValueError(
+        f"Unknown backend {backend}, type: {type(backend)}. "
+        f"Acceptable values are {[BACKEND_ONPREM, BACKEND_SAAS]}"
+    )
