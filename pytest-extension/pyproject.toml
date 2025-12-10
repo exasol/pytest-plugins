@@ -83,3 +83,4 @@ ignore_missing_imports = true
 projectKey = "com.exasol:pytest-extension"
 hostUrl = "https://sonarcloud.io"
 organization = "exasol"
+exclusions = "exasol/pytest_extension/version.py"
