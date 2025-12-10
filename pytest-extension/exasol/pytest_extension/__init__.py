@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import random
 import string
-from collections.abc import Callable
 from typing import (
     Any,
+    Callable,
+    Iterable,
 )
 from urllib.parse import urlparse
 
@@ -35,7 +36,7 @@ def db_schema_name() -> str:
 @pytest.fixture(scope="session")
 def pyexasol_connection(
     backend_aware_database_params, db_schema_name
-) -> pyexasol.ExaConnection:
+) -> Iterable[pyexasol.ExaConnection]:
     """
     The fixture provides a database connection. It opens the test schema,
     creating it if it doesn't exist. In the latter case the schema gets

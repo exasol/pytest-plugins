@@ -1,6 +1,6 @@
 [project]
 name = "pytest-exasol-backend"
-version = "1.2.3"
+version = "1.2.4"
 # Restrict Python versions as difficulty with some unit tests related
 # to the ParallelTask implementation for Python 3.14.
 # This will be resolved in:
@@ -86,3 +86,4 @@ ignore_missing_imports = true
 projectKey = "com.exasol:pytest-backend"
 hostUrl = "https://sonarcloud.io"
 organization = "exasol"
+exclusions = "exasol/pytest_backend/version.py"

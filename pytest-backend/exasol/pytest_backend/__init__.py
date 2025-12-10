@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import ssl
-from collections.abc import Generator
+from collections.abc import Iterable
 from datetime import timedelta
 from typing import (
     Any,
@@ -122,7 +122,6 @@ def start_itde(itde_config, exasol_config, bucketfs_config, ssh_config, database
         db_disk_size=itde_config.db_disk_size,
         nameserver=tuple(itde_config.nameserver),
         additional_db_parameter=tuple(itde_config.additional_db_parameter),
-        docker_db_image_version=itde_config.db_version,
     )
     yield env_info
     cleanup_func()
@@ -157,13 +156,14 @@ def backend_aware_onprem_database_async(
 @pytest.fixture(scope="session")
 def backend_aware_onprem_database(
     backend_aware_onprem_database_async,
-) -> EnvironmentInfo | None:
+) -> Iterable[EnvironmentInfo | None]:
     """
     If the onprem is a selected backend, this fixture waits till the ITDE becomes available.
     """
     if backend_aware_onprem_database_async is not None:
-        return backend_aware_onprem_database_async.get_output()
-    return None
+        yield backend_aware_onprem_database_async.get_output()
+    else:
+        yield None
 
 
 def _env(var: str) -> str:
@@ -215,7 +215,7 @@ def saas_database_name(database_name):
 @pytest.fixture(scope="session")
 def saas_api_access(
     request, use_saas, saas_host, saas_pat, saas_account_id
-) -> Generator[OpenApiAccess | None]:
+) -> Iterable[OpenApiAccess | None]:
     if use_saas and (not request.config.getoption("--saas-database-id")):
         client = create_saas_client(host=saas_host, pat=saas_pat)
         api_access = OpenApiAccess(client=client, account_id=saas_account_id)
@@ -228,7 +228,7 @@ def saas_api_access(
 @pytest.fixture(scope="session", autouse=True)
 def backend_aware_saas_database_id_async(
     request, use_saas, saas_database_name, saas_api_access
-) -> Generator[str]:
+) -> Iterable[str]:
     """
     If the saas is a selected backend, this fixture starts building a temporary SaaS
     database and keeps it running for the duration of the session. It returns before the
@@ -256,7 +256,7 @@ def backend_aware_saas_database_id_async(
 @pytest.fixture(scope="session")
 def backend_aware_saas_database_id(
     saas_api_access, backend_aware_saas_database_id_async
-) -> Generator[str]:
+) -> Iterable[str]:
     """
     If the saas is a selected backend, this fixture waits until the temporary SaaS database
     becomes available.
@@ -269,21 +269,22 @@ def backend_aware_saas_database_id(
 @pytest.fixture(scope="session")
 def backend_aware_onprem_database_params(
     use_onprem, backend_aware_onprem_database, exasol_config
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     if use_onprem:
-        return {
+        yield {
             "dsn": f"{exasol_config.host}:{exasol_config.port}",
             "user": exasol_config.username,
             "password": exasol_config.password,
             "websocket_sslopt": {"cert_reqs": ssl.CERT_NONE},
         }
-    return {}
+    else:
+        yield {}
 
 
 @pytest.fixture(scope="session")
 def backend_aware_saas_database_params(
     use_saas, saas_host, saas_pat, saas_account_id, backend_aware_saas_database_id
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     if use_saas:
         conn_params = get_connection_params(
             host=saas_host,
@@ -292,16 +293,17 @@ def backend_aware_saas_database_params(
             pat=saas_pat,
         )
         conn_params["websocket_sslopt"] = {"cert_reqs": ssl.CERT_NONE}
-        return conn_params
-    return {}
+        yield conn_params
+    else:
+        yield {}
 
 
 @pytest.fixture(scope="session")
 def backend_aware_onprem_bucketfs_params(
     use_onprem, backend_aware_onprem_database, bucketfs_config
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     if use_onprem:
-        return {
+        yield {
             "backend": BACKEND_ONPREM,
             "url": bucketfs_config.url,
             "username": bucketfs_config.username,
@@ -310,28 +312,30 @@ def backend_aware_onprem_bucketfs_params(
             "bucket_name": "default",
             "verify": False,
         }
-    return {}
+    else:
+        yield {}
 
 
 @pytest.fixture(scope="session")
 def backend_aware_saas_bucketfs_params(
     use_saas, saas_host, saas_pat, saas_account_id, backend_aware_saas_database_id
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     if use_saas:
-        return {
+        yield {
             "backend": BACKEND_SAAS,
             "url": saas_host,
             "account_id": saas_account_id,
             "database_id": backend_aware_saas_database_id,
             "pat": saas_pat,
         }
-    return {}
+    else:
+        yield {}
 
 
 @pytest.fixture(scope="session")
 def backend_aware_database_params(
     backend, backend_aware_onprem_database_params, backend_aware_saas_database_params
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     """
     Returns a set of parameters sufficient to open a pyexasol connection to the
     current testing backend.
@@ -339,16 +343,17 @@ def backend_aware_database_params(
     connection = pyexasol.connect(**backend_aware_database_params, compression=True)
     """
     if backend == BACKEND_ONPREM:
-        return backend_aware_onprem_database_params
+        yield backend_aware_onprem_database_params
     elif backend == BACKEND_SAAS:
-        return backend_aware_saas_database_params
-    raise ValueError(f"Unknown backend {backend}")
+        yield backend_aware_saas_database_params
+    else:
+        raise ValueError(f"Unknown backend {backend}")
 
 
 @pytest.fixture(scope="session")
 def backend_aware_bucketfs_params(
     backend, backend_aware_onprem_bucketfs_params, backend_aware_saas_bucketfs_params
-) -> dict[str, Any]:
+) -> Iterable[dict[str, Any]]:
     """
     Returns a set of parameters sufficient to open a PathLike bucket-fs connection to the
     current testing backend.
@@ -356,7 +361,8 @@ def backend_aware_bucketfs_params(
     bfs_path = exasol.bucketfs.path.build_path(**backend_aware_bucketfs_params, path=path_in_bucket)
     """
     if backend == BACKEND_ONPREM:
-        return backend_aware_onprem_bucketfs_params
+        yield backend_aware_onprem_bucketfs_params
     elif backend == BACKEND_SAAS:
-        return backend_aware_saas_bucketfs_params
-    raise ValueError(f"Unknown backend {backend}")
+        yield backend_aware_saas_bucketfs_params
+    else:
+        raise ValueError(f"Unknown backend {backend}")
