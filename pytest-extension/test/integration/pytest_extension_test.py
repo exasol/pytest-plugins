@@ -2,7 +2,7 @@ from textwrap import dedent
 
 import pytest
 from exasol.pytest_backend import (
-    BACKEND_ONPREM,
+    BACKEND_ALL,
     BACKEND_OPTION,
 )
 
@@ -111,6 +111,6 @@ def test_extension_all_backends(pytester):
     """
     )
     pytester.makepyfile(test_code)
-    result = pytester.runpytest("-s", BACKEND_OPTION, BACKEND_ONPREM)
+    result = pytester.runpytest("-s", BACKEND_OPTION, BACKEND_ALL)
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=12, skipped=0)
