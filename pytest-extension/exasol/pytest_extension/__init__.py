@@ -20,6 +20,9 @@ from exasol.python_extension_common.connections.bucketfs_location import (
     create_bucketfs_conn_object_onprem,
     create_bucketfs_conn_object_saas,
 )
+from tenacity import retry
+from tenacity.stop import stop_after_attempt
+from tenacity.wait import wait_exponential
 
 
 @pytest.fixture(scope="session")
@@ -33,6 +36,17 @@ def db_schema_name() -> str:
     return "".join(random.choice(string.ascii_uppercase) for _ in range(12))
 
 
+@retry(
+    reraise=True,
+    wait=wait_exponential(multiplier=1, min=5, max=15),
+    stop=stop_after_attempt(5),
+)
+def _open_pyexasol_connection(
+    database_params: dict[str, Any],
+) -> pyexasol.ExaConnection:
+    return pyexasol.connect(**database_params, compression=True)
+
+
 @pytest.fixture(scope="session")
 def pyexasol_connection(
     backend_aware_database_params, db_schema_name
@@ -42,17 +56,19 @@ def pyexasol_connection(
     creating it if it doesn't exist. In the latter case the schema gets
     deleted and the end of the fixture's life span.
     """
-    with pyexasol.connect(**backend_aware_database_params, compression=True) as conn:
+    conn = _open_pyexasol_connection(backend_aware_database_params)
+    use_temp_schema = False
+    try:
         sql = f"SELECT * FROM SYS.EXA_SCHEMAS WHERE SCHEMA_NAME = '{db_schema_name}'"
         use_temp_schema = len(conn.execute(sql).fetchall()) == 0
         if use_temp_schema:
             conn.execute(f'CREATE SCHEMA "{db_schema_name}"')
         conn.execute(f'OPEN SCHEMA "{db_schema_name}"')
-        try:
-            yield conn
-        finally:
-            if use_temp_schema:
-                conn.execute(f'DROP SCHEMA "{db_schema_name}" CASCADE')
+        yield conn
+    finally:
+        if use_temp_schema:
+            conn.execute(f'DROP SCHEMA IF EXISTS "{db_schema_name}" CASCADE')
+        conn.close()
 
 
 @pytest.fixture(scope="session")
