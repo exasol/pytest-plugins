@@ -1,9 +1,6 @@
 # Unreleased
 
-## Summary 
+## Internal
 
-This release removes the override `8.18.0` in favor of using the default Docker DB version as defined by ITDE.
-
-## Features
-
-* #139: Removed override `8.18.0` for default Docker DB version used by ITDE
+* #140: Ensured that a proper project-short-tag is used in SaaS tests.
+* #141: Added a Merge Gate to the CI Workflow.

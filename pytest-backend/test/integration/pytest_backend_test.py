@@ -46,7 +46,9 @@ def test_pytest_all_backends(pytester):
     """
     )
     pytester.makepyfile(test_code)
-    result = pytester.runpytest(BACKEND_OPTION, BACKEND_ALL)
+    result = pytester.runpytest(
+        BACKEND_OPTION, BACKEND_ALL, "--project-short-tag", "PYTBE"
+    )
     assert result.ret == pytest.ExitCode.OK
     result.assert_outcomes(passed=4, skipped=0)
 
