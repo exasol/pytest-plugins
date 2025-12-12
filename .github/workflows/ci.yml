@@ -94,6 +94,14 @@ jobs:
           path: ${{ matrix.working-directory }}/.coverage
           include-hidden-files: true
 
+  merge-gate:
+    name: Merge Gate
+    needs: [ fast-checks, slow-tests ]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Approve
+        run: echo "Merge Approved"
+
   metrics:
     needs: [ set-project-matrix, fast-checks, slow-tests ]
     strategy:
