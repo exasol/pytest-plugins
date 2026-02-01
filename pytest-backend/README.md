@@ -1,8 +1,10 @@
 # pytest-exasol-backend Plugin
 
-The `pytest-exasol-backend` plugin is a collection of pytest fixtures commonly used for testing
-projects related to Exasol. In particular, it provides unified access to both Exasol On-Prem and
-SaaS backends. This eliminates the need to build different sets of tests for different backends.
+Pytest plugin `pytest-exasol-backend` provides pytest fixtures for using various variants of Exasol database instances in integration tests.
+
+In particular, the plugin enables accessing both Exasol On-Prem and SaaS backends in a unified way.
+
+This enables your integration tests to use either backend variant without modification, incl. iterating the test for each backend variant.
 
 ## Features
 
@@ -21,8 +23,9 @@ pip install pytest-exasol-backend
 
 ## Usage in Tests
 
-Below is an example of a test that requires access to the database. Note, that by default
-this test will run twice - once for each backend.
+### Pyexasol Connection
+
+This test accesses the database via [Pyexasol](github.com/exasol/pyexasol). Note, that by default this test will run **twice** - once for each backend.
 
 ```python
 import pyexasol
@@ -33,8 +36,9 @@ def test_number_of_rows_in_my_table(backend_aware_database_params):
         assert num_of_rows == 5
 ```
 
-Here is an example of a test that requires access to the BucketFS. Again, this test will
-run for each backend, unless one of them is disabled in the CLI.
+### BucketFS
+
+This test accesses the [BucketFS](https://docs.exasol.com/db/latest/database_concepts/bucketfs/bucketfs.htm). Again, this test will run for each backend, unless one of them is disabled in the CLI.
 
 ```python
 import exasol.bucketfs as bfs
@@ -45,8 +49,9 @@ def test_my_file_exists(backend_aware_bucketfs_params):
     assert my_bfs_file.exists()
 ```
 
-Sometimes it may be necessary to know which backend the test is running with. In such
-a case the `backend` fixture can be used, as in the example below.
+### Inspect the Selected Backend Variant
+
+If a tests wants to know, which backend it is running with, it can use the `backend` fixture, as shown below.
 
 ```python
 def test_something_backend_sensitive(backend):
@@ -60,35 +65,67 @@ def test_something_backend_sensitive(backend):
         raise RuntimeError(f'Unknown backend {backend}')
 ```
 
-## Selecting Backends in CLI
+## Selecting Backends on the Command Line
 
-By default, none of the backends is selected for testing. Please use the `--backend` option to specify the target backend.
-The command below runs the tests on an on-prem database.
+By default, none of the backends is selected for testing.
+
+Please use the `--backend` option to specify the target backend with either `onprem`, `saas`, or `all`.
+
+The plugin automatically starts the selected backends and shuts them down after the test session has finished.
+* A SaaS backend is started via [saas-api-python](https://github.com/exasol/saas-api-python/).
+* An on-prem backend via the [ITDE](https://github.com/exasol/integration-test-docker-environment).
+* Additionally you can [use an external or local database](#re-using-an-external-or-local-database).
+
+Please noe that all selected backends are started preemptively, regardless of their _actual usage_ in tests.
+
+Therefore, it is important to make sure the backends are not selected where they are not needed, for instance when running unit tests only.
+
+### Example Command Lines
+
+Run the tests on an on-prem database:
 
 ```shell
 pytest --backend=onprem my_test_suite.py
 ```
 
-This following command runs the test on two backends.
+Run the tests on two backends:
 
 ```shell
 pytest --backend=onprem --backend=saas my_test_suite.py
 ```
 
-The next command runs the test on all backends, which currently is equivalent to the previous command since there
-are only two backends available.
+Run the test on all backends&mdash;equivalent to the previous command:
 
 ```shell
 pytest --backend=all my_test_suite.py
 ```
 
-Please note that all selected backends starts preemptively, regardless of their actual usage in tests.
-Therefore, it is important to make sure the backends are not selected where they are not needed,
-for instance when running unit tests only.
+### (Re-)Using an External or Local Database
 
-## Setting ITDE parameters in CLI
+During development you can shorten the time between code changes and running the tests by (re-)using a backend that is already running.
 
-Sometimes the default ITDE parameters cannot satisfy the test requirements. The plugin allows setting
+To save 2-20 minutes each cycle, simply add CLI parameter `--itde-db-version=external`.
+
+Alternatively, you can export environment variable `PYTEST_ADDOPTS`, e.g.
+```shell
+export PYTEST_ADDOPTS="--backend=onprem --itde-db-version=external"
+```
+
+More parameters may be required if your setup deviates from the default values:
+
+| Option                | Default value    |
+|-----------------------|------------------|
+| `--exasol-host`       | `localhost`      |
+| `--exasol-port`       | `8563`           |
+| `--exasol-username`   | `sys`            |
+| `--exasol-password`   | `exasol`         |
+| `--bucketfs-url`      | `127.0.0.1:2580` |
+| `--bucketfs-username` | `w`              |
+| `--bucketfs-password` | (none)           |
+
+### Setting ITDE Parameters via CLI Options
+
+Sometimes, the default ITDE parameters cannot satisfy the test requirements. The plugin allows setting
 some of the parameters of the [api.spawn_test_environment(...)](https://github.com/exasol/integration-test-docker-environment/blob/92cc67b8f9ab78c52106c1c4ba19fe64811bcb2c/exasol_integration_test_docker_environment/lib/api/spawn_test_environment.py#L35)
 function. The parameter values can be provided in the CLI options. Currently, it is possible to set values of the following parameters:
  - `--itde-db-mem-size`
@@ -97,7 +134,7 @@ function. The parameter values can be provided in the CLI options. Currently, it
  - `--itde-additional-db-parameter`
  - `--itde-db-version`
 
-In the example below the tests are run using an instance of the DockerDB with increased memory.
+This example runs the tests using an instance of the DockerDB with increased memory.
 
 ```shell
 pytest --backend=onprem --itde-db-mem-size "8 GiB" my_test_suite.py
