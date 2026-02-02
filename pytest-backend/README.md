@@ -21,11 +21,32 @@ The pytest-exasol-backend plugin can be installed using pip:
 pip install pytest-exasol-backend
 ```
 
+Alternatively via poetry, recommended as `dev` dependency:
+
+```shell
+poetry add pytest-exasol-backend --group dev
+```
+
 ## Usage in Tests
 
 ### Pyexasol Connection
 
-This test accesses the database via [Pyexasol](github.com/exasol/pyexasol). Note, that by default this test will run **twice** - once for each backend.
+This test accesses the database via [Pyexasol](github.com/exasol/pyexasol) and requires an additional (`dev`) dependency to `pyexasol` to be added to your project.
+
+Note: If pytest option `--backend all` is specified, then this test will run **twice** - once for each backend.
+
+```python
+import pyexasol
+
+def test_number_of_rows_in_my_table(backend_aware_database_params):
+    with pyexasol.connect(**backend_aware_database_params) as conn:
+        value = conn.execute('SELECT 1 FROM DUAL').fetchval()
+        assert value == 1
+```
+
+The following test accesses a specific table within a database schema, and requires
+* Database schema `MY_SCHEMA` and table `MY_TABLE` to exist
+* Database table `MY_TABLE` to contain 5 rows
 
 ```python
 import pyexasol
