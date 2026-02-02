@@ -72,7 +72,7 @@ def test_my_file_exists(backend_aware_bucketfs_params):
 
 ### Inspect the Selected Backend Variant
 
-If a tests wants to know, which backend it is running with, it can use the `backend` fixture, as shown below.
+For inquiring the currenty selected backend variant in a test case, you can use the `backend` fixture, as shown below.
 
 ```python
 def test_something_backend_sensitive(backend):
