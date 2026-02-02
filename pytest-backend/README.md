@@ -38,7 +38,7 @@ Note: If pytest option `--backend all` is specified, then this test will run **t
 ```python
 import pyexasol
 
-def test_number_of_rows_in_my_table(backend_aware_database_params):
+def test_simple_sql(backend_aware_database_params):
     with pyexasol.connect(**backend_aware_database_params) as conn:
         value = conn.execute('SELECT 1 FROM DUAL').fetchval()
         assert value == 1
