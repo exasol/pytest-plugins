@@ -10,7 +10,6 @@ on:
         type: choice
         options:
         - "pytest-backend"
-        - "pytest-extension"
         - "pytest-slc"
       version:
         description: 'Version number for the release'

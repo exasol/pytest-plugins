@@ -6,6 +6,8 @@ This collection of plugins is designed to enhance and simplify the testing exper
 
 By providing a centralized location for pytest plugins, we aim to foster collaboration, ensure consistency, and improve the quality of testing practices within the organization.
 
+Please note that pytest plugin pytest-exasol-extension has been moved to a separate repository https://github.com/exasol/pytest-extension.
+
 ## Introduction
 
 [pytest](https://pytest.org) is a powerful testing framework for [python](https://www.python.org), and with the help of these plugins, developers can extend its functionality to better suit the testing requirements of Exasol-related projects.
@@ -17,9 +19,7 @@ Whether you're looking to use database interactions, enhance test reporting, or 
 | Plugin                    | Description                                                                                                                | PYPI                                                                         |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------|
 | `pytest-exasol-backend`   | Fixture aggregating functionality of both of the above plugins                                                             | [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/)     |
-| `pytest-exasol-extension` | Fixture for setting up a database for an extension test                                                                    | [pytest-exasol-extension](https://pypi.org/project/pytest-exasol-extension/) |
 | `pytest-exasol-slc`       | Fixture for uploading a script language container                                                                          | [pytest-exasol-slc](https://pypi.org/project/pytest-exasol-slc/)             |
-
 
 ## Installation
 

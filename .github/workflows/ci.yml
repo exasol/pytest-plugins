@@ -20,7 +20,7 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-extension\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
