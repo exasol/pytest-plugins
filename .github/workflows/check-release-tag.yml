@@ -14,7 +14,7 @@ jobs:
 
   check-tag-version-job:
     name: Check Tag Version
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     steps:

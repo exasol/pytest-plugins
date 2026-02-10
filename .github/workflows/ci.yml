@@ -14,7 +14,7 @@ on:
 jobs:
   set-project-matrix:
     name: Set Project Matrix
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     steps:
@@ -37,7 +37,7 @@ jobs:
 
   slow-test-detection:
     name: Run Slow or Expensive Tests?
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     needs: [ fast-checks ]
     permissions:
       contents: read
@@ -49,7 +49,7 @@ jobs:
 
   slow-tests:
     name: Slow Tests (${{ matrix.working-directory }})
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     needs: [ set-project-matrix, slow-test-detection ]
     strategy:
       matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
@@ -97,7 +97,7 @@ jobs:
   merge-gate:
     name: Merge Gate
     needs: [ fast-checks, slow-tests ]
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     steps:
       - name: Approve
         run: echo "Merge Approved"

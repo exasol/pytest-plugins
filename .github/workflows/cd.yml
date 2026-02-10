@@ -18,7 +18,7 @@ on:
 jobs:
   check-release-branch:
     name: Check branch for release ${{ inputs.project }}
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: write
     defaults:

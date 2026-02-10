@@ -10,7 +10,7 @@ on:
 jobs:
   Version-Check:
     name: Version (${{ inputs.working-directory }})
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     defaults:
@@ -26,6 +26,8 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           working-directory: ${{ inputs.working-directory }}
+          python-version: "3.10"
+          poetry-version: "2.3.0"
 
       - name: Check Version(s)
         run: poetry run -- nox -s version:check
@@ -40,7 +42,7 @@ jobs:
 
   Changelog:
     name: Changelog Update Check (${{ inputs.working-directory }})
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/master' }}
@@ -55,14 +57,16 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           working-directory: ${{ inputs.working-directory }}
+          python-version: "3.10"
+          poetry-version: "2.3.0"
 
       - name: Run changelog update check
         run: poetry run -- nox -s changelog:updated
 
   Lint:
     name: Linting (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
-    needs: [ Version-Check, build-matrix ]
-    runs-on: ubuntu-24.04
+    needs: [ build-matrix ]
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     strategy:
@@ -81,6 +85,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           working-directory: ${{ inputs.working-directory }}
+          poetry-version: "2.3.0"
 
       - name: Run lint
         run: poetry run -- nox -s lint:code
@@ -96,8 +101,8 @@ jobs:
 
   Type-Check:
     name: Type Checking (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
-    needs: [ Version-Check, build-matrix ]
-    runs-on: ubuntu-24.04
+    needs: [ build-matrix ]
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     strategy:
@@ -116,14 +121,15 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           working-directory: ${{ inputs.working-directory }}
+          poetry-version: "2.3.0"
 
       - name: Run type-check
         run: poetry run -- nox -s lint:typing
 
   Security:
     name: Security Checks (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
-    needs: [ Version-Check, build-matrix ]
-    runs-on: ubuntu-24.04
+    needs: [ build-matrix ]
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     strategy:
@@ -142,6 +148,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           working-directory: ${{ inputs.working-directory }}
+          poetry-version: "2.3.0"
 
       - name: Run security linter
         run: poetry run -- nox -s lint:security
@@ -155,7 +162,7 @@ jobs:
 
   Format:
     name: Format Check (${{ inputs.working-directory }})
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     defaults:
@@ -169,14 +176,16 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           working-directory: ${{ inputs.working-directory }}
+          python-version: "3.10"
+          poetry-version: "2.3.0"
 
       - name: Run format check
-        run: poetry run -- nox -s project:format
+        run: poetry run -- nox -s format:check
+
 
   Build-Packages:
-    name: Build Package Check  (${{ inputs.working-directory }})
-    needs: [ Lint, Type-Check, Security, Format ]
-    runs-on: ubuntu-24.04
+    name: Build Package Check (${{ inputs.working-directory }})
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     defaults:
@@ -190,14 +199,16 @@ jobs:
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           working-directory: ${{ inputs.working-directory }}
+          python-version: "3.10"
+          poetry-version: "2.3.0"
 
       - name: Run Distribution Check
         run: poetry run -- nox -s package:check
 
   Tests:
     name: Unit-Tests (${{ inputs.working-directory }}, Python-${{ matrix.python-version }})
-    needs: [ Build-Packages, build-matrix ]
-    runs-on: ubuntu-24.04
+    needs: [ build-matrix ]
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     strategy:
@@ -213,6 +224,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           working-directory: ${{ inputs.working-directory }}
+          poetry-version: "2.3.0"
 
       - name: Run Tests and Collect Coverage
         working-directory: ${{ inputs.working-directory }}
