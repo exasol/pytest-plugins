@@ -18,7 +18,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -49,7 +49,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -74,7 +74,7 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -86,7 +86,7 @@ jobs:
         run: poetry run -- nox -s lint:code
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: lint-${{ inputs.working-directory }}-python${{ matrix.python-version }}
           path: |
@@ -109,7 +109,7 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -135,7 +135,7 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -147,7 +147,7 @@ jobs:
         run: poetry run -- nox -s lint:security
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: security-${{ inputs.working-directory }}-python${{ matrix.python-version }}
           path: ${{ inputs.working-directory }}/.security.json
@@ -163,7 +163,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -184,7 +184,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -206,7 +206,7 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python & Poetry Environment
         uses: exasol/python-toolbox/.github/actions/python-environment@v5
@@ -219,7 +219,7 @@ jobs:
         run: poetry run -- nox -s test:unit -- --coverage
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ inputs.working-directory }}-python${{ matrix.python-version }}-fast
           path: ${{ inputs.working-directory }}/.coverage

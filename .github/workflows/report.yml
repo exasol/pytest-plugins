@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -63,7 +63,7 @@ jobs:
         working-directory: ${{ inputs.working-directory }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ inputs.working-directory }}-metrics.json
           path: ${{ inputs.working-directory }}/metrics.json
