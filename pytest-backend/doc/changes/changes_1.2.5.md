@@ -21,7 +21,7 @@ Additionally project `pytest-extension` was removed, as it has been moved to a s
 ## Dependency Updates
 
 ### `main`
-* Updated dependency `exasol-saas-api:2.5.0` to `2.6.0`
+* Updated dependency `exasol-saas-api:2.5.0` to `2.7.0`
 
 ### `dev`
 * Updated dependency `exasol-toolbox:3.0.0` to `5.1.1`
