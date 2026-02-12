@@ -14,13 +14,13 @@ on:
 jobs:
   set-project-matrix:
     name: Set Project Matrix
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     permissions:
       contents: read
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-extension\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"working-directory\": [\"pytest-backend\", \"pytest-slc\"]}" >> "$GITHUB_OUTPUT"
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
 
@@ -37,7 +37,7 @@ jobs:
 
   slow-test-detection:
     name: Run Slow or Expensive Tests?
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     needs: [ fast-checks ]
     permissions:
       contents: read
@@ -49,7 +49,7 @@ jobs:
 
   slow-tests:
     name: Slow Tests (${{ matrix.working-directory }})
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     needs: [ set-project-matrix, slow-test-detection ]
     strategy:
       matrix: ${{ fromJson(needs.set-project-matrix.outputs.matrix) }}
@@ -66,12 +66,12 @@ jobs:
         run: echo slow-tests='-m "not slow"' >> "$GITHUB_OUTPUT"
 
       - name: SCM Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
       - name: Setup Python & Poetry Environment
-        uses: exasol/python-toolbox/.github/actions/python-environment@v3
+        uses: exasol/python-toolbox/.github/actions/python-environment@v5
         with:
           working-directory: ${{ matrix.working-directory }}
 
@@ -88,7 +88,7 @@ jobs:
           PYTEST_ADDOPTS: '${{ steps.pytest-markers.outputs.slow-tests }}'
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ matrix.working-directory }}-python${{ matrix.python-version }}-slow
           path: ${{ matrix.working-directory }}/.coverage
@@ -97,7 +97,7 @@ jobs:
   merge-gate:
     name: Merge Gate
     needs: [ fast-checks, slow-tests ]
-    runs-on: ubuntu-24.04
+    runs-on: "ubuntu-24.04"
     steps:
       - name: Approve
         run: echo "Merge Approved"

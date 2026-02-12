@@ -1,6 +1,6 @@
 [project]
 name = "pytest-exasol-slc"
-version = "0.4.3"
+version = "0.4.4"
 requires-python = ">=3.10,<3.14"
 description = ""
 authors = [
@@ -23,7 +23,7 @@ exasol-saas-api = ">=2.3,<3"
 slc = "exasol.pytest_slc"
 
 [tool.poetry.group.dev.dependencies]
-exasol-toolbox = "^3.0.0"
+exasol-toolbox = "^5.0.0"
 exasol-bucketfs = ">=1.0.0"
 
 [build-system]
