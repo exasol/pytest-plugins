@@ -4,7 +4,7 @@
 
 This release fixes vulnerabilites by updating dependencies.
 
-Additionally project `pytest-extension` was removed, as it has been moved to a separate GitHub repository https://github.com/exasol/pytest-extension.
+Additionally project `pytest-extension` was removed, as it has been moved to a separate Git repository https://github.com/exasol/pytest-extension.
 
 ## Security
 
