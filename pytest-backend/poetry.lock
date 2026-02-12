@@ -688,7 +688,7 @@ description = "Cross-platform colored terminal text."
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 groups = ["main", "dev"]
-markers = "sys_platform == \"win32\" or platform_system == \"Windows\""
+markers = "platform_system == \"Windows\" or sys_platform == \"win32\""
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -1171,14 +1171,14 @@ simplejson = ">=3.16.0"
 
 [[package]]
 name = "exasol-saas-api"
-version = "2.6.0"
+version = "2.7.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 optional = false
 python-versions = "<4.0,>=3.10.0"
 groups = ["main", "dev"]
 files = [
-    {file = "exasol_saas_api-2.6.0-py3-none-any.whl", hash = "sha256:6518cf571fed74044cd67972cf24c36cf108170315f731950e59db0e2d4f3307"},
-    {file = "exasol_saas_api-2.6.0.tar.gz", hash = "sha256:43ae4eb076f4f402610daee024473bfcb631fc5f31a233b6f54173b750fb2ee1"},
+    {file = "exasol_saas_api-2.7.0-py3-none-any.whl", hash = "sha256:242193a17d9bd5277838b6f1fb837a390d4d5dea5fb017bcdd6c856149154a76"},
+    {file = "exasol_saas_api-2.7.0.tar.gz", hash = "sha256:0a0398f66b45d823c821fa8b4293f8c8b1209633eadd43b5b985b21c6bffc031"},
 ]
 
 [package.dependencies]
@@ -1848,7 +1848,7 @@ description = "Low-level, pure Python DBus protocol wrapper."
 optional = false
 python-versions = ">=3.7"
 groups = ["dev"]
-markers = "platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and sys_platform == \"linux\""
+markers = "sys_platform == \"linux\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\""
 files = [
     {file = "jeepney-0.9.0-py3-none-any.whl", hash = "sha256:97e5714520c16fc0a45695e5365a2e11b81ea79bba796e26f9f1d178cb182683"},
     {file = "jeepney-0.9.0.tar.gz", hash = "sha256:cf0e9e845622b81e4a28df94c40345400256ec608d0e55bb8a3feaa9163f5732"},
@@ -3821,7 +3821,7 @@ description = "Python bindings to FreeDesktop.org Secret Service API"
 optional = false
 python-versions = ">=3.10"
 groups = ["dev"]
-markers = "platform_machine != \"ppc64le\" and platform_machine != \"s390x\" and sys_platform == \"linux\""
+markers = "sys_platform == \"linux\" and platform_machine != \"ppc64le\" and platform_machine != \"s390x\""
 files = [
     {file = "secretstorage-3.5.0-py3-none-any.whl", hash = "sha256:0ce65888c0725fcb2c5bc0fdb8e5438eece02c523557ea40ce0703c266248137"},
     {file = "secretstorage-3.5.0.tar.gz", hash = "sha256:f04b8e4689cbce351744d5537bf6b1329c6fc68f91fa666f60a380edddcd11be"},

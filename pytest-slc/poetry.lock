@@ -1193,14 +1193,14 @@ tenacity = ">=8.3.0,<9.0.0"
 
 [[package]]
 name = "exasol-saas-api"
-version = "2.6.0"
+version = "2.7.0"
 description = "API enabling Python applications connecting to Exasol database SaaS instances and using their SaaS services"
 optional = false
 python-versions = "<4.0,>=3.10.0"
 groups = ["main", "dev"]
 files = [
-    {file = "exasol_saas_api-2.6.0-py3-none-any.whl", hash = "sha256:6518cf571fed74044cd67972cf24c36cf108170315f731950e59db0e2d4f3307"},
-    {file = "exasol_saas_api-2.6.0.tar.gz", hash = "sha256:43ae4eb076f4f402610daee024473bfcb631fc5f31a233b6f54173b750fb2ee1"},
+    {file = "exasol_saas_api-2.7.0-py3-none-any.whl", hash = "sha256:242193a17d9bd5277838b6f1fb837a390d4d5dea5fb017bcdd6c856149154a76"},
+    {file = "exasol_saas_api-2.7.0.tar.gz", hash = "sha256:0a0398f66b45d823c821fa8b4293f8c8b1209633eadd43b5b985b21c6bffc031"},
 ]
 
 [package.dependencies]
