@@ -1,10 +1,10 @@
-PROJECTS := "pytest-slc pytest-backend"
+PROJECTS := "pytest-backend"
 
 # Default target
 default:
     just --list
 
-# Run tests for one or multiple projects within this respository
+# Run tests for one or multiple projects within this repository
 test +projects=PROJECTS:
     #!/usr/bin/env python3
     import subprocess, sys
