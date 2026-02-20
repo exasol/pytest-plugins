@@ -19,23 +19,22 @@ Whether you're looking to use database interactions, enhance test reporting, or 
 | Plugin                    | Description                                                                                                                | PYPI                                                                         |
 |---------------------------|----------------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------------------|
 | `pytest-exasol-backend`   | Fixture aggregating functionality of both of the above plugins                                                             | [pytest-exasol-backend](https://pypi.org/project/pytest-exasol-backend/)     |
-| `pytest-exasol-slc`       | Fixture for uploading a script language container                                                                          | [pytest-exasol-slc](https://pypi.org/project/pytest-exasol-slc/)             |
 
 ## Installation
 
 To ensure you're using the latest features and bug fixes, we recommend installing the plugins directly from PyPI using your preferred package manager. This approach simplifies the process of keeping your testing environment up-to-date.
 
-For example, to install the `pytest-exasol-slc` plugin, you could use the following command:
+For example, to install the `pytest-exasol-backend` plugin, you could use the following command:
 
 
 ```shell
-pip install pytest-exasol-slc
+pip install pytest-exasol-backend
 ```
 
 To install a specific version of a plugin, simply specify the version number:
 
 ```shell
-pip install "pytest-exasol-slc==x.y.z"
+pip install "pytest-exasol-backend==x.y.z"
 ```
 
 Replace x.y.z with the desired version number.
