@@ -162,3 +162,19 @@ pytest --backend=onprem --itde-db-mem-size "8 GiB" my_test_suite.py
 ```
 
 These options are ignored if the "onprem" backend is not selected.
+
+## Naming SaaS instances
+
+For naming SaaS instances, PYTBE defines fixtures `database_name` and `project_short_tag`.
+
+Fixture `database_name`
+* Depends on fixture `project_short_tag()` and
+* Passes the result to SAPIPY's function `timestamp_name()`, see [SAPIPY user guide](https://github.com/exasol/saas-api-python/main/doc/user_guide/user-guide.md#naming-saas-instances)) for more details.
+
+You can override this fixture, but this is not recommended.
+
+Fixture `project_short_tag` tries to read the current project's short tag from the following places
+* CLI option `--project-short-tag`
+* Environment variable `PROJECT_SHORT_TAG`
+* Yaml file `error_code_config.yml`
+
