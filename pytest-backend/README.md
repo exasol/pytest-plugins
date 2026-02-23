@@ -169,7 +169,7 @@ For naming SaaS instances, PYTBE defines fixtures `database_name` and `project_s
 
 Fixture `database_name`
 * Depends on fixture `project_short_tag()` and
-* Passes the result to SAPIPY's function `timestamp_name()`, see [SAPIPY user guide](https://github.com/exasol/saas-api-python/main/doc/user_guide/user-guide.md#naming-saas-instances)) for more details.
+* Passes the result to SAPIPY's function `timestamp_name()`, see [SAPIPY user guide](https://github.com/exasol/saas-api-python/blob/main/doc/user_guide/user-guide.md#naming-saas-instances) for more details.
 
 You can override this fixture, but this is not recommended.
 
