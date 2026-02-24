@@ -1,6 +1,6 @@
 [project]
 name = "pytest-exasol-backend"
-version = "1.2.5"
+version = "1.3.0"
 # Restrict Python versions as difficulty with some unit tests related
 # to the ParallelTask implementation for Python 3.14.
 # This will be resolved in:
@@ -18,7 +18,7 @@ packages = [{include = "exasol"}]
 
 [tool.poetry.dependencies]
 pytest = ">=7,<9"
-exasol-integration-test-docker-environment = ">=4.3,<6"
+exasol-integration-test-docker-environment = ">=4.3,<7"
 exasol-saas-api = ">=2.8,<3"
 
 [tool.poetry.plugins.pytest11]
