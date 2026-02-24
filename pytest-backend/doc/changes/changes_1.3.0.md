@@ -7,7 +7,7 @@ Also, the dependency definition for exasol-integration-test-docker-environment h
 
 ## Refactorings
 
- - #171: Updated ITDE to support version >= 6.0.0
+* #171: Updated ITDE to support version >= 6.0.0
 
 ## Documentation
 
