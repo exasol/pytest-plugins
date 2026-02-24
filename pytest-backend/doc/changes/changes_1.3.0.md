@@ -3,6 +3,11 @@
 ## Summary
 
 This release adds a description to the User Guide, how the project short tag is retrieved for naming SaaS instances.
+Also, the dependency definition for exasol-integration-test-docker-environment has been changed to support also version >=6.0.0.
+
+## Refactorings
+
+ - #171: Updated ITDE to support version >= 6.0.0
 
 ## Documentation
 
