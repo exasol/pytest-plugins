@@ -18,8 +18,3 @@ Also, the dependency definition for exasol-integration-test-docker-environment h
 ### `main`
 
 * Updated dependency `exasol-saas-api:2.7.0` to `2.8.0`
-
-## Dependency Updates
-
-### `main`
-* Updated dependency `exasol-saas-api:2.7.0` to `2.8.0`
