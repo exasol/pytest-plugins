@@ -1,3 +1,12 @@
+> [!IMPORTANT]
+> This project has been archived as of March 2nd, 2026 and is no longer supported.
+>
+> Each plugin was moved to its own repository:
+>
+> * [pytest-backend](https://github.com/exasol/pytest-backend/)
+> * [pytest-extension](https://github.com/exasol/pytest-extension/)
+> * [pytest-slc](https://github.com/exasol/pytest-slc/)
+
 # Pytest-Plugins for Exasol
 
 Welcome to the official repository for Exasol pytest-plugins!
